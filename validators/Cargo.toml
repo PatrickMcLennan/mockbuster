@@ -1,0 +1,15 @@
+[package]
+name = "validators"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "./validators.rs"
+
+[dependencies]
+lazy_static = "1.4.0"
+regex = "1.9.6"
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = "1.0"
+validator = { version = "0.16.1", features = ["derive"] }

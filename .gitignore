@@ -1,0 +1,16 @@
+.DS_Store
+*~
+*.swp
+
+Cargo.lock
+target
+*.rs.bk
+
+.env
+examples
+files
+
+__pycache__
+node_modules
+dist/
+pkg/

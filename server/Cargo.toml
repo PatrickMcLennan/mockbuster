@@ -1,0 +1,23 @@
+[package]
+name = "server"
+version = "0.0.1"
+edition = "2021"
+
+[[bin]]
+name = "server"
+path = "./server.rs"
+
+[dependencies]
+actix-files = "0.6.2"
+actix-web = "4.0.0-rc.1"
+regex = "1.9.6"
+reqwest = { version = "0.11.9", features = ["json"] }
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.17.0", features = ["full"] }
+validator = { version = "0.16.1", features = ["derive"] }
+validators = { path = "./../validators" }
+home_view = { path = "./../views/home_view" }
+login_view = { path = "./../views/login_view" }
+web-sys = "0.3.64"
+yew = { version = "0.21.0", features = ["hydration", "ssr"] }

@@ -1,0 +1,8 @@
+[workspace]
+members = [
+  "./server",
+  "./validators",
+  "./views/components",
+  "./views/home_view",
+  "./views/login_view",
+]
