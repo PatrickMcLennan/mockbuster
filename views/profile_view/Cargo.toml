@@ -1,5 +1,5 @@
 [package]
-name = "home_view"
+name = "profile_view"
 version = "0.0.1"
 edition = "2021"
 
@@ -9,6 +9,7 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
+rust-i18n = "2.2.1"
 wasm-bindgen = "0.2"
 yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
 

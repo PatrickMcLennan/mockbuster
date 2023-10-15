@@ -1,3 +1,3 @@
 import(`./pkg`).then(module => {
-  module.run_home_view();
+  module.run_top_ten_view();
 })

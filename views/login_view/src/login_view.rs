@@ -97,7 +97,7 @@ pub fn login_view() -> Html {
                                     if has_email_errors { Some(EMAIL_ERROR_ID) } else { None }
                                 }
                                 class={classes!("form-control", if has_email_errors { "is-invalid" } else { "" })}
-                                // value="test@testing.com"
+                                value="king@theking.com"
                                 type="email"
                                 id="email"
                                 ref={email_ref}
@@ -120,7 +120,7 @@ pub fn login_view() -> Html {
                                 }
                                 class={classes!("form-control", if has_password_errors { "is-invalid" } else { "" })}
                                 type="password"
-                                // value="Testing123!"
+                                value="!Testing2"
                                 id="password"
                                 ref={password_ref}
                             />
@@ -136,17 +136,17 @@ pub fn login_view() -> Html {
                         </div>
                     </fieldset>
                     <fieldset>
-                            <button class="btn btn-primary" disabled={*loading} type="submit">
-                                {if *loading {
-                                    html! {
-                                        <div class="spinner-border text-warning" role="status">
-                                            <span class="visually-hidden">{"Loading..."}</span>
-                                        </div>
-                                    }
-                                } else {
-                                    html! { {"Log In"} }
-                                }}
-                            </button>
+                        <button class="btn btn-primary" disabled={*loading} type="submit">
+                            {if *loading {
+                                html! {
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="visually-hidden">{"Loading..."}</span>
+                                    </div>
+                                }
+                            } else {
+                                html! { {"Log In"} }
+                            }}
+                        </button>
                     </fieldset>
                 </form>
             </div>

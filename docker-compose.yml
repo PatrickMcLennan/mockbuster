@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    restart: unless-stopped
+    env_file: 
+      - .env
+    environment:
+      POSTGRES_DB: mockbuster
+    working_dir: /app
+    ports:
+      - 5432:5432
+    volumes:
+      - .:/app
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    working_dir: /app
+    volumes:
+      - .:/app

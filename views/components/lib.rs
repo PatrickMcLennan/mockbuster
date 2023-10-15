@@ -1,2 +1,2 @@
-pub mod App;
 pub mod Header;
+pub mod Logo;

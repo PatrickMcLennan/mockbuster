@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-path = "./lib.rs"
+path = "./src/lib.rs"
 
 [dependencies]
 reqwasm = { version = "0.5.0" }
@@ -17,3 +17,4 @@ web-sys = "0.3.64"
 validator = { version = "0.16.1", features = ["derive"] }
 validators = { path = "./../../validators" }
 yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
+

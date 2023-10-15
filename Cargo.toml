@@ -1,8 +1,17 @@
 [workspace]
 members = [
+  "./migration",
+  "./models",
   "./server",
   "./validators",
   "./views/components",
   "./views/home_view",
   "./views/login_view",
+  "./views/profile_view",
+  "./views/recently_rented_view",
+  "./views/top_ten_view",
 ]
+
+[profile.release]
+lto = true
+opt-level = 's'

@@ -2,9 +2,9 @@ use actix_web::{get, Error as ActixError, HttpResponse};
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
-use home_view::home_view::Home;
+use top_ten_view::top_ten_view::TopTen;
 
-#[get("/")]
+#[get("/top-10")]
 async fn get() -> Result<HttpResponse, ActixError> {
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
@@ -13,7 +13,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            let ssr_renderer = yew::ServerRenderer::<Home>::new();
+            let ssr_renderer = yew::ServerRenderer::<TopTen>::new();
             let ssr_rendered = ssr_renderer.render().await;
             ssr_rendered
         })
@@ -30,10 +30,10 @@ async fn get() -> Result<HttpResponse, ActixError> {
 					<meta charset="UTF-8" />
 					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+					<script defer src="/assets/bootstrap.js"></script>
 					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<script defer src="/assets/bootstrap.js" type="text/javascript"></script>
-					<script defer src="/assets/homeView.js"></script>
-					<title>Home | mockbuster</title>
+					<title>Top 10 | mockbuster</title>
+					<script defer src="/assets/topTenView.js"></script>
 				</head>
 				<body>
 					{}

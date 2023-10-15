@@ -30,8 +30,8 @@ async fn get() -> Result<HttpResponse, ActixError> {
 					<meta charset="UTF-8" />
 					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/shared.js"></script>
-					<link rel="stylesheet" href="/assets/shared.css" />
+					<script defer src="/assets/bootstrap.js"></script>
+					<link rel="stylesheet" href="/assets/bootstrap.css" />
 					<title>Log in | mockbuster</title>
 					<script defer src="/assets/loginView.js"></script>
 				</head>
