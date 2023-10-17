@@ -8,17 +8,15 @@ pub fn top_ten_view() -> Html {
     html! {
         <>
             <Header />
-            <div class="container row">
-                <div class="col-6 offset-3">
-                    <h1>{"This is the Top 10"}</h1>
-                </div>
+            <div class="container">
+                <h1>{"Top 10"}</h1>
             </div>
         </>
     }
 }
 
 #[wasm_bindgen]
-pub fn run_top_ten_view() -> Result<(), JsValue> {
+pub fn run_top_ten_view_wasm() -> Result<(), JsValue> {
     yew::Renderer::<TopTen>::new().hydrate();
     Ok(())
 }

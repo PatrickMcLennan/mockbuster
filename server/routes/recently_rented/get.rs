@@ -33,7 +33,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
 					<script defer src="/assets/bootstrap.js"></script>
 					<link rel="stylesheet" href="/assets/bootstrap.css" />
 					<title>Recently Rented | mockbuster</title>
-					<script defer src="/assets/recentlyRentedView.js"></script>
+					<script defer src="/assets/recentlyRented.js"></script>
 				</head>
 				<body>
 					{}

@@ -9,16 +9,14 @@ pub fn profile_view() -> Html {
         <>
             <Header />
             <div class="container row">
-                <div class="col-6 offset-3">
-                    <h1>{"This is the Profile page"}</h1>
-                </div>
+                <h1>{"Profile"}</h1>
             </div>
         </>
     }
 }
 
 #[wasm_bindgen]
-pub fn run_profile_view() -> Result<(), JsValue> {
+pub fn run_profile_view_wasm() -> Result<(), JsValue> {
     yew::Renderer::<Profile>::new().hydrate();
     Ok(())
 }

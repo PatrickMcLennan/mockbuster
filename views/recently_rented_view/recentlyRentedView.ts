@@ -1,3 +1,3 @@
 import(`./pkg`).then(module => {
-  module.run_recently_rented_view();
+  module.run_recently_rented_view_wasm();
 })

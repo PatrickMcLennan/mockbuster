@@ -8,7 +8,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
  * TODO:
  * 
  * - Better optimize prod WASM builds (WASM code splitting? IDK)
- * - yarn compile::dev::watch seems to recompile on save but browser doesn't always reflect latest changes. ?
  * - Watching the /components dir on each package is really innefficient (see: watchDirectories on every WasmPackPlugin).
  *   Find a more efficient way to recompile only what's necessary when /components changes
  */
@@ -77,7 +76,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/home_view`),
-      outName: `home_view`,
+      outName: `index`,
       args: '--log-level warn',
       extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,
@@ -89,7 +88,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/login_view`),
-      outName: `login_view`,
+      outName: `index`,
       args: '--log-level warn',
       extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,
@@ -101,7 +100,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/profile_view`),
-      outName: `home_view`,
+      outName: `index`,
       args: '--log-level warn',
       extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,
@@ -113,7 +112,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/recently_rented_view`),
-      outName: `home_view`,
+      outName: `index`,
       args: '--log-level warn',
       extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,
@@ -125,7 +124,7 @@ module.exports = {
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/top_ten_view`),
-      outName: `home_view`,
+      outName: `index`,
       args: '--log-level warn',
       extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,

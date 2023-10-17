@@ -8,17 +8,15 @@ pub fn recently_rented_view() -> Html {
     html! {
         <>
             <Header />
-            <div class="container row">
-                <div class="col-6 offset-3">
-                    <h1>{"This is the Recently Rented"}</h1>
-                </div>
+            <div class="container">
+                <h1>{"Recently Rented"}</h1>
             </div>
         </>
     }
 }
 
 #[wasm_bindgen]
-pub fn run_recently_rented_view() -> Result<(), JsValue> {
+pub fn run_recently_rented_view_wasm() -> Result<(), JsValue> {
     yew::Renderer::<RecentlyRented>::new().hydrate();
     Ok(())
 }
