@@ -1,19 +1,18 @@
-use yew::prelude::*;
-use reqwasm::http::{Request, Headers};
-use web_sys::{console, window};
-use serde_json::json;
 use crate::Logo::Logo;
+use reqwasm::http::{Headers, Request};
+use serde_json::json;
+use web_sys::{console, window};
+use yew::prelude::*;
 
 #[function_component(Header)]
 pub fn header() -> Html {
-
-	let logout = Callback::from(move |_: MouseEvent| {
-		wasm_bindgen_futures::spawn_local(async move {
-			let headers = Headers::new();
-			headers.set("Content-Type", "application/json");
+    let logout = Callback::from(move |_: MouseEvent| {
+        wasm_bindgen_futures::spawn_local(async move {
+            let headers = Headers::new();
+            headers.set("Content-Type", "application/json");
 
             match Request::post("/logout")
-				.headers(headers)
+                .headers(headers)
                 .body(serde_json::to_string(&json!({})).unwrap())
                 .send()
                 .await
@@ -30,7 +29,7 @@ pub fn header() -> Html {
                 }
             }
         });
-	});
+    });
 
     html! {
         <header class="sticky-top">

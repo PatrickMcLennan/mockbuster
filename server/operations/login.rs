@@ -32,7 +32,7 @@ pub async fn login(
                     id: v.id,
                 });
             }
-            None => Err("Incorrect email or password".to_string())
+            None => Err("Incorrect email or password".to_string()),
         },
         Err(e) => {
             println!("[Error]: {:?}", e);

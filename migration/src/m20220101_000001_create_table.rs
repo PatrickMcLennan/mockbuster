@@ -1,7 +1,16 @@
 use sea_orm_migration::prelude::*;
+use sea_orm::{DeriveActiveEnum, EnumIter};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
+
+#[derive(EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "i32", db_type = "Integer")]
+pub enum Permission {
+    User = 0,
+    Admin = 1,
+    Owner = 2,
+}
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
@@ -23,21 +32,46 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Users::PasswordHash).string().not_null())
                     .col(ColumnDef::new(Users::Email).string().not_null())
                     .col(ColumnDef::new(Users::Permission).integer().not_null())
+                    .col(
+                        ColumnDef::new(Users::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default("now()")
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Users::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .default("now()")
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
 
-        if cfg!(any(debug_assertions, test)) {
-            let conn = manager.get_connection();
+        let conn = manager.get_connection();
 
+        if cfg!(any(debug_assertions, test)) {
             conn.execute_unprepared(
-                "INSERT INTO users (first_name, last_name, email, password_hash, permission) VALUES
+                "
+					INSERT INTO users (first_name, last_name, email, password_hash, permission) VALUES
 					('Elvis', 'Presley', 'king@theking.com', crypt('!Testing2', gen_salt('bf')), 2),
 					('Kurt', 'Cobain', 'whatever@whatever.com', crypt('!Testing0', gen_salt('bf')), 0),
-					('Jimi', 'Hendrix', 'jimi@hendrix.com', crypt('!Testing0', gen_salt('bf')), 0);",
+					('Jimi', 'Hendrix', 'jimi@hendrix.com', crypt('!Testing0', gen_salt('bf')), 0);
+				",
             )
             .await?;
         }
+
+        conn.execute_unprepared(
+            "
+				CREATE TRIGGER trigger_update_users_updated_at
+				BEFORE UPDATE
+				ON users
+				FOR EACH ROW
+				EXECUTE FUNCTION update_updated_at_column();
+			",
+        )
+        .await?;
 
         Ok(())
     }
@@ -58,4 +92,6 @@ enum Users {
     Email,
     PasswordHash,
     Permission,
+    CreatedAt,
+    UpdatedAt,
 }
