@@ -8,7 +8,7 @@ use std::env;
 mod operations;
 mod routes;
 
-use routes::{home, login, profile, recently_rented, top_ten};
+use routes::{home, login, logout, profile, recently_rented, top_ten};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -41,6 +41,7 @@ async fn main() -> std::io::Result<()> {
 			.service(home::get::get)
 			.service(login::get::get)
 			.service(login::post::post)
+			.service(logout::post::post)
 			.service(profile::get::get)
 			.service(recently_rented::get::get)
 			.service(top_ten::get::get)

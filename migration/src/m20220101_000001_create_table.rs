@@ -32,9 +32,9 @@ impl MigrationTrait for Migration {
 
             conn.execute_unprepared(
                 "INSERT INTO users (first_name, last_name, email, password_hash, permission) VALUES
-					('Elvis', 'Presley', 'king@theking.com', crypt('!Testing2', gen_salt('md5')), 2),
-					('Kurt', 'Cobain', 'whatever@whatever.com', crypt('!Testing0', gen_salt('md5')), 0),
-					('Jimi', 'Hendrix', 'jimi@hendrix.com', crypt('!Testing0', gen_salt('md5')), 0);",
+					('Elvis', 'Presley', 'king@theking.com', crypt('!Testing2', gen_salt('bf')), 2),
+					('Kurt', 'Cobain', 'whatever@whatever.com', crypt('!Testing0', gen_salt('bf')), 0),
+					('Jimi', 'Hendrix', 'jimi@hendrix.com', crypt('!Testing0', gen_salt('bf')), 0);",
             )
             .await?;
         }

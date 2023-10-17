@@ -13,12 +13,10 @@ pub async fn login(
     db: DatabaseConnection,
     login_form: LoginFormSchema,
 ) -> Result<LoginResult, String> {
-
-	println!("{:?}", login_form);
     match users::Entity::find()
         .from_raw_sql(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
-            "SELECT * FROM users WHERE email = '$1' AND password_hash = crypt('$2', password_hash);",
+            "SELECT * FROM users WHERE email = $1 AND password_hash = crypt($2, password_hash)",
             [login_form.email.into(), login_form.password.into()],
         ))
         .one(&db)
@@ -34,14 +32,11 @@ pub async fn login(
                     id: v.id,
                 });
             }
-            None => {
-				println!("Nothing found");
-				return Err("Incorrect email or password".to_string())
-			},
+            None => Err("Incorrect email or password".to_string())
         },
         Err(e) => {
-			println!("[Error]: {:?}", e);
-			return Err("Incorrect email or password".to_string())
-		},
+            println!("[Error]: {:?}", e);
+            return Err("Incorrect email or password".to_string());
+        }
     }
 }
