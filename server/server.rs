@@ -8,7 +8,7 @@ use std::env;
 mod operations;
 mod routes;
 
-use routes::{home, login, logout, profile, recently_rented, top_ten};
+use routes::{home, login, logout, profile, recently_rented, search, top_ten};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -21,6 +21,8 @@ async fn main() -> std::io::Result<()> {
             .await
             .unwrap();
     let secret_key = Key::generate();
+
+    let http_client = reqwest::Client::new();
 
     HttpServer::new(move || {
         ActixApp::new()
@@ -35,6 +37,8 @@ async fn main() -> std::io::Result<()> {
 			)
 			// Postgres connection pool
 			.app_data(web::Data::new(pool.clone()))
+			// HTTP Client connection pool
+			.app_data(web::Data::new(http_client.clone()))
 			// Static Files
 			.service(Files::new("/assets", "./assets/").show_files_listing())
 			// Routes
@@ -44,6 +48,7 @@ async fn main() -> std::io::Result<()> {
 			.service(logout::post::post)
 			.service(profile::get::get)
 			.service(recently_rented::get::get)
+			.service(search::post::post)
 			.service(top_ten::get::get)
     })
     .bind(("127.0.0.1", 8080))?

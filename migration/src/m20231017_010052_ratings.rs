@@ -20,6 +20,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Ratings::UserId).integer().not_null())
                     .col(ColumnDef::new(Ratings::Score).float().not_null())
+                    .col(ColumnDef::new(Ratings::MediaId).integer().not_null())
                     .col(
                         ColumnDef::new(Ratings::CreatedAt)
                             .timestamp_with_time_zone()
@@ -38,9 +39,30 @@ impl MigrationTrait for Migration {
 
         let conn = manager.get_connection();
 
+        if cfg!(any(debug_assertions, test)) {
+            conn.execute_unprepared(
+                "
+					INSERT INTO ratings (user_id, score, media_id) VALUES
+					(1, 10, 550),
+					(2, 10, 550),
+					(3, 10, 550),
+					(1, 10, 26679),
+					(2, 10, 26679),
+					(3, 10, 26679),
+					(1, 7.5, 420818),
+					(2, 2.0, 420818),
+					(3, 6.0, 420818),
+					(1, 9.0, 11362),
+					(2, 7.5, 11362),
+					(3, 5.0, 11362);
+				",
+            )
+            .await?;
+        }
+
         conn.execute_unprepared(
             "
-				CREATE TRIGGER trigger_update_users_updated_at
+				CREATE TRIGGER trigger_update_ratings_updated_at
 				BEFORE UPDATE
 				ON ratings
 				FOR EACH ROW
@@ -67,5 +89,5 @@ enum Ratings {
     CreatedAt,
     UpdatedAt,
     Score,
-	
+    MediaId,
 }
