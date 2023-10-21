@@ -8,7 +8,7 @@ pub fn profile_view() -> Html {
     html! {
         <>
             <Header />
-            <div class="container row">
+            <div class="container">
                 <h1>{"Profile"}</h1>
             </div>
         </>

@@ -2,6 +2,7 @@
 name = "home_view"
 version = "0.0.1"
 edition = "2021"
+include = ["./../../locales"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -9,6 +10,5 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
-wasm-bindgen = "0.2"
-yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
-
+wasm-bindgen = { workspace = true }
+yew = { workspace = true }

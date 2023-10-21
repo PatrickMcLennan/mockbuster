@@ -7,4 +7,4 @@ edition = "2021"
 path = "./lib.rs"
 
 [dependencies]
-sea-orm = { version = "0.12.3", features = ["sqlx-postgres", "runtime-tokio-native-tls"] }
+sea-orm = { workspace = true }

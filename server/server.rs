@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
     dotenv::from_path("./../.env").ok();
 
     let pool: DatabaseConnection =
-        Database::connect(env::var("DATABASE_URL").unwrap_or("NO_POSTGRES_URL_IN_ENV".to_string()))
+        Database::connect(env::var("DATABASE_URL").expect("NO_POSTGRES_URL_IN_ENV"))
             .await
             .unwrap();
     let secret_key = Key::generate();
@@ -29,7 +29,7 @@ async fn main() -> std::io::Result<()> {
 			// Redis connection
 			.wrap(
 				SessionMiddleware::new(
-					RedisActorSessionStore::new(env::var("REDIS_URL").unwrap_or("NO_REDIS_URL_IN_ENV".to_string())),
+					RedisActorSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV")),
 					secret_key.clone()
 				)
 			)

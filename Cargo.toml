@@ -11,6 +11,19 @@ members = [
   "./views/recently_rented_view",
   "./views/top_ten_view",
 ]
+default-members = ["./server"]
+
+[workspace.dependencies]
+reqwasm = { version = "0.5.0" }
+sea-orm = { version = "0.12.3", features = ["sqlx-postgres", "runtime-tokio-native-tls"] }
+serde = "1.0"
+serde_json = "1.0"
+validator = { version = "0.16.1", features = ["derive"] }
+yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4.37"
+wasm-bindgen-test = "0.3"
+web-sys = "0.3.64"
 
 [profile.release]
 lto = true
