@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::Header::Header;
+use components::{Header::Header, MovieCard::MovieCard};
 use models::tmdb::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
 use validators::search_dto::SearchDTO;
@@ -33,18 +33,23 @@ fn Content(props: &Props) -> HtmlResult {
 			<div class="container">
 				<h1>{"Search"}</h1>
 				<h2>{format!("Results for: {}", state.dto.query)}</h2>
-				{
-					state.movie_search_results
-						.clone()
-						.results
-						.into_iter()
-						.map(|result| 
-							html! {
-								<div key={result.title.to_string()}>{result.title}</div>
-							}
-						)
-						.collect::<Html>()
-				}
+				<div class="row">
+					{
+						state
+							.movie_search_results
+							.clone()
+							.results
+							.into_iter()
+							.map(|result| 
+								html! {
+									<div class="col-12 col-sm-6 col-lg-3 col-4">
+										<MovieCard key={result.title.to_string()} movie={result.clone()} />
+									</div>
+								}
+							)
+							.collect::<Html>()
+					}
+				</div>
 			</div>
 		</>
 	})

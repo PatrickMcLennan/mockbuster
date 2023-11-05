@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use yew::Properties;
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Properties, Clone)]
 pub struct MovieResult {
     pub adult: bool,
     pub backdrop_path: Option<String>,

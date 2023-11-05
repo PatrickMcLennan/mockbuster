@@ -35,7 +35,7 @@ pub fn header() -> Html {
         <header class="sticky-top">
             <div class="container">
                 <nav class="navbar navbar-expand-md">
-                    <div class="col-2">
+                    <div class="col-2 mr-auto">
                         <a href="/" class="navbar-brand" style="max-height: 100px;">
                             <Logo />
                         </a>
