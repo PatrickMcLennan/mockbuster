@@ -1,5 +1,5 @@
 use actix_session::Session;
-use models::generated::users;
+use db_models::generated::users;
 use sea_orm::{prelude::*, DatabaseBackend, DatabaseConnection, Statement};
 use validators::login_form::LoginFormSchema;
 

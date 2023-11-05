@@ -10,6 +10,6 @@ path = "./validators.rs"
 [dependencies]
 lazy_static = "1.4.0"
 regex = "1.9.6"
-serde = { version = "1.0.136", features = ["derive"] }
+serde = { workspace = true }
 serde_json = "1.0"
-validator = { version = "0.16.1", features = ["derive"] }
+validator = { workspace = true }

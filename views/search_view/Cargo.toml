@@ -1,0 +1,18 @@
+[package]
+name = "search_view"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "./src/lib.rs"
+
+[dependencies]
+components = { path = "./../components" }
+getrandom = { workspace = true }
+models = { path = "./../../models" }
+serde = { workspace = true }
+validator = { workspace = true }
+validators = { path = "./../../validators" }
+wasm-bindgen = { workspace = true }
+yew = { workspace = true }

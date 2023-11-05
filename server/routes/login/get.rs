@@ -9,13 +9,10 @@ async fn get() -> Result<HttpResponse, ActixError> {
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
-
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            let ssr_renderer = yew::ServerRenderer::<Login>::new();
-            let ssr_rendered = ssr_renderer.render().await;
-            ssr_rendered
+            yew::ServerRenderer::<Login>::new().render().await
         })
     })
     .await

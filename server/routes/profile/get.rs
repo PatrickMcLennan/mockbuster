@@ -13,9 +13,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            let ssr_renderer = yew::ServerRenderer::<Profile>::new();
-            let ssr_rendered = ssr_renderer.render().await;
-            ssr_rendered
+            yew::ServerRenderer::<Profile>::new().render().await
         })
     })
     .await

@@ -47,7 +47,7 @@ Example / explanation using the [LoginView](https://github.com/PatrickMcLennan/m
   curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh; // https://rustwasm.github.io/wasm-pack/installer/
   docker-compose up -d;
   sea-orm-cli migrate up;
-  sea-orm-cli generate entity -o ./models/generated;
+  sea-orm-cli generate entity -o ./db_models/generated;
   yarn;
   ```
 Once installed, run these 2 build processes in parallel **from the project root**.

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use validator::Validate;
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, PartialEq)]
 pub struct SearchDTO {
     #[validate(length(min = 1, message = "No search term entered"))]
     pub query: String,

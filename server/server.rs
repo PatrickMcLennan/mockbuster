@@ -48,6 +48,7 @@ async fn main() -> std::io::Result<()> {
 			.service(logout::post::post)
 			.service(profile::get::get)
 			.service(recently_rented::get::get)
+			.service(search::get::get)
 			.service(search::post::post)
 			.service(top_ten::get::get)
     })

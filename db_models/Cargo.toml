@@ -1,5 +1,5 @@
 [package]
-name = "models"
+name = "db_models"
 version = "0.0.1"
 edition = "2021"
 
@@ -7,4 +7,5 @@ edition = "2021"
 path = "./lib.rs"
 
 [dependencies]
+sea-orm = { workspace = true }
 serde = { workspace = true }

@@ -12,16 +12,22 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
  *   Find a more efficient way to recompile only what's necessary when /components changes
  */
 
+const VIEWS = [
+  { js: `homeView`, rust: `home_view` },
+  { js: `loginView`, rust: `login_view`} ,
+  { js: `profileView`, rust: `profile_view` },
+  { js: `recentlyRentedView`, rust: `recently_rented_view` },
+  { js: `searchView`, rust: `search_view` },
+  { js: `topTenView`, rust: `top_ten_view` }
+]
+
 const IS_PROD = process.env.NODE_ENV === `production`;
 
 module.exports = {
-  entry: {
-    homeView: path.resolve(__dirname, `./views/home_view/homeView.ts`),
-    loginView: path.resolve(__dirname, `./views/login_view/loginView.ts`),
-    profileView: path.resolve(__dirname, `./views/profile_view/profileView.ts`),
-    recentlyRented: path.resolve(__dirname, `./views/recently_rented_view/recentlyRentedView.ts`),
-    topTenView: path.resolve(__dirname, `./views/top_ten_view/topTenView.ts`),
-  },
+  entry: VIEWS.reduce((all, {js, rust}) => ({
+    ...all, 
+    [js]: path.resolve(__dirname, `./views/${rust}/${js}.ts`)
+  }),{}),
   experiments: {
     asyncWebAssembly: true,
   },
@@ -74,66 +80,18 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    new WasmPackPlugin({
-      crateDirectory: path.resolve(__dirname, `./views/home_view`),
+    ...VIEWS.map(({rust}) => new WasmPackPlugin({
+      crateDirectory: path.resolve(__dirname, `./views/${rust}`),
       outName: `index`,
       args: '--log-level warn',
-      extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
+      extraArgs: IS_PROD ? '--no-typescript' : ``,
       mode: process.env.NODE_ENV,
       target: `web`,
       watchDirectories: [
-        path.resolve(__dirname, `./views/home_view/src`),
+        path.resolve(__dirname, `./views/${rust}/src`),
         path.resolve(__dirname, `./views/components`)
       ]
-    }),
-    new WasmPackPlugin({
-      crateDirectory: path.resolve(__dirname, `./views/login_view`),
-      outName: `index`,
-      args: '--log-level warn',
-      extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
-      mode: process.env.NODE_ENV,
-      target: `web`,
-      watchDirectories: [
-        path.resolve(__dirname, `./views/login_view/src`),
-        path.resolve(__dirname, `./views/components`)
-      ]
-    }),
-    new WasmPackPlugin({
-      crateDirectory: path.resolve(__dirname, `./views/profile_view`),
-      outName: `index`,
-      args: '--log-level warn',
-      extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
-      mode: process.env.NODE_ENV,
-      target: `web`,
-      watchDirectories: [
-        path.resolve(__dirname, `./views/profile_view/src`),
-        path.resolve(__dirname, `./views/components`)
-      ]
-    }),
-    new WasmPackPlugin({
-      crateDirectory: path.resolve(__dirname, `./views/recently_rented_view`),
-      outName: `index`,
-      args: '--log-level warn',
-      extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
-      mode: process.env.NODE_ENV,
-      target: `web`,
-      watchDirectories: [
-        path.resolve(__dirname, `./views/recently_rented_view/src`),
-        path.resolve(__dirname, `./views/components`)
-      ]
-    }),
-    new WasmPackPlugin({
-      crateDirectory: path.resolve(__dirname, `./views/top_ten_view`),
-      outName: `index`,
-      args: '--log-level warn',
-      extraArgs: process.env.NODE_ENV === `production` ? '--no-typescript' : ``,
-      mode: process.env.NODE_ENV,
-      target: `web`,
-      watchDirectories: [
-        path.resolve(__dirname, `./views/top_ten_view/src`),
-        path.resolve(__dirname, `./views/components`)
-      ]
-    }),
+    })),
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],

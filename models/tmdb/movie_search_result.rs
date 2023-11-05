@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct MovieResult {
     pub adult: bool,
     pub backdrop_path: Option<String>,
@@ -16,4 +16,12 @@ pub struct MovieResult {
     pub video: bool,
     pub vote_average: f64,
     pub vote_count: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+pub struct MovieSearchResults {
+    pub page: i32,
+    pub results: Vec<MovieResult>,
+    pub total_pages: i32,
+    pub total_results: i32,
 }

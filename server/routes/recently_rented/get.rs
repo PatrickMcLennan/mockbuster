@@ -9,13 +9,10 @@ async fn get() -> Result<HttpResponse, ActixError> {
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
-
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            let ssr_renderer = yew::ServerRenderer::<RecentlyRented>::new();
-            let ssr_rendered = ssr_renderer.render().await;
-            ssr_rendered
+            yew::ServerRenderer::<RecentlyRented>::new().render().await
         })
     })
     .await
@@ -33,7 +30,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
 					<script defer src="/assets/bootstrap.js"></script>
 					<link rel="stylesheet" href="/assets/bootstrap.css" />
 					<title>Recently Rented | mockbuster</title>
-					<script defer src="/assets/recentlyRented.js"></script>
+					<script defer src="/assets/recentlyRentedView.js"></script>
 				</head>
 				<body>
 					{}
