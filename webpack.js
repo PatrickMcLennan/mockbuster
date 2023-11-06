@@ -15,6 +15,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const VIEWS = [
   { js: `homeView`, rust: `home_view` },
   { js: `loginView`, rust: `login_view`} ,
+  { js: `movieView`, rust: `movie_view`} ,
   { js: `profileView`, rust: `profile_view` },
   { js: `recentlyRentedView`, rust: `recently_rented_view` },
   { js: `searchView`, rust: `search_view` },
@@ -24,7 +25,7 @@ const VIEWS = [
 const IS_PROD = process.env.NODE_ENV === `production`;
 
 module.exports = {
-  entry: VIEWS.reduce((all, {js, rust}) => ({
+  entry: VIEWS.reduce((all, { js, rust }) => ({
     ...all, 
     [js]: path.resolve(__dirname, `./views/${rust}/${js}.ts`)
   }),{}),
@@ -80,7 +81,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    ...VIEWS.map(({rust}) => new WasmPackPlugin({
+    ...VIEWS.map(({ rust }) => new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, `./views/${rust}`),
       outName: `index`,
       args: '--log-level warn',

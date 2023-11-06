@@ -1,3 +1,3 @@
 import(`./pkg`).then(module => {
-  module.run_login_view_wasm();
+  module.hydrate_login_view();
 })

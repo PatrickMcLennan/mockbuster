@@ -16,7 +16,7 @@ pub fn recently_rented_view() -> Html {
 }
 
 #[wasm_bindgen]
-pub fn run_recently_rented_view_wasm() -> Result<(), JsValue> {
+pub fn hydrate_recently_rented_view() -> Result<(), JsValue> {
     yew::Renderer::<RecentlyRented>::new().hydrate();
     Ok(())
 }

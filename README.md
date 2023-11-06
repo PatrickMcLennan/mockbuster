@@ -32,6 +32,11 @@ Example / explanation using the [LoginView](https://github.com/PatrickMcLennan/m
 
 #### Back End
 - [Actix Web](https://actix.rs/) for document, asset + REST requests
+- [SeaORM](https://github.com/SeaQL/sea-orm) ORM & all interfacing with postgres
+
+#### Networking
+- [Docker](https://docs.docker.com/) for Postgres + Redis containers
+- [docker-compose](https://docs.docker.com/compose/) for composability
 
 #### Shared
 - [yew](https://yew.rs/) for UI components, compiled on both server + client (see [FE TL;DR](https://github.com/PatrickMcLennan/mockbuster#fe-tldr)).

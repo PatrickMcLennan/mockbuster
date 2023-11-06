@@ -16,7 +16,7 @@ pub fn top_ten_view() -> Html {
 }
 
 #[wasm_bindgen]
-pub fn run_top_ten_view_wasm() -> Result<(), JsValue> {
+pub fn hydrate_top_ten_view() -> Result<(), JsValue> {
     yew::Renderer::<TopTen>::new().hydrate();
     Ok(())
 }

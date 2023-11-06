@@ -32,11 +32,11 @@ pub fn header() -> Html {
     });
 
     html! {
-        <header class="sticky-top">
+        <header class="sticky-top bg-white">
             <div class="container">
                 <nav class="navbar navbar-expand-md">
-                    <div class="col-2 mr-auto">
-                        <a href="/" class="navbar-brand" style="max-height: 100px;">
+                    <div class="col-2" style="max-height: 100px;">
+                        <a href="/" class="navbar-brand">
                             <Logo />
                         </a>
                     </div>
@@ -51,8 +51,8 @@ pub fn header() -> Html {
                     >
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                        <ul class="navbar-nav ml-auto">
+                    <div class="collapse navbar-collapse ml-auto" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link" href="/recently-rented">
                                     {"Recently Rented"}

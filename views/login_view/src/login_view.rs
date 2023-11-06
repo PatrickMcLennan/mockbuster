@@ -155,7 +155,7 @@ pub fn login_view() -> Html {
 }
 
 #[wasm_bindgen]
-pub fn run_login_view_wasm() -> Result<(), JsValue> {
+pub fn hydrate_login_view() -> Result<(), JsValue> {
     yew::Renderer::<Login>::new().hydrate();
     Ok(())
 }

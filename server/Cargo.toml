@@ -25,6 +25,7 @@ validator = { workspace = true }
 validators = { path = "./../validators" }
 home_view = { path = "./../views/home_view" }
 login_view = { path = "./../views/login_view" }
+movie_view = { path = "./../views/movie_view" }
 profile_view = { path = "./../views/profile_view" }
 recently_rented_view = { path = "./../views/recently_rented_view" }
 search_view = { path = "./../views/search_view" }

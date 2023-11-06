@@ -16,7 +16,7 @@ pub fn home_view() -> Html {
 }
 
 #[wasm_bindgen]
-pub fn run_home_view_wasm() -> Result<(), JsValue> {
+pub fn hydrate_home_view() -> Result<(), JsValue> {
     yew::Renderer::<Home>::new().hydrate();
     Ok(())
 }

@@ -8,7 +8,7 @@ use std::env;
 mod operations;
 mod routes;
 
-use routes::{home, login, logout, profile, recently_rented, search, top_ten};
+use routes::{home, login, logout, movie, profile, recently_rented, search, top_ten};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -16,13 +16,12 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
     dotenv::from_path("./../.env").ok();
 
+    let secret_key = Key::generate();
+    let http_client = reqwest::Client::new();
     let pool: DatabaseConnection =
         Database::connect(env::var("DATABASE_URL").expect("NO_POSTGRES_URL_IN_ENV"))
             .await
             .unwrap();
-    let secret_key = Key::generate();
-
-    let http_client = reqwest::Client::new();
 
     HttpServer::new(move || {
         ActixApp::new()
@@ -46,6 +45,7 @@ async fn main() -> std::io::Result<()> {
 			.service(login::get::get)
 			.service(login::post::post)
 			.service(logout::post::post)
+			.service(movie::get::get)
 			.service(profile::get::get)
 			.service(recently_rented::get::get)
 			.service(search::get::get)

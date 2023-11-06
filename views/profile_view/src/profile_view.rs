@@ -16,7 +16,7 @@ pub fn profile_view() -> Html {
 }
 
 #[wasm_bindgen]
-pub fn run_profile_view_wasm() -> Result<(), JsValue> {
+pub fn hydrate_profile_view() -> Result<(), JsValue> {
     yew::Renderer::<Profile>::new().hydrate();
     Ok(())
 }

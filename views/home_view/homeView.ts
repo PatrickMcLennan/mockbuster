@@ -1,3 +1,3 @@
 import(`./pkg`).then(module => {
-  module.run_home_view_wasm();
+  module.hydrate_home_view();
 })
