@@ -1,11 +1,21 @@
 use crate::Logo::Logo;
 use reqwasm::http::{Headers, Request};
+use serde::{Deserialize, Serialize};
 use serde_json::json;
-use web_sys::{console, window};
+use web_sys::{console, window, EventTarget, HtmlInputElement};
 use yew::prelude::*;
 
+#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
+pub struct Props {
+	#[prop_or(String::new())]
+    pub search: String,
+}
+
 #[function_component(Header)]
-pub fn header() -> Html {
+pub fn header(props: &Props) -> Html {
+
+	let search = use_state(|| props.search.to_string());
+
     let logout = Callback::from(move |_: MouseEvent| {
         wasm_bindgen_futures::spawn_local(async move {
             let headers = Headers::new();
@@ -31,12 +41,25 @@ pub fn header() -> Html {
         });
     });
 
+	let onchange = Callback::from(move |event: Event| {
+		let target: Option<EventTarget> = event.target();
+		let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok()).unwrap();
+		let value = input.value();
+		console::log_1(&format!("{:?}", value).into());
+		()
+	});
+
+	let submit_stub = Callback::from(move |e: SubmitEvent| {
+		e.prevent_default();
+		()
+    });
+
     html! {
         <header class="sticky-top bg-white">
-            <div class="container">
-                <nav class="navbar navbar-expand-md">
-                    <div class="col-2" style="max-height: 100px;">
-                        <a href="/" class="navbar-brand">
+			<nav class="navbar navbar-expand-md">
+				<div class="container-fluid">
+                    <div class="navbar-brand" style="max-height: 80px;">
+                        <a href="/">
                             <Logo />
                         </a>
                     </div>
@@ -56,6 +79,11 @@ pub fn header() -> Html {
                             <li class="nav-item">
                                 <a class="nav-link" href="/recently-rented">
                                     {"Recently Rented"}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/top-10">
+                                    {"Top 10"}
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -94,10 +122,23 @@ pub fn header() -> Html {
                                     </li>
                                 </ul>
                             </li>
+							<li>
+								<form class="input-group mb-0" novalidate={true} onsubmit={submit_stub}>
+									<span class="input-group-text" id="search-label">{"🔎"}</span>
+									<input 
+										type="search" 
+										class="form-control" 
+										placeholder="Search for movies" 
+										aria-describedby="search-label" 
+										value={search.to_string()}
+										onchange={onchange}
+									/> 
+								</form>
+							</li>
                         </ul>
                     </div>
-                </nav>
-            </div>
+				</div>
+			</nav>
         </header>
     }
 }

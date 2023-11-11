@@ -28,13 +28,48 @@ fn Content(props: &Props) -> HtmlResult {
     })?
     .unwrap();
 
+	let current_page = state.dto.page;
+	let total_pages = state.movie_search_results.total_pages as i64;
+
+	let show_pagination = &state.movie_search_results.total_pages > &1;
+
+	let is_first_page = &current_page == &1;
+	let is_last_page = current_page == total_pages as i64;
+	let has_more_than_5_pages_remaining = current_page + 5 <= total_pages;
+	let has_more_than_5_pages_in_total = current_page - 5 > 0;
+	let has_more_than_2_pages_remaining = current_page + 2 <= total_pages;
+	let has_more_than_2_pages_in_total = current_page - 2 > 0;
+
+	let offered_pagination = 
+		if is_first_page {
+			if has_more_than_5_pages_remaining {
+				(1..=5).collect::<Vec<i64>>()
+			} else {
+				(1..=total_pages).collect::<Vec<i64>>()
+			}
+		} else if is_last_page {
+			if has_more_than_5_pages_in_total {
+				((current_page - 4)..=current_page).collect::<Vec<i64>>()
+			} else {
+				(1..=current_page).collect::<Vec<i64>>()
+			}
+		} else {
+			if has_more_than_2_pages_remaining && has_more_than_2_pages_in_total {
+				((current_page - 2)..=(current_page + 2)).collect::<Vec<i64>>()
+			} else {
+				(1..=current_page).collect::<Vec<i64>>()
+			}
+		};
+
     Ok(html! {
         <>
-            <Header />
+            <Header search={state.dto.query.to_string()} />
             <main class="container">
-                <h1>{"Search"}</h1>
-                <h2>{"Results for: "}<i>{state.dto.query.clone()}</i></h2>
-                <div class="row">
+				<header class="border-bottom mb-4 pt-2 pb-4">
+					<h1>{"Search"}</h1>
+					<h2 class="mb-0">{"Results for: "}<i>{&state.dto.query}</i></h2>
+				</header>
+                <section class="row g-2">
                     {
                         state
                             .movie_search_results
@@ -43,12 +78,95 @@ fn Content(props: &Props) -> HtmlResult {
                             .into_iter()
                             .map(|result|
                                 html! {
-                                    <MovieCard key={result.title.to_string()} movie={result.clone()} />
+									<div class="col-sm-12 col-md-6 col-lg-4">
+										<MovieCard key={result.title.to_string()} movie={result.clone()} />
+									</div>
                                 }
                             )
                             .collect::<Html>()
                     }
-                </div>
+                </section>
+				{if show_pagination {
+					html! { 
+						<footer class="mt-4 pt-4 border-top">
+							<nav aria-label="Search pagination">
+								<ul class="pagination justify-content-center">
+									<li class={classes!(
+										"page-item", 
+										if is_first_page { Some("disabled") } else { None }
+									)}>
+										<a 
+											class="page-link" 
+											href={if is_first_page { "#".to_string() } else { 
+												format!("/search?query={}&page={}", 
+													&state.dto.query, 
+													&state.dto.page -1
+												) 
+											}} 
+											tabindex={if is_first_page { Some("-1") } else { None }}
+											aria-disabled={if is_first_page { Some("true") } else { None }}
+										>
+											{"Previous"}
+										</a>
+									</li>
+									{
+										offered_pagination
+											.into_iter()
+											.map(|page| {
+												let is_current_page = page == current_page;
+												html! {
+													<li 
+														class={classes!(
+														"page-item", 
+														if is_current_page { Some("active") } else { None }
+														)}
+														key={page}
+													>
+														<a 
+															class="page-link" 
+															href={if is_current_page { "#".to_string() } else { 
+																format!("/search?query={}&page={}", 
+																	&state.dto.query, 
+																	&page
+																) 
+															}} 
+															tabindex={if is_current_page { Some("-1") } else { None }}
+															aria-disabled={if is_current_page { Some("true") } else { None }}
+														>
+															{page}
+														</a>
+													</li>
+												}
+											})
+											.collect::<Html>()
+									}
+									<li class={classes!(
+										"page-item",
+										if is_last_page { Some("disabled") } else { None }
+									)}>
+										<a 
+											class="page-link"
+											href={if is_last_page { "#".to_string() } else { 
+												format!("/search?query={}&page={}", 
+													&state.dto.query, 
+													&state.dto.page +1
+												) 
+											}} 
+											tabindex={if is_first_page { Some("-1") } else { None }}
+											aria-disabled={if is_first_page { Some("true") } else { None }}
+										>
+											{"Next"}
+										</a>
+									</li>
+								</ul>
+							</nav>
+						</footer>
+					}
+				} else {
+					html! {
+						<></>
+					}
+				}}
             </main>
         </>
     })

@@ -10,19 +10,50 @@ pub struct Props {
 #[function_component(MovieCard)]
 pub fn movie_card(props: &Props) -> Html {
     let movie = &props.movie;
-    let image = match movie.poster_path.clone() {
+    let image = match &movie.poster_path {
         Some(v) => format!("https://image.tmdb.org/t/p/w300{}", v),
         None => "https://www.google.com".to_string(),
     };
 
+	let overview = {
+		let overview = &movie.overview.to_string();
+		let string = overview.chars().take(150).collect::<String>();
+		if overview.len() > string.len() {
+			format!("{}...", string)
+		} else {
+			string
+		}
+	};
+
     html! {
-        <a class="card position-relative overflow-hidden col-6 col-sm-4 col-lg-2" href={format!("/movie/{}", movie.id)}>
-            <img class="card-img-top w-100" src={image} alt={format!("{} poster", movie.title)} />
-            <div class="card-body position-absolute bottom-0 w-100 bg-dark">
-                <h3 class="card-title h6">
-                    <small class="text-white small">{movie.title.to_string()}</small>
-                </h3>
-            </div>
-        </a>
+		<div class="card">
+			<div class="card-header">
+				<h3 class="card-title h5 mb-0">
+					<a class="block" href={format!("/movie/{}", movie.id)}>
+						{&movie.title}
+					</a>
+				</h3>
+				</div>
+			<div class="card-body">
+				<div class="row g-2">
+					<div class="col-4">
+						<img class="img-fluid w-100" src={image} alt={format!("{} poster", movie.title)} />
+					</div>
+				<div class="col-8">
+					<p>{overview}</p>
+				</div>
+			</div>
+			</div>
+			<div class="card-footer">
+				<div class="row g-2">
+					<div class="col-6">
+						{"Our rating"}
+					</div>
+					<div class="col-6">
+						{"tmdb rating"}
+					</div>
+				</div>
+			</div>
+		</div>
     }
 }
