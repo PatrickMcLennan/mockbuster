@@ -6,12 +6,12 @@ pub async fn get_tmdb_movie(
 ) -> Result<MovieIdResult, String> {
     let api_key = std::env::var("TMDB_API_KEY").expect("NO_TMDB_API_KEY_IN_ENV");
     let five_hundo = "This movie is unavailable at the moment; please try again later.".to_string();
-	let url = format!(
-		"https://api.themoviedb.org/3/movie/{}?language=en-US&api_key={}",
-		id, api_key
-	);
+    let url = format!(
+        "https://api.themoviedb.org/3/movie/{}?language=en-US&api_key={}",
+        id, api_key
+    );
 
-	println!("{}", url);
+    println!("{}", url);
 
     match http_client
         .unwrap_or(reqwest::Client::new())
@@ -20,21 +20,27 @@ pub async fn get_tmdb_movie(
         .await
     {
         Ok(res) => {
-			println!("{:?}", res); 
-			match res.json::<MovieIdResult>().await {
-				Ok(v) => {
-					println!("[SUCCESS -- get_tmdb_movie]: {:?}", v);
-					return Ok(v);
-				},
-				Err(e) => {
-					println!("[ERROR -- get_tmdb_movie res.json::<MovieIdResult>]: {:?}", e);
-					return Err(five_hundo);
-				}
-			}
-		},
+            println!("{:?}", res);
+            match res.json::<MovieIdResult>().await {
+                Ok(v) => {
+                    println!("[SUCCESS -- get_tmdb_movie]: {:?}", v);
+                    return Ok(v);
+                }
+                Err(e) => {
+                    println!(
+                        "[ERROR -- get_tmdb_movie res.json::<MovieIdResult>]: {:?}",
+                        e
+                    );
+                    return Err(five_hundo);
+                }
+            }
+        }
         Err(e) => {
-            println!("[ERROR -- get_tmdb_movie http_client.get({})]: {:?}", url, e);
+            println!(
+                "[ERROR -- get_tmdb_movie http_client.get({})]: {:?}",
+                url, e
+            );
             return Err(five_hundo);
         }
-	}
+    }
 }
