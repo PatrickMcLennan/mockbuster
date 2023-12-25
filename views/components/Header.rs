@@ -15,7 +15,7 @@ pub struct Props {
 #[function_component(Header)]
 pub fn header(props: &Props) -> Html {
     let timeout = use_mut_ref(|| 0);
-	let timeout_clone = timeout.clone();
+    let timeout_clone = timeout.clone();
     let props_clone = props.clone();
 
     let logout = Callback::from(move |_: MouseEvent| {
@@ -78,9 +78,13 @@ pub fn header(props: &Props) -> Html {
         ()
     });
 
-	use_effect(move || {
-		move || window().unwrap().clear_timeout_with_handle(*timeout_clone.borrow_mut())
-	});
+    use_effect(move || {
+        move || {
+            window()
+                .unwrap()
+                .clear_timeout_with_handle(*timeout_clone.borrow_mut())
+        }
+    });
 
     html! {
         <header class="sticky-top bg-white">

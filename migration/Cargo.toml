@@ -13,6 +13,7 @@ async-std = { version = "1", features = ["attributes", "tokio1"] }
 chrono = "0.4.31"
 sea-orm = "0.12.3"
 sea-orm-macros = "0.12.3"
+db_models = { path = "./../db_models" }
 
 [dependencies.sea-orm-migration]
 version = "0.12.0"

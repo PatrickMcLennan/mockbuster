@@ -1,7 +1,27 @@
+use db_models::generated::{users, ratings};
+use sea_orm::{
+    ColumnDef, DeriveRelation, EnumIter, Related, RelationDef, RelationTrait
+};
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+    #[sea_orm(
+        belongs_to = "users::Entity",
+        from = "ratings::Column::UserId",
+        to = "users::Column::Id"
+    )]
+    Users,
+}
+
+impl Related<users::Entity> for Ratings {
+    fn to() -> RelationDef {
+        Relation::Users.def()
+    }
+}
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
@@ -18,7 +38,11 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Ratings::UserId).integer().not_null())
+                    .col(
+                        ColumnDef::new(Ratings::UserId)
+                            .integer()
+                            .not_null()
+                    )
                     .col(ColumnDef::new(Ratings::Score).float().not_null())
                     .col(ColumnDef::new(Ratings::MediaId).integer().not_null())
                     .col(
@@ -39,7 +63,8 @@ impl MigrationTrait for Migration {
 
         let conn = manager.get_connection();
 
-        if cfg!(any(debug_assertions, test)) {
+        #[cfg(any(debug_assertions, test))]
+        {
             conn.execute_unprepared(
                 "
 					INSERT INTO ratings (user_id, score, media_id) VALUES

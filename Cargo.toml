@@ -19,7 +19,6 @@ resolver = "2"
 
 [workspace.dependencies]
 getrandom = { version = "0.2", features = ["js"] }
-# openssl = { version = "0.10", features = ["vendored"] }
 reqwasm = { version = "0.5.0" }
 sea-orm = { version = "0.12.3", features = ["sqlx-postgres", "runtime-tokio-native-tls"] }
 serde = "1.0"

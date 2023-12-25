@@ -78,7 +78,7 @@ fn Content(props: &Props) -> HtmlResult {
                             .map(|result|
                                 html! {
                                     <div class="col-sm-12 col-md-6 col-lg-4">
-                                        <MovieCard key={result.title.to_string()} movie={result.clone()} />
+                                        <MovieCard key={result.tmdb.title.to_string()} movie={result.tmdb.clone()} />
                                     </div>
                                 }
                             )

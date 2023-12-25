@@ -20,9 +20,33 @@ pub struct MovieResult {
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
-pub struct MovieSearchResults {
+pub struct Rating {
+    pub id: i32,
+    pub user_id: i32,
+    pub score: f32,
+    pub media_id: i32,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+pub struct Movie {
+    pub tmdb: MovieResult,
+    pub postgres: Vec<Rating>,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+pub struct TmdbSearchResults {
     pub page: i32,
     pub results: Vec<MovieResult>,
+    pub total_pages: i32,
+    pub total_results: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+pub struct MovieSearchResults {
+    pub page: i32,
+    pub results: Vec<Movie>,
     pub total_pages: i32,
     pub total_results: i32,
 }
