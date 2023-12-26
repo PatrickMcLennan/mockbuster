@@ -1,11 +1,31 @@
-use actix_web::{get, Error as ActixError, HttpResponse};
+use actix_web::{
+    get,
+    web::{Data, Query},
+    Error as ActixError, HttpResponse,
+};
+use sea_orm::DatabaseConnection;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
+use crate::operations::get_recently_rented_movies::get_recently_rented_movies;
 use recently_rented_view::recently_rented_view::RecentlyRented;
+use validators::recently_rented_dto::RecentlyRentedDTO;
 
 #[get("/recently-rented")]
-async fn get() -> Result<HttpResponse, ActixError> {
+async fn get(
+    db: Data<DatabaseConnection>,
+    params: Query<RecentlyRentedDTO>,
+) -> Result<HttpResponse, ActixError> {
+    let page = match params.page {
+        Some(v) => match v.to_string().parse::<u64>() {
+            Ok(page) => page,
+            Err(_) => 1,
+        },
+        None => 1,
+    };
+
+    let recently_rented = get_recently_rented_movies(page, db.get_ref().clone()).await;
+
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();

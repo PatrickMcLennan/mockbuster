@@ -53,7 +53,7 @@ async fn get(
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(format!(
-            r#"`
+            r#"
 			<html lang="en">
 				<head>
 					<meta charset="UTF-8" />

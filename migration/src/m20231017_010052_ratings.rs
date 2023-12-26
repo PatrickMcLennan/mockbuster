@@ -1,27 +1,8 @@
-use db_models::generated::{users, ratings};
-use sea_orm::{
-    ColumnDef, DeriveRelation, EnumIter, Related, RelationDef, RelationTrait
-};
+use super::m20220101_000001_create_table::Users;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "users::Entity",
-        from = "ratings::Column::UserId",
-        to = "users::Column::Id"
-    )]
-    Users,
-}
-
-impl Related<users::Entity> for Ratings {
-    fn to() -> RelationDef {
-        Relation::Users.def()
-    }
-}
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
@@ -38,11 +19,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(
-                        ColumnDef::new(Ratings::UserId)
-                            .integer()
-                            .not_null()
-                    )
+                    .col(ColumnDef::new(Ratings::UserId).integer().not_null())
                     .col(ColumnDef::new(Ratings::Score).float().not_null())
                     .col(ColumnDef::new(Ratings::MediaId).integer().not_null())
                     .col(
@@ -57,6 +34,23 @@ impl MigrationTrait for Migration {
                             .default("now()")
                             .not_null(),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("ratings-user-id")
+                            .from(Ratings::Table, Ratings::UserId)
+                            .to(Users::Table, Users::Id),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("ratings-created_at-index")
+                    .table(Ratings::Table)
+                    .col(Ratings::CreatedAt)
                     .to_owned(),
             )
             .await?;

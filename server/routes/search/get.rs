@@ -8,7 +8,7 @@ use models::tmdb::movie_search_result::{Movie, MovieSearchResults, Rating};
 use sea_orm::{prelude::*, DatabaseConnection};
 use search_view::search_view::{Props, Search};
 use serde_json::json;
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 use validators::search_dto::SearchDTO;
@@ -94,8 +94,6 @@ async fn get(
         use tokio::runtime::Builder;
         let set = LocalSet::new();
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
-
-        let results_clone = tmdb_search_results.clone();
 
         set.block_on(&rt, async {
             let clone = tmdb_search_results.clone();

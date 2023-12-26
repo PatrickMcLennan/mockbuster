@@ -1,44 +1,31 @@
-use db_models::generated::ratings;
-use models::tmdb::movie_search_result::TmdbSearchResults;
-use sea_orm::{prelude::*, DatabaseBackend, DatabaseConnection, Statement};
-use serde::{Deserialize, Serialize};
-use validator::Validate;
-use validators::search_dto::SearchDTO;
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize, Validate, PartialEq)]
-pub struct Pagination {
-    #[validate(range(min = 1, message = "Page must be a value > 1"))]
-    pub page: i64,
-}
+use db_models::generated::{ratings, users};
+use sea_orm::{prelude::*, DatabaseConnection, QueryOrder, QuerySelect};
+// use serde::{Deserialize, Serialize};
+// use validator::Validate;
+use validators::recently_rented_dto::RecentlyRentedDTO;
 
 pub async fn get_recently_rented_movies(
-    pagination: SearchDTO,
+    pagination: u64,
     db: DatabaseConnection,
-) -> Result<(), String> {
-    // ratings::Entity::find()
-    // 	.order_by_asc(ratings::Column::CreatedAt);
+) -> Vec<(ratings::Model, Vec<users::Model>)> {
+    let offset = (pagination - 1) * 20;
 
-    return Ok(());
+    let postgres = match ratings::Entity::find()
+        .find_with_related(users::Entity)
+        .group_by(ratings::Column::Id)
+        .group_by(users::Column::Id)
+        .order_by_asc(ratings::Column::CreatedAt)
+        .limit(Some(20 as u64))
+        .offset(offset)
+        .all(&db)
+        .await
+    {
+        Ok(v) => v,
+        Err(e) => {
+            println!("[get_recently_rented_movies]: {:?}", e);
+            vec![]
+        }
+    };
 
-    // match http_client
-    //     .unwrap_or(reqwest::Client::new())
-    //     .get(format!(
-    //         "https://api.themoviedb.org/3/search/movie?page={}&api_key={}&query={}",
-    //         dto.page, api_key, dto.query
-    //     ))
-    //     .send()
-    //     .await
-    // {
-    //     Ok(res) => match res.json::<TmdbSearchResults>().await {
-    //         Ok(v) => Ok(v),
-    //         Err(e) => {
-    //             println!("[ERROR -- search_tmdb_movies]: {:?}", e);
-    //             return Err(five_hundo);
-    //         }
-    //     },
-    //     Err(e) => {
-    //         println!("[ERROR -- search_tmdb_movies]: {:?}", e);
-    //         return Err(five_hundo);
-    //     }
-    // }
+	postgres
 }

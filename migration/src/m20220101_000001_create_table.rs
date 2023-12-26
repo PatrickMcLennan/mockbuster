@@ -1,22 +1,8 @@
-use sea_orm::{
-    DeriveActiveEnum, DeriveRelation, EnumIter, Related, RelationDef, RelationTrait,
-};
+use sea_orm::{DeriveActiveEnum, EnumIter};
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "db_models::generated::ratings::Entity")]
-    Ratings,
-}
-
-impl Related<db_models::generated::ratings::Entity> for Users {
-    fn to() -> RelationDef {
-        Relation::Ratings.def()
-    }
-}
 
 #[derive(EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
@@ -98,7 +84,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(Iden)]
-enum Users {
+pub enum Users {
     Table,
     Id,
     FirstName,
