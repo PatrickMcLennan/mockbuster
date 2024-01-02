@@ -10,5 +10,7 @@ path = "./src/lib.rs"
 [dependencies]
 components = { path = "./../components" }
 wasm-bindgen = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
 yew = { workspace = true }
 

@@ -4,11 +4,12 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use sea_orm::DatabaseConnection;
+use serde_json::Value;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
 use crate::operations::get_recently_rented_movies::get_recently_rented_movies;
-use recently_rented_view::recently_rented_view::RecentlyRented;
+use recently_rented_view::recently_rented_view::{Props, RecentlyRented};
 use validators::recently_rented_dto::RecentlyRentedDTO;
 
 #[get("/recently-rented")]
@@ -32,7 +33,11 @@ async fn get(
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            yew::ServerRenderer::<RecentlyRented>::new().render().await
+            yew::ServerRenderer::<RecentlyRented>::with_props(move || Props {
+                results: Some(recently_rented),
+            })
+            .render()
+            .await
         })
     })
     .await

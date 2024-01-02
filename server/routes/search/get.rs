@@ -45,7 +45,7 @@ async fn get(
         .collect::<Vec<sea_orm::Value>>();
 
     let postgres_search_results: HashMap<i32, Vec<Rating>> = match ratings::Entity::find()
-        .filter(ratings::Column::MediaId.is_in(ids.clone()))
+        .filter(ratings::Column::TmdbId.is_in(ids.clone()))
         .all(&db.get_ref().clone())
         .await
     {
@@ -53,13 +53,13 @@ async fn get(
             let mut hash_map: HashMap<i32, Vec<Rating>> = HashMap::new();
             for rating in v {
                 hash_map
-                    .entry(rating.media_id)
+                    .entry(rating.tmdb_id)
                     .or_insert_with(Vec::new)
                     .push(Rating {
                         id: rating.id.clone(),
                         user_id: rating.user_id.clone(),
                         score: rating.score.clone(),
-                        media_id: rating.media_id.clone(),
+                        tmdb_id: rating.tmdb_id.clone(),
                         created_at: rating.created_at.to_string(),
                         updated_at: rating.updated_at.to_string(),
                     });

@@ -3,7 +3,7 @@ use reqwasm::http::{Headers, Request};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use wasm_bindgen::{closure::Closure, JsCast};
-use web_sys::{console, window, EventTarget, HtmlInputElement};
+use web_sys::{console, window, HtmlInputElement};
 use yew::prelude::*;
 
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]

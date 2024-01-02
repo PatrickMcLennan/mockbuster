@@ -24,7 +24,7 @@ pub struct Rating {
     pub id: i32,
     pub user_id: i32,
     pub score: f32,
-    pub media_id: i32,
+    pub tmdb_id: i32,
     pub created_at: String,
     pub updated_at: String,
 }

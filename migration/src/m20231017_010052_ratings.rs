@@ -1,4 +1,5 @@
 use super::m20220101_000001_create_table::Users;
+use super::m20231226_145143_movies::Movies;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -21,7 +22,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Ratings::UserId).integer().not_null())
                     .col(ColumnDef::new(Ratings::Score).float().not_null())
-                    .col(ColumnDef::new(Ratings::MediaId).integer().not_null())
+                    .col(ColumnDef::new(Ratings::TmdbId).integer().not_null())
                     .col(
                         ColumnDef::new(Ratings::CreatedAt)
                             .timestamp_with_time_zone()
@@ -55,29 +56,29 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        let conn = manager.get_connection();
-
-        #[cfg(any(debug_assertions, test))]
-        {
-            conn.execute_unprepared(
-                "
-					INSERT INTO ratings (user_id, score, media_id) VALUES
-					(1, 10, 550),
-					(2, 10, 550),
-					(3, 10, 550),
-					(1, 10, 26679),
-					(2, 10, 26679),
-					(3, 10, 26679),
-					(1, 7.5, 420818),
-					(2, 2.0, 420818),
-					(3, 6.0, 420818),
-					(1, 9.0, 11362),
-					(2, 7.5, 11362),
-					(3, 5.0, 11362);
-				",
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("ratings-tmdb_id-index")
+                    .table(Ratings::Table)
+                    .col(Ratings::TmdbId)
+                    .to_owned(),
             )
             .await?;
-        }
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("ratings-user_id-index")
+                    .table(Ratings::Table)
+                    .col(Ratings::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        let conn = manager.get_connection();
 
         conn.execute_unprepared(
             "
@@ -94,19 +95,23 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .drop_table(Table::drop().table(Ratings::Table).to_owned())
-            .await
+        if manager.has_table("ratings").await? {
+            manager
+                .drop_table(Table::drop().table(Ratings::Table).to_owned())
+                .await
+        } else {
+            Ok(())
+        }
     }
 }
 
 #[derive(DeriveIden)]
-enum Ratings {
+pub enum Ratings {
     Table,
     Id,
     UserId,
     CreatedAt,
     UpdatedAt,
     Score,
-    MediaId,
+    TmdbId,
 }
