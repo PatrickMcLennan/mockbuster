@@ -4,13 +4,14 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use sea_orm::DatabaseConnection;
-use serde_json::Value;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
-use crate::operations::get_recently_rented_movies::get_recently_rented_movies;
+use crate::operations::ratings;
 use recently_rented_view::recently_rented_view::{Props, RecentlyRented};
-use validators::recently_rented_dto::RecentlyRentedDTO;
+use validators::ratings::recently_rented_dto::RecentlyRentedDTO;
+
+const PAGE_SIZE: u64 = 20;
 
 #[get("/recently-rented")]
 async fn get(
@@ -25,7 +26,13 @@ async fn get(
         None => 1,
     };
 
-    let recently_rented = get_recently_rented_movies(page, db.get_ref().clone()).await;
+    let start_cursor = (page - 1) * PAGE_SIZE;
+    let end_cursor = page * PAGE_SIZE;
+
+    let recently_rented =
+        ratings::list::execute(start_cursor, end_cursor, db.get_ref().clone()).await;
+
+    println!("{:?}", recently_rented.clone());
 
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;

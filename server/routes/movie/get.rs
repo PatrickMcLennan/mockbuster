@@ -8,7 +8,7 @@ use serde_json::json;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
-use crate::operations::get_tmdb_movie::get_tmdb_movie;
+use crate::operations::tmdb_movies;
 
 #[get("/movie/{tmdb_id}")]
 async fn get(
@@ -17,7 +17,7 @@ async fn get(
 ) -> Result<HttpResponse, ActixError> {
     let tmdb_id = path.into_inner();
 
-    let tmdb_movie_result = match get_tmdb_movie(
+    let tmdb_movie_result = match tmdb_movies::fetch::execute(
         tmdb_id.clone(),
         Some(http_client.as_ref().clone()),
     )

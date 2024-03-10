@@ -1,4 +1,4 @@
-use models::tmdb::movie_search_result::MovieResult;
+use models::tmdb_movies::movie_search_result::MovieResult;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 

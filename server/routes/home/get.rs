@@ -1,7 +1,6 @@
 use actix_web::{get, Error as ActixError, HttpResponse};
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-
 use home_view::home_view::Home;
 
 #[get("/")]

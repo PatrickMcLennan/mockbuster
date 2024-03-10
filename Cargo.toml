@@ -1,9 +1,5 @@
 [workspace]
 members = [
-  "./migration",
-  "./db_models",
-  "./models",
-  "./server",
   "./validators",
   "./views/components",
   "./views/home_view",
@@ -13,6 +9,9 @@ members = [
   "./views/recently_rented_view",
   "./views/search_view",
   "./views/top_ten_view",
+  "./migration",
+  "./models",
+  "./server",
 ]
 default-members = ["./server"]
 resolver = "2"

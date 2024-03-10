@@ -7,14 +7,14 @@ edition = "2021"
 name = "server"
 path = "./server.rs"
 
+
 [dependencies]
 actix-files = "0.6.2"
 actix-session = { version = "0.8.0", features = ["redis-actor-session"] }
 actix-web = "4.0.0-rc.1"
-db_models = { path = "./../db_models" }
+models = { path = "./../models", features = ["db_models"] }
 dotenv = "0.15.0"
 env_logger = "0.10.0"
-models = { path = "./../models" }
 regex = "1.9.6"
 reqwest = { version = "0.11.9", features = ["json"] }
 sea-orm = { workspace = true }
@@ -27,7 +27,7 @@ home_view = { path = "./../views/home_view" }
 login_view = { path = "./../views/login_view" }
 movie_view = { path = "./../views/movie_view" }
 profile_view = { path = "./../views/profile_view" }
-recently_rented_view = { path = "./../views/recently_rented_view" }
+recently_rented_view = { path = "./../views/recently_rented_view", features = ["ssr"] }
 search_view = { path = "./../views/search_view" }
 top_ten_view = { path = "./../views/top_ten_view" }
 web-sys = { workspace = true }

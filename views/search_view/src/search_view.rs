@@ -2,9 +2,9 @@ use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
 use components::{Header::Header, MovieCard::MovieCard};
-use models::tmdb::movie_search_result::MovieSearchResults;
+use models::tmdb_movies::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
-use validators::search_dto::SearchDTO;
+use validators::tmdb_movies::search_dto::SearchDTO;
 
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
@@ -117,7 +117,7 @@ fn Content(props: &Props) -> HtmlResult {
                                                     <li
                                                         class={classes!(
                                                         "page-item",
-                                                        if is_current_page { Some("active") } else { None }
+                                                        if is_current_page { Some("active disabled") } else { None }
                                                         )}
                                                         key={page}
                                                     >

@@ -1,81 +1,64 @@
+#[cfg(feature = "ssr")]
+use models::{generated::{ratings, users}};
+
+use models::stubs::{rating::Rating as RatingStub, user::User as UserStub};
+use components::Header::Header;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value, Map};
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 use yew::prelude::*;
 
-use components::Header::Header;
-
-#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
+#[cfg(not(feature = "ssr"))]
+#[derive(Debug, Deserialize, PartialEq, Properties, Serialize)]
 pub struct Props {
-    pub results: Option<Vec<Value>>,
+    pub results: Option<Vec<(RatingStub, Option<UserStub>)>>,
 }
 
-#[derive(Properties, PartialEq, Deserialize, Serialize, Debug)]
+#[cfg(feature = "ssr")]
+#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
+pub struct Props {
+    pub results: Option<Vec<(ratings::Model, Option<users::Model>)>>,
+}
+
+#[cfg(feature = "ssr")]
+#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct State {
-    pub results: Vec<Value>,
+    pub results: Vec<(ratings::Model, Option<users::Model>)>,
+}
+
+#[cfg(not(feature = "ssr"))]
+#[derive(Clone, Debug, Deserialize, PartialEq, Properties, Serialize)]
+pub struct State {
+    results: Vec<(RatingStub, Option<UserStub>)>,
 }
 
 #[function_component]
 fn Content(props: &Props) -> HtmlResult {
+
+    #[cfg(not(feature = "ssr"))]
+    console::log_1(&format!("Props: {:?}", props).into());
+
     let state = use_prepared_state!((), move |_| -> State {
-
-		let first = props
-			.results
-			.as_ref()
-			.unwrap();
-	
-		// let second = match first.as_array() {
-		// 	Some(v) => v.clone(),
-		// 	None => {
-		// 		println!("second");
-		// 		Map::new().clone()
-		// 	}
-		// };
-
-		let second = first.into_iter().map(|json| { json.as_object().unwrap() }).clone();
-
-		// let second = match second.get("results") {
-		// 	Some(v) => v.clone(),
-		// 	None => {
-		// 		println!("third");
-		// 		println!("first: {:?}", first);
-		// 		println!("second: {:?}", second);
-		// 		json!({})
-		// 	}
-		// };
-
-		// let fourth = match third.as_array() {
-		// 	Some(v) => v.clone(),
-		// 	None => {
-		// 		println!("fourth");
-		// 		vec![]
-		// 	}
-		// };
-
         State {
-            results: second
-            // results: props
-			// 	.results
-            //     .as_ref()
-            //     .unwrap()
-			// 	.as_object()
-			// 	.unwrap()
-			// 	.get("results")
-			// 	.unwrap()
-			// 	.as_array()
-			// 	.unwrap()
-			// 	.clone()
+            results: props.results.as_ref().unwrap().clone()
         }
-    })?
-    .unwrap();
-
-    println!("{:?}", state);
+    })?.unwrap();
 
     Ok(html! {
         <>
             <Header />
             <div class="container">
                 <h1>{"Recently Rented"}</h1>
+                {
+                    state
+                        .results
+                        .clone()
+                        .into_iter()
+                        .map(|result| html! {
+                            <p>{result.0.score}</p>
+                        })
+                        .collect::<Html>()
+                }
             </div>
         </>
     })

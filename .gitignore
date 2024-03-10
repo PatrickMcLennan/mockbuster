@@ -16,4 +16,4 @@ dist/
 pkg/
 assets/
 dump.rdb
-db_models/generated/
+models/generated/

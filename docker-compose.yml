@@ -20,6 +20,7 @@ services:
   redis:
     image: redis:7
     restart: unless-stopped
+    user: "$UID:$GID"
     ports:
       - 6379:6379
     working_dir: /app

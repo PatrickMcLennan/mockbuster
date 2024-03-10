@@ -1,5 +1,5 @@
 use reqwasm::http::{Headers, Request};
-use validators::login_form::LoginFormSchema;
+use validators::users::login_form::LoginFormSchema;
 use wasm_bindgen::prelude::*;
 use web_sys::{console, window, HtmlInputElement};
 use yew::prelude::*;

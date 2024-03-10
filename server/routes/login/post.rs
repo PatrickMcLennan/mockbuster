@@ -4,9 +4,9 @@ use actix_web::{
 };
 use sea_orm::DatabaseConnection;
 use serde_json::json;
-use validators::login_form::LoginFormSchema;
+use validators::users::login_form::LoginFormSchema;
 
-use crate::operations::login::login as login_operation;
+use crate::operations::users;
 
 #[post("/login")]
 async fn post(
@@ -19,7 +19,7 @@ async fn post(
         None => (),
     };
 
-    match login_operation(session, db.get_ref().clone(), form).await {
+    match users::login::execute(session, db.get_ref().clone(), form).await {
         Ok(_) => Ok(HttpResponse::build(StatusCode::MOVED_PERMANENTLY)
             .append_header(("Location", "/"))
             .finish()),

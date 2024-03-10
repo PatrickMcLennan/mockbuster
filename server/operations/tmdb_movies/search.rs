@@ -1,7 +1,7 @@
-use models::tmdb::movie_search_result::TmdbSearchResults;
-use validators::search_dto::SearchDTO;
+use models::tmdb_movies::movie_search_result::TmdbSearchResults;
+use validators::tmdb_movies::search_dto::SearchDTO;
 
-pub async fn search_tmdb_movies(
+pub async fn execute(
     dto: SearchDTO,
     http_client: Option<reqwest::Client>,
 ) -> Result<TmdbSearchResults, String> {

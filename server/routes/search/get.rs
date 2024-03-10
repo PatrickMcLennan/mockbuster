@@ -3,17 +3,17 @@ use actix_web::{
     web::{Data, Query},
     Error as ActixError, HttpResponse,
 };
-use db_models::generated::ratings;
-use models::tmdb::movie_search_result::{Movie, MovieSearchResults, Rating};
+use models::generated::ratings;
+use models::tmdb_movies::movie_search_result::{Movie, MovieSearchResults, Rating};
 use sea_orm::{prelude::*, DatabaseConnection};
 use search_view::search_view::{Props, Search};
 use serde_json::json;
 use std::collections::HashMap;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-use validators::search_dto::SearchDTO;
+use validators::tmdb_movies::search_dto::SearchDTO;
 
-use crate::operations::search_tmdb_movies::search_tmdb_movies;
+use crate::operations::tmdb_movies;
 
 #[get("/search")]
 async fn get(
@@ -23,7 +23,7 @@ async fn get(
 ) -> Result<HttpResponse, ActixError> {
     // Pass params to tmdb search, get postgres entries for all tmdb results
 
-    let tmdb_search_results = match search_tmdb_movies(
+    let tmdb_search_results = match tmdb_movies::search::execute(
         params.clone().into_inner(),
         Some(http_client.as_ref().clone()),
     )

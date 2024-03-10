@@ -1,11 +1,45 @@
-use actix_web::{get, Error as ActixError, HttpResponse};
+use crate::operations::users;
+use actix_session::Session;
+use actix_web::{
+    get,
+    web::{Data, Query},
+    Error as ActixError, HttpResponse,
+};
+use sea_orm::DatabaseConnection;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-
+use validators::users::get_profile_dto::GetProfileDto;
 use profile_view::profile_view::Profile;
 
+// profile/$id fetches that user, /profile fetches yourself
+
 #[get("/profile")]
-async fn get() -> Result<HttpResponse, ActixError> {
+async fn get(
+    db: Data<DatabaseConnection>,
+    params: Query<GetProfileDto>,
+    session: Session,
+) -> Result<HttpResponse, ActixError> {
+    let unauthed = HttpResponse::Unauthorized().finish();
+
+    let id = match params.get_errors() {
+        Some(_) => match session.get("id") {
+            Ok(v) => match v {
+                Some(id) => id,
+                None => return Ok(unauthed)
+            },
+            Err(_) => return Ok(unauthed),
+        },
+        None => params.id,
+    };
+
+    let profile = users::fetch::execute(id, db.get_ref().clone()).await;
+
+    match profile.len() {
+        1 => (),
+        0 => return Ok(HttpResponse::NotFound().finish()),
+        _ => return Ok(HttpResponse::InternalServerError().finish()),
+    };
+
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();

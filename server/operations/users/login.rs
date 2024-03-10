@@ -1,14 +1,14 @@
 use actix_session::Session;
-use db_models::generated::users;
+use models::generated::users;
 use sea_orm::{prelude::*, DatabaseBackend, DatabaseConnection, Statement};
-use validators::login_form::LoginFormSchema;
+use validators::users::login_form::LoginFormSchema;
 
 pub struct LoginResult {
     pub id: i32,
     pub email: String,
 }
 
-pub async fn login(
+pub async fn execute(
     session: Session,
     db: DatabaseConnection,
     login_form: LoginFormSchema,

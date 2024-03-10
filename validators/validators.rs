@@ -1,3 +1,3 @@
-pub mod login_form;
-pub mod recently_rented_dto;
-pub mod search_dto;
+pub mod ratings;
+pub mod tmdb_movies;
+pub mod users;

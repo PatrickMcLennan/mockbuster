@@ -8,4 +8,9 @@ path = "./lib.rs"
 
 [dependencies]
 serde = { workspace = true }
+sea-orm = { workspace = true, optional = true }
 yew = { workspace = true }
+
+[features]
+db_models = ["sea-orm"]
+stubs = []

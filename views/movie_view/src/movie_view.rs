@@ -1,4 +1,4 @@
-use models::tmdb::movie_id_result::MovieIdResult;
+use models::tmdb_movies::movie_id_result::MovieIdResult;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;

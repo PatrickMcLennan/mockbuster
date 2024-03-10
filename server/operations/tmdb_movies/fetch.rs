@@ -1,6 +1,6 @@
-use models::tmdb::movie_id_result::MovieIdResult;
+use models::tmdb_movies::movie_id_result::MovieIdResult;
 
-pub async fn get_tmdb_movie(
+pub async fn execute(
     id: u32,
     http_client: Option<reqwest::Client>,
 ) -> Result<MovieIdResult, String> {
