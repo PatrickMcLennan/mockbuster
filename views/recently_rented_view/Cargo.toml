@@ -9,6 +9,7 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
+chrono = { workspace = true }
 models = { path = "./../../models", optional = true }
 wasm-bindgen = { workspace = true }
 serde = { workspace = true }

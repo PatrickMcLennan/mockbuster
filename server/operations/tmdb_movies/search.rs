@@ -3,7 +3,7 @@ use validators::tmdb_movies::search_dto::SearchDTO;
 
 pub async fn execute(
     dto: SearchDTO,
-    http_client: Option<reqwest::Client>,
+    http_client: Option<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<TmdbSearchResults, String> {
     let api_key = std::env::var("TMDB_API_KEY").expect("NO_TMDB_API_KEY_IN_ENV");
 
@@ -11,7 +11,7 @@ pub async fn execute(
         "Searching movies is unavailable at the moment; please try again later.".to_string();
 
     match http_client
-        .unwrap_or(reqwest::Client::new())
+        .unwrap_or(reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build())
         .get(format!(
             "https://api.themoviedb.org/3/search/movie?page={}&api_key={}&query={}",
             dto.page, api_key, dto.query

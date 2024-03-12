@@ -8,9 +8,12 @@ pub fn home_view() -> Html {
     html! {
         <>
             <Header />
-            <div class="container">
-                <h1>{"What's trending"}</h1>
-            </div>
+            <main class="container">
+                <header class="border-bottom mb-4 pt-2 pb-4">
+                    <h1>{"mockbuster"}</h1>
+                    <h2 class="mb-0">{"Find your next movie"}</h2>
+                </header>
+            </main>
         </>
     }
 }

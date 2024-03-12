@@ -18,7 +18,7 @@ use crate::operations::tmdb_movies;
 #[get("/search")]
 async fn get(
     params: Query<SearchDTO>,
-    http_client: Data<reqwest::Client>,
+    http_client: Data<reqwest_middleware::ClientWithMiddleware>,
     db: Data<DatabaseConnection>,
 ) -> Result<HttpResponse, ActixError> {
     // Pass params to tmdb search, get postgres entries for all tmdb results

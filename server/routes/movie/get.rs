@@ -13,7 +13,7 @@ use crate::operations::tmdb_movies;
 #[get("/movie/{tmdb_id}")]
 async fn get(
     path: Path<u32>,
-    http_client: Data<reqwest::Client>,
+    http_client: Data<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<HttpResponse, ActixError> {
     let tmdb_id = path.into_inner();
 

@@ -7,7 +7,7 @@ use crate::operations::tmdb_movies;
 #[post("/search")]
 async fn post(
     Json(dto): Json<SearchDTO>,
-    http_client: Data<reqwest::Client>,
+    http_client: Data<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<impl Responder, ActixError> {
     match dto.get_errors() {
         Some(e) => return Ok(HttpResponse::BadRequest().body(e.to_json())),

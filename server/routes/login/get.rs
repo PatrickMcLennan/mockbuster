@@ -1,7 +1,7 @@
 use actix_web::{get, Error as ActixError, HttpResponse};
+use login_view::login_view::Login;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-use login_view::login_view::Login;
 
 #[get("/login")]
 async fn get() -> Result<HttpResponse, ActixError> {

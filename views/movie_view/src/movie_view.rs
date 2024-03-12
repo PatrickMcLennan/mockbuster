@@ -24,11 +24,37 @@ fn Content(props: &Props) -> HtmlResult {
     })?
     .unwrap();
 
+    let backdrop = format!(
+        "https://image.tmdb.org/t/p/w500{}",
+        state.movie.backdrop_path
+    );
+    let poster = format!(
+        "https://image.tmdb.org/t/p/w500{}",
+        state.movie.poster_path
+    );
+    let title = &state.movie.title;
+    let tagline = &state.movie.tagline;
+
     Ok(html! {
         <>
             <Header />
-            <main class="container">
-                <h1>{state.movie.title.to_string()}</h1>
+            <main>
+                <header class="card" style={format!("background-image: url({}); background-size: cover; background-repeat: no-repeat;", backdrop)}>
+                    <div class="container">
+                        <div class="row g-0">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <img src={poster} class="img-fluid rounded-start h-75 d-block mx-auto" alt={format!("Poster for {}", title)} />
+                            </div>
+                            <div class="col-md-8 my-auto">
+                                <div class="card-body text-bg-dark rounded">
+                                    <h1 class="card-title text-end">{title}</h1>
+                                    <h2 class="card-subtitle my-2 text-end"><i>{tagline}</i></h2>
+                                    <p class="card-text" style="text-indent: 2rem;">{&state.movie.overview}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
             </main>
         </>
     })

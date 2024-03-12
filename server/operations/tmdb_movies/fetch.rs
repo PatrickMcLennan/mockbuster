@@ -1,8 +1,9 @@
 use models::tmdb_movies::movie_id_result::MovieIdResult;
+use reqwest::Client;
 
 pub async fn execute(
     id: u32,
-    http_client: Option<reqwest::Client>,
+    http_client: Option<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<MovieIdResult, String> {
     let api_key = std::env::var("TMDB_API_KEY").expect("NO_TMDB_API_KEY_IN_ENV");
     let five_hundo = "This movie is unavailable at the moment; please try again later.".to_string();
@@ -11,10 +12,8 @@ pub async fn execute(
         id, api_key
     );
 
-    println!("{}", url);
-
     match http_client
-        .unwrap_or(reqwest::Client::new())
+        .unwrap_or(reqwest_middleware::ClientBuilder::new(Client::new()).build())
         .get(url.to_string())
         .send()
         .await

@@ -17,3 +17,4 @@ pkg/
 assets/
 dump.rdb
 models/generated/
+http-cacache

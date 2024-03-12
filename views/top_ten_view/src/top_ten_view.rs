@@ -8,9 +8,12 @@ pub fn top_ten_view() -> Html {
     html! {
         <>
             <Header />
-            <div class="container">
-                <h1>{"Top 10"}</h1>
-            </div>
+            <main class="container">
+                <header class="border-bottom mb-4 pt-2 pb-4">
+                    <h1>{"Top 10"}</h1>
+                    <h2 class="mb-0">{"Our favourite movies"}</h2>
+                </header>
+            </main>
         </>
     }
 }

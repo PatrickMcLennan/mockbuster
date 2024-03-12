@@ -5,31 +5,34 @@ use actix_web::{
     web::{Data, Query},
     Error as ActixError, HttpResponse,
 };
+use profile_view::profile_view::Profile;
 use sea_orm::DatabaseConnection;
+use serde::{Deserialize, Serialize};
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-use validators::users::get_profile_dto::GetProfileDto;
-use profile_view::profile_view::Profile;
 
-// profile/$id fetches that user, /profile fetches yourself
+#[derive(Serialize, Deserialize)]
+struct Params {
+    pub id: Option<i32>,
+}
 
-#[get("/profile")]
+#[get("/profile/{profile_id}")]
 async fn get(
     db: Data<DatabaseConnection>,
-    params: Query<GetProfileDto>,
+    params: Query<Params>,
     session: Session,
 ) -> Result<HttpResponse, ActixError> {
     let unauthed = HttpResponse::Unauthorized().finish();
 
-    let id = match params.get_errors() {
-        Some(_) => match session.get("id") {
+    let id = match params.id {
+        Some(id) => id,
+        None => match session.get("id") {
             Ok(v) => match v {
                 Some(id) => id,
-                None => return Ok(unauthed)
+                None => return Ok(unauthed),
             },
             Err(_) => return Ok(unauthed),
         },
-        None => params.id,
     };
 
     let profile = users::fetch::execute(id, db.get_ref().clone()).await;

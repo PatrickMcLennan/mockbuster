@@ -5,6 +5,10 @@ use env_logger::Env;
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
 
+use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
+use reqwest::Client;
+use reqwest_middleware::ClientBuilder;
+
 mod operations;
 mod routes;
 
@@ -17,7 +21,15 @@ async fn main() -> std::io::Result<()> {
     dotenv::from_path("./../.env").ok();
 
     let secret_key = Key::generate();
-    let http_client = reqwest::Client::new();
+
+    let http_client = ClientBuilder::new(Client::new())
+        .with(Cache(HttpCache {
+            mode: CacheMode::Default,
+            manager: CACacheManager::default(),
+            options: HttpCacheOptions::default(),
+        }))
+        .build();
+
     let pool: DatabaseConnection =
         Database::connect(env::var("DATABASE_URL").expect("NO_POSTGRES_URL_IN_ENV"))
             .await

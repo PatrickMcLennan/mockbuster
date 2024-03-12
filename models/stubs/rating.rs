@@ -8,6 +8,6 @@ pub struct Rating {
     pub user_id: f32,
     pub score: f32,
     pub tmdb_id: i32,
-    pub created_at: String,
-    pub udpated: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
