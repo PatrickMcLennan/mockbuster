@@ -6,6 +6,8 @@ use wasm_bindgen::{closure::Closure, JsCast};
 use web_sys::{console, window, HtmlInputElement};
 use yew::prelude::*;
 
+const TIMEOUT_MS: i32 = 450;
+
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
     #[prop_or(String::new())]
@@ -64,7 +66,7 @@ pub fn header(props: &Props) -> Html {
                     }) as Box<dyn FnMut()>)
                     .as_ref()
                     .unchecked_ref(),
-                    250,
+                    TIMEOUT_MS,
                 )
                 .expect("Failed to set timeout");
         } else {

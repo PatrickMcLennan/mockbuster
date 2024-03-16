@@ -1,6 +1,6 @@
 use actix_web::{
     get,
-    web::{Data, Path},
+    web::{Data, Path, Query},
     Error as ActixError, HttpResponse,
 };
 use movie_view::movie_view::{Movie, Props};
@@ -10,9 +10,15 @@ use tokio::task::LocalSet;
 
 use crate::operations::tmdb_movies;
 
+#[derive(Debug, serde::Deserialize)]
+pub struct Params {
+    pub banner: Option<String>,
+}
+
 #[get("/movie/{tmdb_id}")]
 async fn get(
     path: Path<u32>,
+    params: Query<Params>,
     http_client: Data<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<HttpResponse, ActixError> {
     let tmdb_id = path.into_inner();

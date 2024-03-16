@@ -4,13 +4,13 @@ use yew::Properties;
 #[derive(Debug, Deserialize, Serialize, PartialEq, Properties, Clone)]
 pub struct MovieIdResult {
     pub adult: bool,
-    pub backdrop_path: String,
+    pub backdrop_path: Option<String>,
     pub belongs_to_collection: Option<BelongsToCollection>,
     pub budget: i32,
     pub genres: Vec<Genre>,
     pub homepage: String,
     pub id: i32,
-    pub imdb_id: String,
+    pub imdb_id: Option<String>,
     pub original_language: String,
     pub original_title: String,
     pub overview: String,
@@ -34,8 +34,8 @@ pub struct MovieIdResult {
 pub struct BelongsToCollection {
     pub id: i32,
     pub name: String,
-    pub poster_path: String,
-    pub backdrop_path: String,
+    pub poster_path: Option<String>,
+    pub backdrop_path: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Properties, Clone)]

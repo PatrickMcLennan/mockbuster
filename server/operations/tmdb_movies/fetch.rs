@@ -22,7 +22,6 @@ pub async fn execute(
             println!("{:?}", res);
             match res.json::<MovieIdResult>().await {
                 Ok(v) => {
-                    println!("[SUCCESS -- get_tmdb_movie]: {:?}", v);
                     return Ok(v);
                 }
                 Err(e) => {

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::Header::Header;
+use components::{vote_modal::VoteModal, Header::Header};
 
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
@@ -23,15 +23,23 @@ fn Content(props: &Props) -> HtmlResult {
         }
     })?
     .unwrap();
+    let vote_modal_open = use_state(|| false);
+    let vote_modal_open_clone = vote_modal_open.clone();
 
     let backdrop = format!(
         "https://image.tmdb.org/t/p/w500{}",
-        state.movie.backdrop_path
+        match &state.movie.backdrop_path {
+            Some(v) => v.to_string(),
+            None => String::new(),
+        }
     );
-    let poster = format!(
-        "https://image.tmdb.org/t/p/w500{}",
-        state.movie.poster_path
-    );
+
+    let toggle_modal = {
+        let clone = vote_modal_open.clone();
+        Callback::from(move |_: MouseEvent| vote_modal_open.set(!*clone))
+    };
+
+    let poster = format!("https://image.tmdb.org/t/p/w500{}", state.movie.poster_path);
     let title = &state.movie.title;
     let tagline = &state.movie.tagline;
 
@@ -50,11 +58,28 @@ fn Content(props: &Props) -> HtmlResult {
                                     <h1 class="card-title text-end">{title}</h1>
                                     <h2 class="card-subtitle my-2 text-end"><i>{tagline}</i></h2>
                                     <p class="card-text" style="text-indent: 2rem;">{&state.movie.overview}</p>
+                                    <button
+                                        onclick={toggle_modal}
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target={format!("#vote-modal-{}", state.movie.id)}
+                                        type="button"
+                                    >
+                                        {"Rate"}
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </header>
+                <section class="container">
+
+                </section>
+                <VoteModal
+                    title={state.movie.title.to_string()}
+                    id={state.movie.id}
+                    open={*vote_modal_open_clone}
+                />
             </main>
         </>
     })

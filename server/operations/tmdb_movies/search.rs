@@ -10,7 +10,7 @@ pub async fn execute(
     let five_hundo =
         "Searching movies is unavailable at the moment; please try again later.".to_string();
 
-    match http_client
+    let tmdb_results = match http_client
         .unwrap_or(reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build())
         .get(format!(
             "https://api.themoviedb.org/3/search/movie?page={}&api_key={}&query={}",
@@ -20,7 +20,7 @@ pub async fn execute(
         .await
     {
         Ok(res) => match res.json::<TmdbSearchResults>().await {
-            Ok(v) => Ok(v),
+            Ok(v) => v,
             Err(e) => {
                 println!("[ERROR -- search_tmdb_movies]: {:?}", e);
                 return Err(five_hundo);
@@ -30,5 +30,7 @@ pub async fn execute(
             println!("[ERROR -- search_tmdb_movies]: {:?}", e);
             return Err(five_hundo);
         }
-    }
+    };
+
+    Ok(tmdb_results)
 }

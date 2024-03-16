@@ -1,5 +1,5 @@
 use actix_files::Files;
-use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
+use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App as ActixApp, HttpServer};
 use env_logger::Env;
 use sea_orm::{Database, DatabaseConnection};
@@ -35,6 +35,17 @@ async fn main() -> std::io::Result<()> {
             .await
             .unwrap();
 
+	let redis_store = match RedisSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV"))
+		.await
+		{
+			Ok(v) => v,
+			Err(e) => {
+				println!("{}", e);
+				panic!();
+			}
+		};
+
+
     HttpServer::new(move || {
         ActixApp::new()
 			// Logger
@@ -42,8 +53,8 @@ async fn main() -> std::io::Result<()> {
 			// Redis connection
 			.wrap(
 				SessionMiddleware::new(
-					RedisActorSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV")),
-					secret_key.clone()
+					redis_store.clone(),
+                    secret_key.clone(),
 				)
 			)
 			// Postgres connection pool
@@ -58,6 +69,7 @@ async fn main() -> std::io::Result<()> {
 			.service(login::post::post)
 			.service(logout::post::post)
 			.service(movie::get::get)
+			.service(movie::post::post)
 			.service(profile::get::get)
 			.service(recently_rented::get::get)
 			.service(search::get::get)

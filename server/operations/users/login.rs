@@ -13,6 +13,7 @@ pub async fn execute(
     db: DatabaseConnection,
     login_form: LoginFormSchema,
 ) -> Result<LoginResult, String> {
+    println!("Starting execute");
     match users::Entity::find()
         .from_raw_sql(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
@@ -24,15 +25,23 @@ pub async fn execute(
     {
         Ok(record_option) => match record_option {
             Some(v) => {
-                session
-                    .insert(v.id.to_string(), v.email.to_string())
-                    .unwrap();
-                return Ok(LoginResult {
-                    email: v.email,
-                    id: v.id,
-                });
+                println!("User found");
+                match session
+                    .insert("id", v.id) {
+                        Ok(_) => return Ok(LoginResult {
+                            email: v.email,
+                            id: v.id,
+                        }),
+                        Err(e) => {
+                            println!("Error inserting session: {}", e);
+                            panic!();
+                        }
+                    }
             }
-            None => Err("Incorrect email or password".to_string()),
+            None => {
+                println!("Incorrect email or password");
+                Err("Incorrect email or password".to_string())
+            },
         },
         Err(e) => {
             println!("[Error]: {:?}", e);

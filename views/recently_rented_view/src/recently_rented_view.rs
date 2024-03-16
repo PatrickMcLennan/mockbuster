@@ -55,7 +55,7 @@ fn Content(props: &Props) -> HtmlResult {
                     <h1>{"Recently Rented"}</h1>
                     <h2 class="mb-0">{"See what your friends are watching"}</h2>
                 </header>
-                <section class="row g-2">
+                <section class="row g-3">
                     {
                         state
                             .results
@@ -67,7 +67,7 @@ fn Content(props: &Props) -> HtmlResult {
                                 let tmdb = result.2.unwrap();
 
                                 let image = format!("https://image.tmdb.org/t/p/w300{}", tmdb.poster_path);
-                                let watched_at = model.created_at.format("%Y-%m-%d");
+                                let watched_at = model.created_at.format("%d-%m-%Y");
                                 let score = model.score as i32 * 10;
                                 let score_color = match model.score as f32 {
                                     0.0..=2.5 => Some("bg-danger"),
@@ -78,49 +78,77 @@ fn Content(props: &Props) -> HtmlResult {
 
                                 html! {
                                     <div class="col-sm-12 col-md-6 col-lg-4">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h3 class="card-title h5 mb-0">
+                                        <div class="card border-dark">
+                                            <div class="row g-0">
+                                                <div class="col-4">
                                                     <a class="block" href={format!("/movie/{}", tmdb.id)}>
-                                                        {&tmdb.title}
+                                                        <img
+                                                            alt={format!("{} poster", tmdb.title)}
+                                                            class="img-fluid rounded-start"
+                                                            src={image}
+                                                            style="aspect-ratio: 2/3; width: 100%; height: auto; max-height: 168px;"
+                                                        />
                                                     </a>
-                                                </h3>
                                                 </div>
-                                            <div class="card-body">
-                                                <div class="row g-2">
-                                                    <div class="col-4">
-                                                        <img class="img-fluid w-100" src={image} alt={format!("{} poster", tmdb.title)} />
-                                                    </div>
                                                 <div class="col-8">
-                                                    <figure>
-                                                        <blockquote class="blockquote">
-                                                            <span class="display-6">{model.score}</span>
-                                                            <div class="progress-stacked mt-1" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                                                <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", score)}></div>
+                                                    <div class="card-body">
+                                                        <a href={format!("/movie/{}", tmdb.id)} style="-webkit-line-clamp: 3;">
+                                                            <h5 class="card-title h6 mb-0" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{tmdb.title.to_string()}</h5>
+                                                        </a>
+                                                        <figure class="mb-0">
+                                                            <div>
+                                                                <span class="display-6">{model.score}</span>
+                                                                <div class="progress-stacked mt-1" role="progressbar" aria-label={format!("{} / 10", model.score)} aria-valuenow={model.score.to_string()} aria-valuemin="0" aria-valuemax="10">
+                                                                    <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", score)}></div>
+                                                                </div>
                                                             </div>
-                                                        </blockquote>
-                                                        <figcaption class="blockquote-footer mt-1">
-                                                            <a href={format!("/profile/{}", user.id)}>
-                                                                {user.first_name}{" "}{user.last_name}
-                                                            </a>
-                                                            <p>
-                                                                {watched_at.to_string()}
-                                                            </p>
-                                                        </figcaption>
-                                                    </figure>
-                                                </div>
-                                            </div>
-                                            </div>
-                                            <div class="card-footer">
-                                                <div class="row g-2">
-                                                    <div class="col-6">
-                                                        {"Rating"}
-                                                    </div>
-                                                    <div class="col-6">
-                                                        {"raters"}
+                                                            <figcaption class="mt-2 d-flex justify-content-between">
+                                                                <span class="badge rounded-pill text-bg-secondary">
+                                                                    {user.first_name.chars().nth(0).unwrap()}{user.last_name.chars().nth(0).unwrap()}
+                                                                </span>
+                                                                <time class="ml-auto" datetime={watched_at.to_string()}>
+                                                                    {watched_at.to_string()}
+                                                                </time>
+                                                            </figcaption>
+                                                        </figure>
                                                     </div>
                                                 </div>
                                             </div>
+                                            // <div class="card-body">
+                                            //     <div class="row g-0">
+                                            //         <div class="col-4">
+                                            //             <img class="img-fluid w-100" src={image} alt={format!("{} poster", tmdb.title)} />
+                                            //         </div>
+                                            //     <div class="col-8">
+                                            //         <figure>
+                                            //             <blockquote class="blockquote">
+                                            //                 <span class="display-6">{model.score}</span>
+                                            //                 <div class="progress-stacked mt-1" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            //                     <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", score)}></div>
+                                            //                 </div>
+                                            //             </blockquote>
+                                            //             <figcaption class="blockquote-footer mt-1">
+                                            //                 <a href={format!("/profile/{}", user.id)}>
+                                            //                     {user.first_name}{" "}{user.last_name}
+                                            //                 </a>
+                                            //                 <p>
+                                            //                     {watched_at.to_string()}
+                                            //                 </p>
+                                            //             </figcaption>
+                                            //         </figure>
+                                            //     </div>
+                                            // </div>
+                                            // </div>
+                                            // <div class="card-footer">
+                                            //     <div class="row g-2">
+                                            //         <div class="col-6">
+                                            //             {"Rating"}
+                                            //         </div>
+                                            //         <div class="col-6">
+                                            //             {"raters"}
+                                            //         </div>
+                                            //     </div>
+                                            // </div>
                                         </div>
                                     </div>
                                 }

@@ -68,7 +68,7 @@ fn Content(props: &Props) -> HtmlResult {
                     <h1>{"Search"}</h1>
                     <h2 class="mb-0">{"Results for: "}<i>{&state.dto.query}</i></h2>
                 </header>
-                <section class="row g-2">
+                <section class="row g-3">
                     {
                         state
                             .movie_search_results

@@ -1,5 +1,4 @@
 use super::m20220101_000001_create_table::Users;
-use super::m20231226_145143_movies::Movies;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -88,6 +87,25 @@ impl MigrationTrait for Migration {
 				FOR EACH ROW
 				EXECUTE FUNCTION update_updated_at_column();
 			",
+        )
+        .await?;
+
+        conn.execute_unprepared(
+            "
+                    INSERT INTO ratings (user_id, score, tmdb_id) VALUES
+                    (1, 10, 550),
+                    (2, 10, 550),
+                    (3, 10, 550),
+                    (1, 10, 26679),
+                    (2, 10, 26679),
+                    (3, 10, 26679),
+                    (1, 9.0, 11362),
+                    (2, 7.5, 11362),
+                    (3, 5.0, 11362),
+                    (1, 7.5, 420818),
+                    (2, 2.0, 420818),
+                    (3, 6.0, 420818);
+                ",
         )
         .await?;
 
