@@ -35,16 +35,14 @@ async fn main() -> std::io::Result<()> {
             .await
             .unwrap();
 
-	let redis_store = match RedisSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV"))
-		.await
-		{
-			Ok(v) => v,
-			Err(e) => {
-				println!("{}", e);
-				panic!();
-			}
-		};
-
+    let redis_store =
+        match RedisSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV")).await {
+            Ok(v) => v,
+            Err(e) => {
+                println!("{}", e);
+                panic!();
+            }
+        };
 
     HttpServer::new(move || {
         ActixApp::new()

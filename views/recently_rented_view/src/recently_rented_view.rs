@@ -114,41 +114,6 @@ fn Content(props: &Props) -> HtmlResult {
                                                     </div>
                                                 </div>
                                             </div>
-                                            // <div class="card-body">
-                                            //     <div class="row g-0">
-                                            //         <div class="col-4">
-                                            //             <img class="img-fluid w-100" src={image} alt={format!("{} poster", tmdb.title)} />
-                                            //         </div>
-                                            //     <div class="col-8">
-                                            //         <figure>
-                                            //             <blockquote class="blockquote">
-                                            //                 <span class="display-6">{model.score}</span>
-                                            //                 <div class="progress-stacked mt-1" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                            //                     <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", score)}></div>
-                                            //                 </div>
-                                            //             </blockquote>
-                                            //             <figcaption class="blockquote-footer mt-1">
-                                            //                 <a href={format!("/profile/{}", user.id)}>
-                                            //                     {user.first_name}{" "}{user.last_name}
-                                            //                 </a>
-                                            //                 <p>
-                                            //                     {watched_at.to_string()}
-                                            //                 </p>
-                                            //             </figcaption>
-                                            //         </figure>
-                                            //     </div>
-                                            // </div>
-                                            // </div>
-                                            // <div class="card-footer">
-                                            //     <div class="row g-2">
-                                            //         <div class="col-6">
-                                            //             {"Rating"}
-                                            //         </div>
-                                            //         <div class="col-6">
-                                            //             {"raters"}
-                                            //         </div>
-                                            //     </div>
-                                            // </div>
                                         </div>
                                     </div>
                                 }

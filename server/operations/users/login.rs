@@ -26,22 +26,23 @@ pub async fn execute(
         Ok(record_option) => match record_option {
             Some(v) => {
                 println!("User found");
-                match session
-                    .insert("id", v.id) {
-                        Ok(_) => return Ok(LoginResult {
+                match session.insert("id", v.id) {
+                    Ok(_) => {
+                        return Ok(LoginResult {
                             email: v.email,
                             id: v.id,
-                        }),
-                        Err(e) => {
-                            println!("Error inserting session: {}", e);
-                            panic!();
-                        }
+                        })
                     }
+                    Err(e) => {
+                        println!("Error inserting session: {}", e);
+                        panic!();
+                    }
+                }
             }
             None => {
                 println!("Incorrect email or password");
                 Err("Incorrect email or password".to_string())
-            },
+            }
         },
         Err(e) => {
             println!("[Error]: {:?}", e);

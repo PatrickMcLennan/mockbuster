@@ -3,14 +3,13 @@ use actix_session::Session;
 use actix_web::{
     post,
     web::{Data, Form, Path},
-    HttpResponse,
-    Error as ActixError
+    Error as ActixError, HttpResponse,
 };
-use sea_orm::{prelude::*, DatabaseConnection};
-use tokio::task::spawn_blocking;
-use serde_json::json;
-use tokio::task::LocalSet;
 use movie_view::movie_view::{Movie, Props};
+use sea_orm::{prelude::*, DatabaseConnection};
+use serde_json::json;
+use tokio::task::spawn_blocking;
+use tokio::task::LocalSet;
 
 #[derive(serde::Deserialize)]
 struct RatingForm {
@@ -27,7 +26,12 @@ async fn post(
 ) -> Result<HttpResponse, ActixError> {
     let tmdb_id = path.into_inner();
 
-    let tmdb_movie_result = match tmdb_movies::fetch::execute(tmdb_id.clone(), Some(http_client.as_ref().clone())).await {
+    let tmdb_movie_result = match tmdb_movies::fetch::execute(
+        tmdb_id.clone(),
+        Some(http_client.as_ref().clone()),
+    )
+    .await
+    {
         Ok(res) => res,
         Err(e) => {
             println!("[ERROR -- /movie/{} POST]: {}", tmdb_id, e);
@@ -43,9 +47,17 @@ async fn post(
     let user_id = match session.get("id") {
         Ok(v) => match v {
             Some(id) => id,
-            None => return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish())
+            None => {
+                return Ok(HttpResponse::Found()
+                    .append_header(("Location", "/login"))
+                    .finish())
+            }
         },
-        Err(_) => return Ok(HttpResponse::Found().append_header(("Location", "/login")).finish())
+        Err(_) => {
+            return Ok(HttpResponse::Found()
+                .append_header(("Location", "/login"))
+                .finish())
+        }
     };
 
     match ratings::create::execute(form.score, user_id, tmdb_id, db.get_ref().clone()).await {
@@ -59,7 +71,7 @@ async fn post(
             _ => {
                 ()
                 // Redirect::to(format!("/movie/{tmdb_id}?banner=failure")).see_other()
-            },
+            }
         },
     };
 
