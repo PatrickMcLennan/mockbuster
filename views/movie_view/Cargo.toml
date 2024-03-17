@@ -8,9 +8,13 @@ crate-type = ["cdylib", "rlib"]
 path = "./src/lib.rs"
 
 [dependencies]
+chrono = { workspace = true }
 components = { path = "./../components" }
-models = { path = "./../../models" }
+models = { path = "./../../models", optional = true }
 serde = { workspace = true }
 wasm-bindgen = { workspace = true }
 yew = { workspace = true }
 
+[features]
+ssr = ["yew/ssr", "dep:models", "models?/db_models"]
+default = ["yew/csr", "dep:models", "models?/stubs"]

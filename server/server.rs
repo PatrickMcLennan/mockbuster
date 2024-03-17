@@ -21,6 +21,7 @@ async fn main() -> std::io::Result<()> {
     dotenv::from_path("./../.env").ok();
 
     let secret_key = Key::generate();
+    let redis_url = env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV");
 
     let http_client = ClientBuilder::new(Client::new())
         .with(Cache(HttpCache {
@@ -35,14 +36,17 @@ async fn main() -> std::io::Result<()> {
             .await
             .unwrap();
 
-    let redis_store =
-        match RedisSessionStore::new(env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV")).await {
-            Ok(v) => v,
-            Err(e) => {
-                println!("{}", e);
-                panic!();
-            }
-        };
+    let redis_store = match RedisSessionStore::new(redis_url.to_string()).await {
+        Ok(v) => v,
+        Err(e) => {
+            println!("{}", e);
+            panic!();
+        }
+    };
+
+    let redis_connection = redis::Client::open(redis_url).unwrap();
+
+    let redis_connection_pool = r2d2::Pool::builder().build(redis_connection).unwrap();
 
     HttpServer::new(move || {
         ActixApp::new()
@@ -59,6 +63,8 @@ async fn main() -> std::io::Result<()> {
 			.app_data(web::Data::new(pool.clone()))
 			// HTTP Client connection pool
 			.app_data(web::Data::new(http_client.clone()))
+			// Redis connection pool
+			.app_data(web::Data::new(redis_connection_pool.clone()))
 			// Static Files
 			.service(Files::new("/assets", "./assets/").show_files_listing())
 			// Routes

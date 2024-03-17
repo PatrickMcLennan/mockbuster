@@ -1,4 +1,4 @@
-use crate::operations::{ratings, tmdb_movies};
+use crate::operations::{aggregate_ratings, ratings, tmdb_movies};
 use actix_session::Session;
 use actix_web::{
     post,
@@ -6,8 +6,7 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use movie_view::movie_view::{Movie, Props};
-use sea_orm::{prelude::*, DatabaseConnection};
-use serde_json::json;
+use sea_orm::DatabaseConnection;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
@@ -25,6 +24,8 @@ async fn post(
     db: Data<DatabaseConnection>,
 ) -> Result<HttpResponse, ActixError> {
     let tmdb_id = path.into_inner();
+    let mut alert_styles = String::new();
+    let mut alert_copy = String::new();
 
     let tmdb_movie_result = match tmdb_movies::fetch::execute(
         tmdb_id.clone(),
@@ -35,10 +36,9 @@ async fn post(
         Ok(res) => res,
         Err(e) => {
             println!("[ERROR -- /movie/{} POST]: {}", tmdb_id, e);
-            // return Redirect::to(format!("/movie/{tmdb_id}?banner=not_found")).see_other();
-            return Ok(HttpResponse::InternalServerError().json(
-                &json!({"message": "This movie is unavailable at the moment; please try again later"}),
-            ));
+            return Ok(HttpResponse::Found()
+                .append_header(("Location", "/"))
+                .finish());
         }
     };
 
@@ -60,29 +60,54 @@ async fn post(
         }
     };
 
-    match ratings::create::execute(form.score, user_id, tmdb_id, db.get_ref().clone()).await {
-        // Ok(_) => Redirect::to(format!("/movie/{tmdb_id}?banner=success")),
-        Ok(_) => (),
-        Err(db_err) => match db_err {
-            DbErr::RecordNotInserted => {
-                ()
-                // Redirect::to(format!("/movie/{tmdb_id}?banner=already_rated")).see_other()
-            }
-            _ => {
-                ()
-                // Redirect::to(format!("/movie/{tmdb_id}?banner=failure")).see_other()
-            }
-        },
+    match ratings::create::execute(form.score.clone(), user_id, tmdb_id, db.get_ref().clone()).await
+    {
+        Some(_) => {
+            alert_styles = "success".to_string();
+            alert_copy = format!(
+                "Success!  You've rated {} {} / 10",
+                tmdb_movie_result.title, form.score
+            );
+        }
+        None => {
+            alert_styles = "danger".to_string();
+            alert_copy = "You have already rated this movie -- you cannot rate a movie twice, and you cannot change your score.".to_string()
+        }
     };
 
+    let ratings = ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await;
+    let aggregate_rating = aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await;
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
+        let form_score_clone = form.score.clone();
 
         set.block_on(&rt, async {
-            yew::ServerRenderer::<Movie>::with_props(|| Props {
+            yew::ServerRenderer::<Movie>::with_props(move || Props {
+                aggregate_rating: aggregate_rating,
                 movie: Some(movie_clone),
+                alert_copy: if alert_copy.len() >= 1 {
+                    Some(alert_copy)
+                } else {
+                    None
+                },
+                alert_styles: if alert_styles.len() >= 1 {
+                    Some(alert_styles.clone())
+                } else {
+                    None
+                },
+                user_score: if alert_styles == "success" {
+                    Some(form_score_clone)
+                } else {
+                    None
+                },
+                user_rated_date: if alert_styles == "success" {
+                    Some(chrono::Utc::now().format("%d-%m-%Y").to_string())
+                } else {
+                    None
+                },
+                ratings: Some(ratings),
             })
             .render()
             .await

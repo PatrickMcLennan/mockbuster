@@ -18,3 +18,4 @@ assets/
 dump.rdb
 models/generated/
 http-cacache
+mongo/data

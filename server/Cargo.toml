@@ -12,6 +12,7 @@ path = "./server.rs"
 actix-files = "0.6.2"
 actix-session = { version = "0.8.0", features = ["redis-rs-session"] }
 actix-web = "4.0.0-rc.1"
+chrono = { workspace = true }
 models = { path = "./../models", features = ["db_models"] }
 dotenv = "0.15.0"
 env_logger = "0.10.0"
@@ -27,10 +28,12 @@ validator = { workspace = true }
 validators = { path = "./../validators" }
 home_view = { path = "./../views/home_view" }
 login_view = { path = "./../views/login_view" }
-movie_view = { path = "./../views/movie_view" }
+movie_view = { path = "./../views/movie_view", features = ["ssr"] }
 profile_view = { path = "./../views/profile_view" }
 recently_rented_view = { path = "./../views/recently_rented_view", features = ["ssr"] }
 search_view = { path = "./../views/search_view" }
 top_ten_view = { path = "./../views/top_ten_view" }
+r2d2 = { workspace = true }
+redis = { workspace = true, features = ["r2d2"] }
 web-sys = { workspace = true }
 yew = { workspace = true }

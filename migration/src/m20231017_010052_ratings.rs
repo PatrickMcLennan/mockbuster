@@ -77,6 +77,19 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("ratings-user_id-tmdb_id-index")
+                    .table(Ratings::Table)
+                    .col(Ratings::UserId)
+                    .col(Ratings::TmdbId)
+                    .unique()
+                    .to_owned(),
+            )
+            .await?;
+
         let conn = manager.get_connection();
 
         conn.execute_unprepared(
