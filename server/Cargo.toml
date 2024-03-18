@@ -32,7 +32,7 @@ movie_view = { path = "./../views/movie_view", features = ["ssr"] }
 profile_view = { path = "./../views/profile_view" }
 recently_rented_view = { path = "./../views/recently_rented_view", features = ["ssr"] }
 search_view = { path = "./../views/search_view" }
-top_ten_view = { path = "./../views/top_ten_view" }
+top_ten_view = { path = "./../views/top_ten_view", features = ["ssr"] }
 r2d2 = { workspace = true }
 redis = { workspace = true, features = ["r2d2"] }
 web-sys = { workspace = true }

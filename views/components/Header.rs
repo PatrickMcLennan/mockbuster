@@ -1,4 +1,4 @@
-use crate::Logo::Logo;
+use crate::logo::Logo;
 use reqwasm::http::{Headers, Request};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -97,72 +97,54 @@ pub fn header(props: &Props) -> Html {
                             <Logo />
                         </a>
                     </div>
-                    <button
-                        class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-target="#navbarNavDropdown"
-                        aria-controls="navbarNavDropdown"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
-                    >
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
                     <div class="collapse navbar-collapse ml-auto" id="navbarNavDropdown">
                         <ul class="navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/recently-rented">
-                                    {"Recently Rented"}
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/top-10">
+
+                        </ul>
+                    </div>
+                    <form class="input-group mb-0 d-flex justify-content-center" novalidate={true} onsubmit={submit_stub} role="search">
+                        <input
+                            aria-label="Search"
+                            autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
+                            type="search"
+                            class="form-control ml-auto"
+                            placeholder="Search..."
+                            value={props.search.to_string()}
+                            oninput={oninput}
+                            style="max-width: 250px;"
+                        />
+                        <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
+                    </form>
+                    <div class="nav-item dropdown">
+                        <button
+                            class="btn dropdown-toggle"
+                            id="navbarDropdownMenuButton"
+                            data-bs-toggle="dropdown"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            type="button"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuButton">
+                            <li class="dropdown-item">
+                                    <a class="nav-link text-nowrap" href="/recently-rented">
+                                        {"Recently Rented"}
+                                    </a>
+                                </li>
+                            <li class="dropdown-item">
+                                <a class="nav-link text-nowrap" href="/top-10">
                                     {"Top 10"}
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a
-                                    class="nav-link dropdown-toggle"
-                                    href="#"
-                                    id="navbarDropdownMenuLink"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                >
-                                    <svg
-                                        aria-label="Profile dropdown"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        fill="currentColor"
-                                        class="bi bi-person-circle"
-                                        viewBox="0 0 16 16"
-                                    >
-                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                                    </svg>
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="/profile">{"Profile"}</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <button class="nav-link" onclick={logout}>{"Logout"}</button>
-                                    </li>
-                                </ul>
+                            <li class="dropdown-item">
+                                <a class="nav-link" href="/profile">{"Profile"}</a>
                             </li>
-                            <li>
-                                <form class="input-group mb-0" novalidate={true} onsubmit={submit_stub}>
-                                    <span class="input-group-text">{"🔎"}</span>
-                                    <input
-                                        autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
-                                        type="search"
-                                        class="form-control"
-                                        placeholder="Search for movies"
-                                        value={props.search.to_string()}
-                                        oninput={oninput}
-                                    />
-                                </form>
+                            <li class="dropdown-item">
+                                <button class="nav-link" onclick={logout}>{"Logout"}</button>
                             </li>
                         </ul>
                     </div>

@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::Header::Header;
+use components::header::Header;
 
 #[function_component(Profile)]
 pub fn profile_view() -> Html {

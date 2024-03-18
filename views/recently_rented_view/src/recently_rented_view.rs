@@ -2,7 +2,7 @@
 use models::generated::{ratings, users};
 
 use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
-use components::{rating_bar::RatingBar, Header::Header};
+use components::{header::Header, rating_bar::RatingBar, sidebar::Sidebar};
 use models::{
     stubs::{rating::Rating as RatingStub, user::User as UserStub},
     tmdb_movies::movie_id_result::MovieIdResult,
@@ -50,6 +50,7 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
+            <Sidebar />
             <main class="container">
                 <header class="border-bottom mb-4 pt-2 pb-4">
                     <h1>{"Recently Rented"}</h1>

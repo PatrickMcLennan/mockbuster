@@ -1,5 +1,4 @@
-use models::generated::ratings;
-use sea_orm::{prelude::*, DatabaseConnection, DbBackend, FromQueryResult, JsonValue, Statement};
+use sea_orm::{DatabaseConnection, DbBackend, FromQueryResult, JsonValue, Statement};
 
 pub struct SummaryResult {
     pub sum_score: f64,

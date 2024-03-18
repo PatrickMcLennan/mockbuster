@@ -3,9 +3,9 @@ use models::generated::{aggregate_ratings, ratings, users};
 
 use crate::components::scores_card::ScoresCard;
 use components::{
+    header::Header,
     rating_bar::{Props as RatingBarProps, RatingBar},
     vote_modal::VoteModal,
-    Header::Header,
 };
 use models::{
     stubs::{

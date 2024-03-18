@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::{Header::Header, MovieCard::MovieCard};
+use components::{header::Header, movie_card::MovieCard};
 use models::tmdb_movies::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
 use validators::tmdb_movies::search_dto::SearchDTO;

@@ -9,6 +9,11 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
+serde = { workspace = true }
 wasm-bindgen = { workspace = true }
 yew = { workspace = true }
+models = { path = "./../../models", optional = true }
 
+[features]
+ssr = ["yew/ssr", "dep:models", "models?/db_models"]
+default = ["yew/csr", "dep:models", "models?/stubs"]
