@@ -3,9 +3,11 @@ use models::generated::{aggregate_ratings, ratings, users};
 
 use crate::components::scores_card::ScoresCard;
 use components::{
+    frame::Frame,
     header::Header,
     rating_bar::{Props as RatingBarProps, RatingBar},
     vote_modal::VoteModal,
+    page_title::PageTitle
 };
 use models::{
     stubs::{
@@ -120,83 +122,70 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
-            <main>
-                <header class="card" style={format!("background-image: url({}); background-size: cover; background-repeat: no-repeat;", backdrop)}>
-                    <div class="container">
-                        {match state.alert_copy.clone() {
+                <Frame>
+                    <PageTitle 
+                        h1={title.clone()}
+                        h2={tagline.clone()}
+                        alert={match state.alert_copy.clone() {
                             Some(v) => html! {
-                                <div class={format!("alert alert-{} fade show mt-2 mb-0", state.alert_styles.clone().unwrap())} role="alert">
+                                <div class={format!("alert alert-{} fade show mt-2 mb-4", state.alert_styles.clone().unwrap())} role="alert">
                                     <h5 class="mb-0">{v}</h5>
                                 </div>
                             },
                             None => html! { <></> }
                         }}
-                        <div class="row g-0">
-                            <div class="col-md-4 d-flex align-items-center">
-                                <img src={poster} class="img-fluid rounded-start h-75 d-block mx-auto" alt={format!("Poster for {}", title)} />
-                            </div>
-                            <div class="col-md-8 my-auto">
-                                <div class="card-body text-bg-dark rounded">
-                                    <h1 class="card-title text-end">{title}</h1>
-                                    <h2 class="card-subtitle my-2 text-end"><i>{tagline}</i></h2>
-                                    {
-                                        match state.aggregate_rating.clone() {
-                                            Some(score) => html!{ <RatingBar score={score.score} /> },
-                                            None => html! { <></> }
-                                        }
-                                    }
-                                    {
-                                        match state.user_score {
-                                            Some(_) => html! { <></> },
-                                            None => {
-                                                html! {
-                                                    <button
-                                                        onclick={toggle_modal}
-                                                        class="btn btn-primary ml-auto"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target={format!("#vote-modal-{}", state.movie.id)}
-                                                        type="button"
-                                                    >
-                                                        {"Rate"}
-                                                    </button>
-                                                }
-                                            }
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                <section class="container">
-                    <div class="row g-3 mt-4">
-                        <article class={classes!(if has_user_ratings { "col-sm-12 col-lg-8" } else { "col-12" } )}>
-                            <section class="card">
-                                <header class="card-header">
-                                    <strong>{"Overview"}</strong>
-                                </header>
-                                <div class="card-body">
-                                    <p class="card-text" style="text-indent: 2rem;">{&state.movie.overview}</p>
-                                </div>
-                            </section>
-                        </article>
-                        {if has_user_ratings {
-                            html! {
-                                <ScoresCard scores={scores_card_props} />
+                        background_path={backdrop}
+                        cta={match state.user_score {
+                            Some(_) => None,
+                            None => {
+                                Some(html! {
+                                    <button
+                                        onclick={toggle_modal}
+                                        class="btn btn-primary ml-auto"
+                                        data-bs-toggle="modal"
+                                        data-bs-target={format!("#vote-modal-{}", state.movie.id)}
+                                        type="button"
+                                    >
+                                        {"Rate"}
+                                    </button>
+                                })
                             }
-                        } else { html! { <></> } }}
-                    </div>
-                </section>
-                {if has_not_rated {
-                    html! {
-                        <VoteModal
-                            title={state.movie.title.to_string()}
-                            id={state.movie.id}
-                            open={*vote_modal_open_clone}
-                        />
-                    }
-                } else { html! { <></> } }}
-            </main>
+                        }}
+                        rating={match state.aggregate_rating.clone() {
+                            Some(score) => html!{ <RatingBar score={score.score} /> },
+                            None => html! { <></> }
+                        }}
+                        poster_path={poster}
+                    />
+                    <section class="container">
+                        <div class="row g-3 mt-4">
+                            <article class={classes!(if has_user_ratings { "col-sm-12 col-lg-8" } else { "col-12" } )}>
+                                <section class="card">
+                                    <header class="card-header">
+                                        <strong>{"Overview"}</strong>
+                                    </header>
+                                    <div class="card-body">
+                                        <p class="card-text" style="text-indent: 2rem; text-wrap: pretty;">{&state.movie.overview}</p>
+                                    </div>
+                                </section>
+                            </article>
+                            {if has_user_ratings {
+                                html! {
+                                    <ScoresCard scores={scores_card_props} />
+                                }
+                            } else { html! { <></> } }}
+                        </div>
+                    </section>
+                    {if has_not_rated {
+                        html! {
+                            <VoteModal
+                                title={state.movie.title.to_string()}
+                                id={state.movie.id}
+                                open={*vote_modal_open_clone}
+                            />
+                        }
+                    } else { html! { <></> } }}
+            </Frame>
         </>
     })
 }

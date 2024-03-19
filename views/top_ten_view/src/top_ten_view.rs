@@ -1,7 +1,7 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, ratings, users};
 
-use components::{header::Header, rating_bar::RatingBar};
+use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar};
 use models::{
     stubs::{
         aggregate_ratings::AggregateRating as AggregateRatingsStub, rating::Rating as RatingStub,
@@ -52,56 +52,56 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
-            <main class="container">
-                <header class="border-bottom mb-4 pt-2 pb-4">
-                    <h1>{"Top Rated"}</h1>
-                    <h2 class="mb-0">{"Our favourite movies"}</h2>
-                </header>
-            </main>
-            <section class="row g-3">
-                {
-                    state
-                        .movies
-                        .clone()
-                        .into_iter()
-                        .map(|result| {
-                            let aggregate_rating = result.0;
-                            let tmdb_result = result.1.unwrap();
-                            let image = format!("https://image.tmdb.org/t/p/w300{}", tmdb_result.poster_path);
-                            html! {
-                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                    <div class="card border-dark">
-                                        <figure class="row g-0 mb-0">
-                                            <div class="col-4">
-                                                <a class="block" href={format!("/movie/{}", tmdb_result.id)}>
-                                                    <img
-                                                        alt={format!("{} poster", tmdb_result.title)}
-                                                        class="img-fluid rounded-start"
-                                                        src={image}
-                                                        style="aspect-ratio: 2/3; width: 100%; height: auto; max-height: 168px;"
-                                                    />
-                                                </a>
-                                            </div>
-                                            <figcaption class="col-8">
-                                                <div class="card-body">
-                                                    <a href={format!("/movie/{}", tmdb_result.id)} style="-webkit-line-clamp: 3;">
-                                                        <h5 class="card-title h6 mb-0" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{tmdb_result.title.to_string()}</h5>
+            <Frame>
+                <PageTitle
+                    h1={"Top Rated"}
+                    h2={"Our favourite movies"}
+                />
+                <section class="row g-3 container">
+                    {
+                        state
+                            .movies
+                            .clone()
+                            .into_iter()
+                            .map(|result| {
+                                let aggregate_rating = result.0;
+                                let tmdb_result = result.1.unwrap();
+                                let image = format!("https://image.tmdb.org/t/p/w300{}", tmdb_result.poster_path);
+                                html! {
+                                    <div class="col-sm-12 col-md-6 col-lg-4">
+                                        <div class="card border-dark">
+                                            <figure class="row g-0 mb-0">
+                                                <div class="col-4">
+                                                    <a class="block" href={format!("/movie/{}", tmdb_result.id)}>
+                                                        <img
+                                                            alt={format!("{} poster", tmdb_result.title)}
+                                                            class="img-fluid rounded-start"
+                                                            src={image}
+                                                            style="aspect-ratio: 2/3; width: 100%; height: auto; max-height: 168px;"
+                                                        />
                                                     </a>
-                                                    <div class="mb-0">
-                                                        <div>
-                                                            <RatingBar score={aggregate_rating.score} />
+                                                </div>
+                                                <figcaption class="col-8">
+                                                    <div class="card-body">
+                                                        <a href={format!("/movie/{}", tmdb_result.id)} style="-webkit-line-clamp: 3;">
+                                                            <h5 class="card-title h6 mb-0" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{tmdb_result.title.to_string()}</h5>
+                                                        </a>
+                                                        <div class="mb-0">
+                                                            <div>
+                                                                <RatingBar score={aggregate_rating.score} />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </figcaption>
-                                        </figure>
+                                                </figcaption>
+                                            </figure>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        })
-                        .collect::<Html>()
-                }
-            </section>
+                                }
+                            })
+                            .collect::<Html>()
+                    }
+                </section>
+            </Frame>
         </>
     })
 }

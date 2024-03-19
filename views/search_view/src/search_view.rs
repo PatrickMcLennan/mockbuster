@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::{header::Header, movie_card::MovieCard};
+use components::{frame::Frame, header::Header, movie_card::MovieCard, page_title::PageTitle};
 use models::tmdb_movies::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
 use validators::tmdb_movies::search_dto::SearchDTO;
@@ -63,12 +63,12 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header search={state.dto.query.to_string()} />
-            <main class="container">
-                <header class="border-bottom mb-4 pt-2 pb-4">
-                    <h1>{"Search"}</h1>
-                    <h2 class="mb-0">{"Results for: "}<i>{&state.dto.query}</i></h2>
-                </header>
-                <section class="row g-3">
+            <Frame>
+                <PageTitle
+                    h1={"Search".to_string()}
+                    h2={format!("Results for: {}", &state.dto.query)}
+                />
+                <section class="row g-3 container">
                     {
                         state
                             .movie_search_results
@@ -87,7 +87,7 @@ fn Content(props: &Props) -> HtmlResult {
                 </section>
                 {if show_pagination {
                     html! {
-                        <footer class="mt-4 pt-4 border-top">
+                        <footer class="mt-4 pt-4 border-top container">
                             <nav aria-label="Search pagination">
                                 <ul class="pagination justify-content-center">
                                     <li class={classes!(
@@ -166,7 +166,7 @@ fn Content(props: &Props) -> HtmlResult {
                         <></>
                     }
                 }}
-            </main>
+            </Frame>
         </>
     })
 }

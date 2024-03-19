@@ -89,66 +89,26 @@ pub fn header(props: &Props) -> Html {
     });
 
     html! {
-        <header class="sticky-top bg-white">
-            <nav class="navbar navbar-expand-md">
-                <div class="container-fluid">
-                    <div class="navbar-brand" style="max-height: 80px;">
-                        <a href="/">
-                            <Logo />
-                        </a>
-                    </div>
-                    <div class="collapse navbar-collapse ml-auto" id="navbarNavDropdown">
-                        <ul class="navbar-nav">
-
-                        </ul>
-                    </div>
-                    <form class="input-group mb-0 d-flex justify-content-center" novalidate={true} onsubmit={submit_stub} role="search">
-                        <input
-                            aria-label="Search"
-                            autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
-                            type="search"
-                            class="form-control ml-auto"
-                            placeholder="Search..."
-                            value={props.search.to_string()}
-                            oninput={oninput}
-                            style="max-width: 250px;"
-                        />
-                        <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
-                    </form>
-                    <div class="nav-item dropdown">
-                        <button
-                            class="btn dropdown-toggle"
-                            id="navbarDropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            type="button"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                            </svg>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuButton">
-                            <li class="dropdown-item">
-                                    <a class="nav-link text-nowrap" href="/recently-rented">
-                                        {"Recently Rented"}
-                                    </a>
-                                </li>
-                            <li class="dropdown-item">
-                                <a class="nav-link text-nowrap" href="/top-10">
-                                    {"Top 10"}
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a class="nav-link" href="/profile">{"Profile"}</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <button class="nav-link" onclick={logout}>{"Logout"}</button>
-                            </li>
-                        </ul>
-                    </div>
+        <header class="sticky-top bg-white border border-top-none border-left-none border-right-none">
+            <nav class="px-4 d-flex flex-nowrap justify-content-between align-items-center">
+                <div style="max-height: 80px;">
+                    <a href="/" aria-label="Home">
+                        <Logo />
+                    </a>
                 </div>
+                <form class="input-group mb-0" novalidate={true} onsubmit={submit_stub} role="search">
+                    <input
+                        aria-label="Search"
+                        autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
+                        type="search"
+                        class="form-control"
+                        placeholder="Search..."
+                        value={props.search.to_string()}
+                        oninput={oninput}
+                        style="max-width: 250px;"
+                    />
+                    <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
+                </form>
             </nav>
         </header>
     }

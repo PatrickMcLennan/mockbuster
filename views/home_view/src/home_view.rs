@@ -1,19 +1,19 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::header::Header;
+use components::{frame::Frame, header::Header, page_title::PageTitle};
 
 #[function_component(Home)]
 pub fn home_view() -> Html {
     html! {
         <>
             <Header />
-            <main class="container">
-                <header class="border-bottom mb-4 pt-2 pb-4">
-                    <h1>{"mockbuster"}</h1>
-                    <h2 class="mb-0">{"Find your next movie"}</h2>
-                </header>
-            </main>
+            <Frame>
+                <PageTitle
+                    h1={"mockbuster"}
+                    h2={"Find your next movie"}
+                />
+            </Frame>
         </>
     }
 }
