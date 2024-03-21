@@ -1,4 +1,5 @@
 use crate::operations::{aggregate_ratings, ratings, tmdb_movies};
+use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
     post,
@@ -118,23 +119,12 @@ async fn post(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(format!(
-            r#"
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/bootstrap.js"></script>
-					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<title>{} | mockbuster</title>
-					<script defer src="/assets/movieView.js"></script>
-				</head>
-				<body>
-					{}
-				</body>
-			</html>
-		"#,
-            tmdb_movie_result.title, content
-        )))
+        .body(
+            Document::new(DocumentProps {
+                wasm_assets: "movieView.js".to_string(),
+                title: tmdb_movie_result.title,
+                content
+            })
+        )
+    )
 }

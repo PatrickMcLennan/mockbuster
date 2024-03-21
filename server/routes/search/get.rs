@@ -14,6 +14,7 @@ use tokio::task::LocalSet;
 use validators::tmdb_movies::search_dto::SearchDTO;
 
 use crate::operations::tmdb_movies;
+use crate::utils::document::{Document, DocumentProps};
 
 #[get("/search")]
 async fn get(
@@ -115,23 +116,12 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(format!(
-            r#"
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/bootstrap.js"></script>
-					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<title>Search | mockbuster</title>
-					<script defer src="/assets/searchView.js"></script>
-				</head>
-				<body>
-					{}
-				</body>
-			</html>
-		"#,
-            content
-        )))
+        .body(
+            Document::new(DocumentProps {
+                wasm_assets: "searchView.js".to_string(),
+                title: "Search".to_string(),
+                content,
+            })
+        )
+    )
 }

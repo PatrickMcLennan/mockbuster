@@ -1,6 +1,7 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, ratings, users};
 
+use num_format::{Locale, ToFormattedString};
 use crate::components::scores_card::ScoresCard;
 use components::{
     frame::Frame,
@@ -122,7 +123,7 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
-                <Frame>
+                <Frame current_route={None}>
                     <PageTitle 
                         h1={title.clone()}
                         h2={tagline.clone()}
@@ -157,17 +158,60 @@ fn Content(props: &Props) -> HtmlResult {
                         }}
                         poster_path={poster}
                     />
-                    <section class="container">
+                    <div class="container">
                         <div class="row g-3 mt-4">
                             <article class={classes!(if has_user_ratings { "col-sm-12 col-lg-8" } else { "col-12" } )}>
-                                <section class="card">
-                                    <header class="card-header">
-                                        <strong>{"Overview"}</strong>
-                                    </header>
-                                    <div class="card-body">
-                                        <p class="card-text" style="text-indent: 2rem; text-wrap: pretty;">{&state.movie.overview}</p>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-sm-6 col-md-4">
+                                        <section class="card">
+                                            <header class="card-header">
+                                                <strong>{"Released"}</strong>
+                                            </header>
+                                            <div class="card-body">
+                                                <p class="card-text">{&state.movie.release_date}</p>
+                                            </div>
+                                        </section>
                                     </div>
-                                </section>
+                                    <div class="col-sm-6 col-md-4">
+                                        <section class="card">
+                                            <header class="card-header">
+                                                <strong>{"Budget"}</strong>
+                                            </header>
+                                            <div class="card-body">
+                                                <p class="card-text">
+                                                    {
+                                                        match &state.movie.budget {
+                                                            0 => "/".to_string(),
+                                                            _ => format!("${}", state.movie.budget.to_formatted_string(&Locale::en).to_string())
+                                                        }
+                                                    }
+                                                </p>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    <div class="col-sm-6 col-md-4">
+                                        <section class="card">
+                                            <header class="card-header">
+                                                <strong>{"Runtime"}</strong>
+                                            </header>
+                                            <div class="card-body">
+                                                <p class="card-text">{format!("{} mins", &state.movie.runtime)}</p>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <section class="card">
+                                            <header class="card-header">
+                                                <strong>{"Overview"}</strong>
+                                            </header>
+                                            <div class="card-body">
+                                                <p class="card-text" style="text-indent: 2rem; text-wrap: pretty;">{&state.movie.overview}</p>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
                             </article>
                             {if has_user_ratings {
                                 html! {
@@ -175,7 +219,7 @@ fn Content(props: &Props) -> HtmlResult {
                                 }
                             } else { html! { <></> } }}
                         </div>
-                    </section>
+                    </div>
                     {if has_not_rated {
                         html! {
                             <VoteModal

@@ -16,6 +16,8 @@ pub struct Props {
     pub rating: Option<Html>,
 }
 
+const HEADING_STYLES: &str = "background-color: white; max-width: max-content; padding: 0.5rem;";
+
 #[function_component(PageTitle)]
 pub fn page_title(props: &Props) -> Html {
     let background_image_styles = match &props.background_path {
@@ -30,7 +32,7 @@ pub fn page_title(props: &Props) -> Html {
 
     html! {
         <header 
-            class="border-bottom mb-4 py-4" 
+            class="border-bottom mb-2 py-4" 
             style={background_image_styles}
             
             >
@@ -42,8 +44,15 @@ pub fn page_title(props: &Props) -> Html {
                 <div class="row g-0">
                     <div class={format!("d-flex flex-column {}", copy_column_styles)}>
                         // <h1 class="p-1" style="mix-blend-mode: difference; color: white; text-shadow: 1px 1px 2px white;">{&props.h1}</h1>
-                        <h1 style="-webkit-text-stroke: 1px white;">{&props.h1}</h1>
-                        <h2 class="mb-0" style="-webkit-text-stroke: 1px white;">{&props.h2}</h2>
+                        // <h1 style="-webkit-text-stroke: 1px white;">{&props.h1}</h1>
+                        // <h2 class="mb-0" style="-webkit-text-stroke: 1px white;">{&props.h2}</h2>
+                        <h1 style={HEADING_STYLES}>{&props.h1}</h1>
+                        {
+                            match &props.h2.len() {
+                                0 => html! { <></> },
+                                _ => html!{ <h2 style={HEADING_STYLES}>{&props.h2}</h2> },
+                            }
+                        }
                         {
                             match props.rating.clone() {
                                 Some(score) => html! {
@@ -63,19 +72,21 @@ pub fn page_title(props: &Props) -> Html {
                             }
                         }
                     </div>
-                    {match props.poster_path.clone() {
-                        Some(v) => html! {
-                            <div class="col-md-4 d-flex align-items-center">
-                                <img
-                                    src={v}
-                                    class="img-fluid rounded-start d-block mx-auto"
-                                    alt={format!("Poster for {}", props.h1)}
-                                    style="aspect-ratio: 2/3; width: auto; height: 300px;"
-                                />
-                            </div>
-                        },
-                        None => html! { <></> }
-                    }}
+                    {
+                        match props.poster_path.clone() {
+                            Some(v) => html! {
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <img
+                                        src={v}
+                                        class="img-fluid rounded-start d-block mx-auto"
+                                        alt={format!("Poster for {}", props.h1)}
+                                        style="aspect-ratio: 2/3; width: auto; height: 300px;"
+                                    />
+                                </div>
+                            },
+                            None => html! { <></> }
+                        }
+                    }
                 </div>
             </div>
         </header>

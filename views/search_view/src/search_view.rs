@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::{frame::Frame, header::Header, movie_card::MovieCard, page_title::PageTitle};
+use components::{frame::Frame, header::Header, movie_card::MovieCard, page_title::PageTitle, pagination::Pagination};
 use models::tmdb_movies::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
 use validators::tmdb_movies::search_dto::SearchDTO;
@@ -63,7 +63,7 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header search={state.dto.query.to_string()} />
-            <Frame>
+            <Frame current_route={None}>
                 <PageTitle
                     h1={"Search".to_string()}
                     h2={format!("Results for: {}", &state.dto.query)}
@@ -87,85 +87,96 @@ fn Content(props: &Props) -> HtmlResult {
                 </section>
                 {if show_pagination {
                     html! {
-                        <footer class="mt-4 pt-4 border-top container">
-                            <nav aria-label="Search pagination">
-                                <ul class="pagination justify-content-center">
-                                    <li class={classes!(
-                                        "page-item",
-                                        if is_first_page { Some("disabled") } else { None }
-                                    )}>
-                                        <a
-                                            class="page-link"
-                                            href={if is_first_page { "#".to_string() } else {
-                                                format!("/search?query={}&page={}",
-                                                    &state.dto.query,
-                                                    &state.dto.page -1
-                                                )
-                                            }}
-                                            tabindex={if is_first_page { Some("-1") } else { None }}
-                                            aria-disabled={if is_first_page { Some("true") } else { None }}
-                                        >
-                                            {"Previous"}
-                                        </a>
-                                    </li>
-                                    {
-                                        offered_pagination
-                                            .into_iter()
-                                            .map(|page| {
-                                                let is_current_page = page == current_page;
-                                                html! {
-                                                    <li
-                                                        class={classes!(
-                                                        "page-item",
-                                                        if is_current_page { Some("active disabled") } else { None }
-                                                        )}
-                                                        key={page}
-                                                    >
-                                                        <a
-                                                            class="page-link"
-                                                            href={if is_current_page { "#".to_string() } else {
-                                                                format!("/search?query={}&page={}",
-                                                                    &state.dto.query,
-                                                                    &page
-                                                                )
-                                                            }}
-                                                            tabindex={if is_current_page { Some("-1") } else { None }}
-                                                            aria-disabled={if is_current_page { Some("true") } else { None }}
-                                                        >
-                                                            {page}
-                                                        </a>
-                                                    </li>
-                                                }
-                                            })
-                                            .collect::<Html>()
-                                    }
-                                    <li class={classes!(
-                                        "page-item",
-                                        if is_last_page { Some("disabled") } else { None }
-                                    )}>
-                                        <a
-                                            class="page-link"
-                                            href={if is_last_page { "#".to_string() } else {
-                                                format!("/search?query={}&page={}",
-                                                    &state.dto.query,
-                                                    &state.dto.page +1
-                                                )
-                                            }}
-                                            tabindex={if is_first_page { Some("-1") } else { None }}
-                                            aria-disabled={if is_first_page { Some("true") } else { None }}
-                                        >
-                                            {"Next"}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </footer>
+                        <Pagination 
+                            current_page={current_page} 
+                            previous_url={format!("/search?query={}&page={}",state.dto.query, current_page - 1)}
+                            next_url={format!("/search?query={}&page={}",state.dto.query, current_page + 1)}
+                            numbered_url={format!("/search?query={}",state.dto.query)}
+                            total_pages={total_pages} 
+                        />
                     }
-                } else {
-                    html! {
-                        <></>
-                    }
-                }}
+                } else { html! { <></> } }}
+                // {if show_pagination {
+                //     html! {
+                //         <footer class="mt-4 pt-4 border-top container">
+                //             <nav aria-label="Search pagination">
+                //                 <ul class="pagination justify-content-center">
+                //                     <li class={classes!(
+                //                         "page-item",
+                //                         if is_first_page { Some("disabled") } else { None }
+                //                     )}>
+                //                         <a
+                //                             class="page-link"
+                //                             href={if is_first_page { "#".to_string() } else {
+                //                                 format!("/search?query={}&page={}",
+                //                                     &state.dto.query,
+                //                                     &state.dto.page -1
+                //                                 )
+                //                             }}
+                //                             tabindex={if is_first_page { Some("-1") } else { None }}
+                //                             aria-disabled={if is_first_page { Some("true") } else { None }}
+                //                         >
+                //                             {"Previous"}
+                //                         </a>
+                //                     </li>
+                //                     {
+                //                         offered_pagination
+                //                             .into_iter()
+                //                             .map(|page| {
+                //                                 let is_current_page = page == current_page;
+                //                                 html! {
+                //                                     <li
+                //                                         class={classes!(
+                //                                         "page-item",
+                //                                         if is_current_page { Some("active disabled") } else { None }
+                //                                         )}
+                //                                         key={page}
+                //                                     >
+                //                                         <a
+                //                                             class="page-link"
+                //                                             href={if is_current_page { "#".to_string() } else {
+                //                                                 format!("/search?query={}&page={}",
+                //                                                     &state.dto.query,
+                //                                                     &page
+                //                                                 )
+                //                                             }}
+                //                                             tabindex={if is_current_page { Some("-1") } else { None }}
+                //                                             aria-disabled={if is_current_page { Some("true") } else { None }}
+                //                                         >
+                //                                             {page}
+                //                                         </a>
+                //                                     </li>
+                //                                 }
+                //                             })
+                //                             .collect::<Html>()
+                //                     }
+                //                     <li class={classes!(
+                //                         "page-item",
+                //                         if is_last_page { Some("disabled") } else { None }
+                //                     )}>
+                //                         <a
+                //                             class="page-link"
+                //                             href={if is_last_page { "#".to_string() } else {
+                //                                 format!("/search?query={}&page={}",
+                //                                     &state.dto.query,
+                //                                     &state.dto.page +1
+                //                                 )
+                //                             }}
+                //                             tabindex={if is_first_page { Some("-1") } else { None }}
+                //                             aria-disabled={if is_first_page { Some("true") } else { None }}
+                //                         >
+                //                             {"Next"}
+                //                         </a>
+                //                     </li>
+                //                 </ul>
+                //             </nav>
+                //         </footer>
+                //     }
+                // } else {
+                //     html! {
+                //         <></>
+                //     }
+                // }}
             </Frame>
         </>
     })

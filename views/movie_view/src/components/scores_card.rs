@@ -11,7 +11,7 @@ pub struct Props {
 #[function_component(ScoresCard)]
 pub fn scores_card(props: &Props) -> Html {
     html! {
-        <aside class="card px-0 col-sm-12 col-lg-4">
+        <aside class="card px-0 col-sm-12 col-lg-4" style="height: max-content;">
             <div class="card-header">
                 <strong>{"Scores"}</strong>
             </div>

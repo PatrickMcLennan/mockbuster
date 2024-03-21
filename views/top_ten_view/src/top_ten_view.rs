@@ -1,7 +1,7 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, ratings, users};
 
-use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar};
+use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar, sidebar::CurrentRoute};
 use models::{
     stubs::{
         aggregate_ratings::AggregateRating as AggregateRatingsStub, rating::Rating as RatingStub,
@@ -52,7 +52,7 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
-            <Frame>
+            <Frame current_route={CurrentRoute::TopRated}>
                 <PageTitle
                     h1={"Top Rated"}
                     h2={"Our favourite movies"}

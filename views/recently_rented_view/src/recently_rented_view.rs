@@ -2,7 +2,7 @@
 use models::generated::{ratings, users};
 
 use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
-use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar};
+use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar, sidebar::CurrentRoute};
 use models::{
     stubs::{rating::Rating as RatingStub, user::User as UserStub},
     tmdb_movies::movie_id_result::MovieIdResult,
@@ -50,7 +50,7 @@ fn Content(props: &Props) -> HtmlResult {
     Ok(html! {
         <>
             <Header />
-            <Frame>
+            <Frame current_route={CurrentRoute::RecentlyRented}>
                 <PageTitle
                     h1={"Recently Rented".to_string()}
                     h2={"See what your friends are watching".to_string()}

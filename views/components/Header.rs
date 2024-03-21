@@ -90,25 +90,29 @@ pub fn header(props: &Props) -> Html {
 
     html! {
         <header class="sticky-top bg-white border border-top-none border-left-none border-right-none">
-            <nav class="px-4 d-flex flex-nowrap justify-content-between align-items-center">
-                <div style="max-height: 80px;">
-                    <a href="/" aria-label="Home">
-                        <Logo />
-                    </a>
+            <nav class="px-4 container">
+                <div class="row gx-2">
+                    <div class="col-4" style="max-height: 80px;">
+                        <a href="/" aria-label="Home">
+                            <Logo />
+                        </a>
+                    </div>
+                    <div class="col-8 d-flex align-items-center">
+                        <form class="input-group mb-0" novalidate={true} onsubmit={submit_stub} role="search">
+                            <input
+                                aria-label="Search"
+                                autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
+                                type="search"
+                                class="form-control"
+                                placeholder="Search..."
+                                value={props.search.to_string()}
+                                oninput={oninput}
+                                style="max-width: 300px;"
+                            />
+                            <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
+                        </form>
+                    </div>
                 </div>
-                <form class="input-group mb-0" novalidate={true} onsubmit={submit_stub} role="search">
-                    <input
-                        aria-label="Search"
-                        autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
-                        type="search"
-                        class="form-control"
-                        placeholder="Search..."
-                        value={props.search.to_string()}
-                        oninput={oninput}
-                        style="max-width: 250px;"
-                    />
-                    <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
-                </form>
             </nav>
         </header>
     }

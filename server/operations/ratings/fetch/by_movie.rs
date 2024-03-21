@@ -1,4 +1,4 @@
-use models::generated::{aggregate_ratings, ratings, users};
+use models::generated::{ratings, users};
 use sea_orm::{prelude::*, DatabaseConnection};
 
 pub async fn execute(

@@ -10,6 +10,7 @@ use sea_orm::DatabaseConnection;
 use serde_json::json;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
+use crate::utils::document::{Document, DocumentProps};
 
 #[get("/movie/{tmdb_id}")]
 async fn get(
@@ -22,12 +23,14 @@ async fn get(
         Ok(v) => match v {
             Some(id) => id as i32,
             None => {
+                println!("None block kicking in");
                 return Ok(HttpResponse::Found()
                     .append_header(("Location", "/login"))
                     .finish())
             }
         },
-        Err(_) => {
+        Err(error) => {
+            println!("SessionGetError: {}", error);
             return Ok(HttpResponse::Found()
                 .append_header(("Location", "/login"))
                 .finish())
@@ -90,23 +93,12 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(format!(
-            r#"
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/bootstrap.js"></script>
-					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<title>{} | mockbuster</title>
-					<script defer src="/assets/movieView.js"></script>
-				</head>
-				<body>
-					{}
-				</body>
-			</html>
-		"#,
-            tmdb_movie_result.title, content
-        )))
+        .body(
+            Document::new(DocumentProps {
+                wasm_assets: "movieView.js".to_string(),
+                title: tmdb_movie_result.title,
+                content
+            })
+        )
+    )
 }

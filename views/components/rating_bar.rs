@@ -8,6 +8,8 @@ pub struct Props {
     pub date: Option<String>,
 }
 
+const TEXT_BACKGROUND: &str = "background-color: white; max-width: max-content; padding: 0.5rem;";
+
 #[function_component(RatingBar)]
 pub fn rating_bar(props: &Props) -> Html {
     let score_color = match props.score as f32 {
@@ -22,9 +24,9 @@ pub fn rating_bar(props: &Props) -> Html {
     html! {
         <div>
             <div class="d-flex justify-content-between align-items-end">
-                <span class="display-6" style="mix-blend-mode: difference; color: white;">
+                <span class="display-6" style={TEXT_BACKGROUND}>
                     {props.score}
-                    <small class="h5">{" / 10"}</small>
+                    <small class="h5" style={TEXT_BACKGROUND}>{" / 10"}</small>
                 </span>
                 {
                     match &props.date {

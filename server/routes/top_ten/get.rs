@@ -1,4 +1,5 @@
 use crate::operations::{aggregate_ratings as aggregate_ratings_operations, tmdb_movies};
+use crate::utils::document::{Document, DocumentProps};
 use actix_web::{get, web::Data, Error as ActixError, HttpResponse};
 use models::{
     generated::aggregate_ratings as aggregate_ratings_model,
@@ -91,23 +92,12 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(format!(
-            r#"
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/bootstrap.js"></script>
-					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<title>Top rated | mockbuster</title>
-					<script defer src="/assets/topTenView.js"></script>
-				</head>
-				<body>
-					{}
-				</body>
-			</html>
-		"#,
-            content
-        )))
+        .body(
+            Document::new(DocumentProps {
+                wasm_assets: "topTenView.js".to_string(),
+                title: "Top rated".to_string(),
+                content,
+            })
+        )
+    )
 }

@@ -12,8 +12,8 @@ use std::collections::HashMap;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
-use crate::operations::ratings;
-use crate::operations::tmdb_movies;
+use crate::operations::{ratings, tmdb_movies};
+use crate::utils::document::{Document, DocumentProps};
 use recently_rented_view::recently_rented_view::{Props, RecentlyRented};
 use validators::ratings::recently_rented_dto::RecentlyRentedDTO;
 
@@ -107,23 +107,12 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(format!(
-            r#"
-			<html lang="en">
-				<head>
-					<meta charset="UTF-8" />
-					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-					<script defer src="/assets/bootstrap.js"></script>
-					<link rel="stylesheet" href="/assets/bootstrap.css" />
-					<title>Recently Rented | mockbuster</title>
-					<script defer src="/assets/recentlyRentedView.js"></script>
-				</head>
-				<body>
-					{}
-				</body>
-			</html>
-		"#,
-            content
-        )))
+        .body(
+            Document::new(DocumentProps {
+                wasm_assets: "recentlyRentedView.js".to_string(),
+                title: "Recently Rented".to_string(),
+                content,
+            })
+        )
+    )
 }

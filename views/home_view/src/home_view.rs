@@ -1,14 +1,14 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::{frame::Frame, header::Header, page_title::PageTitle};
+use components::{frame::Frame, header::Header, page_title::PageTitle, sidebar::CurrentRoute};
 
 #[function_component(Home)]
 pub fn home_view() -> Html {
     html! {
         <>
             <Header />
-            <Frame>
+            <Frame current_route={CurrentRoute::Home}>
                 <PageTitle
                     h1={"mockbuster"}
                     h2={"Find your next movie"}

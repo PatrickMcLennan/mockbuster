@@ -11,6 +11,7 @@ use reqwest_middleware::ClientBuilder;
 
 mod operations;
 mod routes;
+mod utils;
 
 use routes::{home, login, logout, movie, profile, recently_rented, search, top_ten};
 
