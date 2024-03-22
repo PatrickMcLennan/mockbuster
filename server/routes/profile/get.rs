@@ -36,7 +36,10 @@ async fn get(
         },
     };
 
-    let profile = users::fetch::execute(id, db.get_ref().clone()).await;
+    let profile = match users::fetch::execute(id, db.get_ref().clone()).await {
+        Ok(s) => s,
+        Err(e) => return Ok(HttpResponse::NotFound().finish()),
+    };
 
     match profile.len() {
         1 => (),
@@ -59,12 +62,9 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "profiveView.js".to_string(),
-                title: "Profile".to_string(),
-                content,
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "profiveView.js".to_string(),
+            title: "Profile".to_string(),
+            content,
+        })))
 }

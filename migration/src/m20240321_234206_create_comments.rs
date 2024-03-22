@@ -7,7 +7,6 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
         manager
             .create_table(
                 Table::create()
@@ -21,11 +20,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Comments::UserId).integer().not_null())
-                    .col(
-                        ColumnDef::new(Comments::Content)
-                            .string()
-                            .not_null()
-                    )
+                    .col(ColumnDef::new(Comments::Content).string().not_null())
                     .col(
                         ColumnDef::new(Comments::CreatedAt)
                             .timestamp_with_time_zone()
@@ -49,56 +44,55 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("comments-created_at-index")
+                    .table(Comments::Table)
+                    .col(Comments::CreatedAt)
+                    .to_owned(),
+            )
+            .await?;
 
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("comments-created_at-index")
-                        .table(Comments::Table)
-                        .col(Comments::CreatedAt)
-                        .to_owned(),
-                )
-                .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("comments-tmdb_id-index")
+                    .table(Comments::Table)
+                    .col(Comments::TmdbId)
+                    .to_owned(),
+            )
+            .await?;
 
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("comments-tmdb_id-index")
-                        .table(Comments::Table)
-                        .col(Comments::TmdbId)
-                        .to_owned(),
-                )
-                .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("comments-user_id-index")
+                    .table(Comments::Table)
+                    .col(Comments::UserId)
+                    .to_owned(),
+            )
+            .await?;
 
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("comments-user_id-index")
-                        .table(Comments::Table)
-                        .col(Comments::UserId)
-                        .to_owned(),
-                )
-                .await?;
+        let conn = manager.get_connection();
 
-            let conn = manager.get_connection();
-
-            conn.execute_unprepared(
-                "
+        conn.execute_unprepared(
+            "
                     CREATE TRIGGER trigger_update_comments_updated_at
                     BEFORE UPDATE
                     ON comments
                     FOR EACH ROW
                     EXECUTE FUNCTION update_updated_at_column();
                 ",
-            )
-            .await?;
+        )
+        .await?;
 
-            if cfg!(any(debug_assertions, test)) {
-                conn.execute_unprepared(
-                    "
+        if cfg!(any(debug_assertions, test)) {
+            conn.execute_unprepared(
+                "
                         INSERT INTO comments (user_id, tmdb_id, content) VALUES
                         (1, 550, 'This is a good movie.'),
                         (1, 26679, 'This is a bad movie.'),
@@ -113,9 +107,9 @@ impl MigrationTrait for Migration {
                         (3, 11326, 'Pass on this one'),
                         (3, 420818, 'Bad');
                     ",
-                )
-                .await?;
-            }
+            )
+            .await?;
+        }
 
         Ok(())
     }

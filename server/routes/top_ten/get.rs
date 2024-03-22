@@ -92,12 +92,9 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "topTenView.js".to_string(),
-                title: "Top rated".to_string(),
-                content,
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "topTenView.js".to_string(),
+            title: "Top rated".to_string(),
+            content,
+        })))
 }

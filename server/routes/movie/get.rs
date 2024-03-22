@@ -1,4 +1,5 @@
 use crate::operations::{aggregate_ratings, ratings, tmdb_movies};
+use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
     get,
@@ -10,7 +11,6 @@ use sea_orm::DatabaseConnection;
 use serde_json::json;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-use crate::utils::document::{Document, DocumentProps};
 
 #[get("/movie/{tmdb_id}")]
 async fn get(
@@ -26,14 +26,14 @@ async fn get(
                 println!("None block kicking in");
                 return Ok(HttpResponse::Found()
                     .append_header(("Location", "/login"))
-                    .finish())
+                    .finish());
             }
         },
         Err(error) => {
             println!("SessionGetError: {}", error);
             return Ok(HttpResponse::Found()
                 .append_header(("Location", "/login"))
-                .finish())
+                .finish());
         }
     };
 
@@ -93,12 +93,9 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "movieView.js".to_string(),
-                title: tmdb_movie_result.title,
-                content
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "movieView.js".to_string(),
+            title: tmdb_movie_result.title,
+            content,
+        })))
 }

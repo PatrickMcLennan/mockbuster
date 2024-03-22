@@ -1,7 +1,10 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-use components::{frame::Frame, header::Header, movie_card::MovieCard, page_title::PageTitle, pagination::Pagination};
+use components::{
+    frame::Frame, header::Header, movie_card::MovieCard, page_title::PageTitle,
+    pagination::Pagination,
+};
 use models::tmdb_movies::movie_search_result::MovieSearchResults;
 use serde::{Deserialize, Serialize};
 use validators::tmdb_movies::search_dto::SearchDTO;
@@ -87,12 +90,12 @@ fn Content(props: &Props) -> HtmlResult {
                 </section>
                 {if show_pagination {
                     html! {
-                        <Pagination 
-                            current_page={current_page} 
+                        <Pagination
+                            current_page={current_page}
                             previous_url={format!("/search?query={}&page={}",state.dto.query, current_page - 1)}
                             next_url={format!("/search?query={}&page={}",state.dto.query, current_page + 1)}
                             numbered_url={format!("/search?query={}",state.dto.query)}
-                            total_pages={total_pages} 
+                            total_pages={total_pages}
                         />
                     }
                 } else { html! { <></> } }}

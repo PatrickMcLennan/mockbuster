@@ -1,8 +1,8 @@
+use crate::utils::document::{Document, DocumentProps};
 use actix_web::{get, Error as ActixError, HttpResponse};
 use login_view::login_view::Login;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
-use crate::utils::document::{Document, DocumentProps};
 
 #[get("/login")]
 async fn get() -> Result<HttpResponse, ActixError> {
@@ -20,12 +20,9 @@ async fn get() -> Result<HttpResponse, ActixError> {
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "loginView.js".to_string(),
-                title: "Log in".to_string(),
-                content
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "loginView.js".to_string(),
+            title: "Log in".to_string(),
+            content,
+        })))
 }

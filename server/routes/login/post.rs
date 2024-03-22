@@ -20,12 +20,12 @@ async fn post(
     };
 
     match users::login::execute(session, db.get_ref().clone(), form).await {
-        Ok(_) => Ok(HttpResponse::build(StatusCode::MOVED_PERMANENTLY)
-            .append_header(("Location", "/"))
-            .finish()),
-        Err(e) => {
-            Ok(HttpResponse::BadRequest()
-                .body(serde_json::to_string(&json!({"message": e})).unwrap()))
-        }
+        Some(v) => match v {
+            Ok(_) => Ok(HttpResponse::build(StatusCode::MOVED_PERMANENTLY)
+                .append_header(("Location", "/"))
+                .finish()),
+            Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        },
+        None => Ok(HttpResponse::InternalServerError().finish()),
     }
 }

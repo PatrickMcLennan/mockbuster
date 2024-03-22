@@ -5,20 +5,19 @@ pub enum CurrentRoute {
     TopRated,
     RecentlyRented,
     Home,
-    Default
+    Default,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub current_route: Option<CurrentRoute>
+    pub current_route: Option<CurrentRoute>,
 }
 
 #[function_component(Sidebar)]
 pub fn sidebar(props: &Props) -> Html {
-
     let current_route = match props.current_route.clone() {
         Some(v) => v,
-        None => CurrentRoute::Default
+        None => CurrentRoute::Default,
     };
 
     html! {

@@ -2,7 +2,10 @@
 use models::generated::{ratings, users};
 
 use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
-use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar, sidebar::CurrentRoute};
+use components::{
+    frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar,
+    sidebar::CurrentRoute,
+};
 use models::{
     stubs::{rating::Rating as RatingStub, user::User as UserStub},
     tmdb_movies::movie_id_result::MovieIdResult,

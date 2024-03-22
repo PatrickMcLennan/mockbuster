@@ -1,11 +1,15 @@
 use models::generated::comments;
 use sea_orm::{prelude::*, ActiveValue::Set, DatabaseConnection};
 
-pub async fn execute(content: String, user_id: i32, tmdb_id: u32, db: DatabaseConnection) -> Option<()> {
-
+pub async fn execute(
+    content: String,
+    user_id: i32,
+    tmdb_id: u32,
+    db: DatabaseConnection,
+) -> Option<()> {
     if content.len() > 250 {
         // TODO: Handle this better
-        return None
+        return None;
     }
 
     let comment = comments::ActiveModel {

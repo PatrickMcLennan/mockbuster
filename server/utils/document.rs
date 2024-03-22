@@ -25,9 +25,7 @@ impl Document {
 				</body>
 			</html>
 		"#,
-            document_props.wasm_assets,
-            document_props.title,
-            document_props.content
+            document_props.wasm_assets, document_props.title, document_props.content
         )
     }
 }

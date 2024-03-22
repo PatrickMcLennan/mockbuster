@@ -21,20 +21,23 @@ const HEADING_STYLES: &str = "background-color: white; max-width: max-content; p
 #[function_component(PageTitle)]
 pub fn page_title(props: &Props) -> Html {
     let background_image_styles = match &props.background_path {
-        Some(v) => format!("background-image: url({}); background-size: cover; background-repeat: no-repeat;", v),
-        None => String::new()
+        Some(v) => format!(
+            "background-image: url({}); background-size: cover; background-repeat: no-repeat;",
+            v
+        ),
+        None => String::new(),
     };
 
     let copy_column_styles = match &props.poster_path {
         Some(_) => "col-md-8",
-        None => "col-md-12"
+        None => "col-md-12",
     };
 
     html! {
-        <header 
-            class="border-bottom mb-2 py-4" 
+        <header
+            class="border-bottom mb-2 py-4"
             style={background_image_styles}
-            
+
             >
             <div class="container ">
                 {match props.alert.clone() {

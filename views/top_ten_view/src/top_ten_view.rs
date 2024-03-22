@@ -1,7 +1,10 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, ratings, users};
 
-use components::{frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar, sidebar::CurrentRoute};
+use components::{
+    frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar,
+    sidebar::CurrentRoute,
+};
 use models::{
     stubs::{
         aggregate_ratings::AggregateRating as AggregateRatingsStub, rating::Rating as RatingStub,

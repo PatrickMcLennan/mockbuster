@@ -1,14 +1,13 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, ratings, users};
 
-use num_format::{Locale, ToFormattedString};
 use crate::components::scores_card::ScoresCard;
 use components::{
     frame::Frame,
     header::Header,
+    page_title::PageTitle,
     rating_bar::{Props as RatingBarProps, RatingBar},
     vote_modal::VoteModal,
-    page_title::PageTitle
 };
 use models::{
     stubs::{
@@ -17,6 +16,7 @@ use models::{
     },
     tmdb_movies::movie_id_result::MovieIdResult,
 };
+use num_format::{Locale, ToFormattedString};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
@@ -124,7 +124,7 @@ fn Content(props: &Props) -> HtmlResult {
         <>
             <Header />
                 <Frame current_route={None}>
-                    <PageTitle 
+                    <PageTitle
                         h1={title.clone()}
                         h2={tagline.clone()}
                         alert={match state.alert_copy.clone() {

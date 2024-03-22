@@ -119,12 +119,9 @@ async fn post(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "movieView.js".to_string(),
-                title: tmdb_movie_result.title,
-                content
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "movieView.js".to_string(),
+            title: tmdb_movie_result.title,
+            content,
+        })))
 }

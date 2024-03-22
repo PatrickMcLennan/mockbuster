@@ -1,5 +1,4 @@
 use actix_web::{post, web::Data, web::Json, Error as ActixError, HttpResponse, Responder};
-use serde_json::json;
 use validators::tmdb_movies::search_dto::SearchDTO;
 
 use crate::operations::tmdb_movies;
@@ -16,6 +15,6 @@ async fn post(
 
     match tmdb_movies::search::execute(dto, Some(http_client.as_ref().clone())).await {
         Ok(v) => Ok(HttpResponse::Ok().json(v)),
-        Err(e) => Ok(HttpResponse::ServiceUnavailable().json(&json!({"message": e}))),
+        Err(_) => Ok(HttpResponse::ServiceUnavailable().finish()),
     }
 }

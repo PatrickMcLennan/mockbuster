@@ -38,65 +38,65 @@ pub fn pagination(props: &Props) -> Html {
         }
     };
 
-    html! { 
-        <footer class="mt-4 pt-4 border-top container">
-            <nav aria-label="Search pagination">
-                <ul class="pagination justify-content-center">
-                    <li class={classes!(
-                        "page-item",
-                        if is_first_page { Some("disabled") } else { None }
-                    )}>
-                        <a
-                            class="page-link"
-                            href={if is_first_page { "#".to_string() } else { props.previous_url.to_string() }}
-                            tabindex={if is_first_page { Some("-1") } else { None }}
-                            aria-disabled={if is_first_page { Some("true") } else { None }}
-                        >
-                            {"Previous"}
-                        </a>
-                    </li>
-                    {
-                        offered_pagination
-                            .into_iter()
-                            .map(|page| {
-                                let is_current_page = page == props.current_page;
-                                html! {
-                                    <li
-                                        class={classes!(
-                                            "page-item",
-                                            if is_current_page { Some("active disabled") } else { None }
-                                        )}
-                                        key={page}
-                                    >
-                                        <a
-                                            class="page-link"
-                                            href={if is_current_page { "#".to_string() } else { format!("{}&page={}", props.numbered_url, &page) }}
-                                            tabindex={if is_current_page { Some("-1") } else { None }}
-                                            aria-current={if is_first_page { Some("true") } else { None }}
-                                            aria-disabled={if is_current_page { Some("true") } else { None }}
-                                        >
-                                            {page}
-                                        </a>
-                                    </li>
-                                }
-                            })
-                            .collect::<Html>()
-                    }
-                    <li class={classes!(
-                        "page-item",
-                        if is_last_page { Some("disabled") } else { None }
-                    )}>
-                        <a
-                            class="page-link"
-                            href={if is_last_page { "#".to_string() } else { props.next_url.to_string() }}
-                            tabindex={if is_first_page { Some("-1") } else { None }}
-                            aria-disabled={if is_first_page { Some("true") } else { None }}
-                        >
-                            {"Next"}
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </footer>
-     }
+    html! {
+       <footer class="mt-4 pt-4 border-top container">
+           <nav aria-label="Search pagination">
+               <ul class="pagination justify-content-center">
+                   <li class={classes!(
+                       "page-item",
+                       if is_first_page { Some("disabled") } else { None }
+                   )}>
+                       <a
+                           class="page-link"
+                           href={if is_first_page { "#".to_string() } else { props.previous_url.to_string() }}
+                           tabindex={if is_first_page { Some("-1") } else { None }}
+                           aria-disabled={if is_first_page { Some("true") } else { None }}
+                       >
+                           {"Previous"}
+                       </a>
+                   </li>
+                   {
+                       offered_pagination
+                           .into_iter()
+                           .map(|page| {
+                               let is_current_page = page == props.current_page;
+                               html! {
+                                   <li
+                                       class={classes!(
+                                           "page-item",
+                                           if is_current_page { Some("active disabled") } else { None }
+                                       )}
+                                       key={page}
+                                   >
+                                       <a
+                                           class="page-link"
+                                           href={if is_current_page { "#".to_string() } else { format!("{}&page={}", props.numbered_url, &page) }}
+                                           tabindex={if is_current_page { Some("-1") } else { None }}
+                                           aria-current={if is_first_page { Some("true") } else { None }}
+                                           aria-disabled={if is_current_page { Some("true") } else { None }}
+                                       >
+                                           {page}
+                                       </a>
+                                   </li>
+                               }
+                           })
+                           .collect::<Html>()
+                   }
+                   <li class={classes!(
+                       "page-item",
+                       if is_last_page { Some("disabled") } else { None }
+                   )}>
+                       <a
+                           class="page-link"
+                           href={if is_last_page { "#".to_string() } else { props.next_url.to_string() }}
+                           tabindex={if is_first_page { Some("-1") } else { None }}
+                           aria-disabled={if is_first_page { Some("true") } else { None }}
+                       >
+                           {"Next"}
+                       </a>
+                   </li>
+               </ul>
+           </nav>
+       </footer>
+    }
 }

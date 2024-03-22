@@ -1,4 +1,4 @@
-use actix_session::Session;
+use actix_session::{Session, SessionInsertError};
 use models::generated::users;
 use sea_orm::{prelude::*, DatabaseBackend, DatabaseConnection, Statement};
 use validators::users::login_form::LoginFormSchema;
@@ -8,12 +8,13 @@ pub struct LoginResult {
     pub email: String,
 }
 
+const LOG_KEY: &str = "[Operations::Users::Login]: ";
+
 pub async fn execute(
     session: Session,
     db: DatabaseConnection,
     login_form: LoginFormSchema,
-) -> Result<LoginResult, String> {
-    println!("Starting execute");
+) -> Option<Result<LoginResult, DbErr>> {
     match users::Entity::find()
         .from_raw_sql(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
@@ -24,29 +25,21 @@ pub async fn execute(
         .await
     {
         Ok(record_option) => match record_option {
-            Some(v) => {
-                println!("User found");
-                match session.insert("id", v.id) {
-                    Ok(_) => {
-                        return Ok(LoginResult {
-                            email: v.email,
-                            id: v.id,
-                        })
-                    }
-                    Err(e) => {
-                        println!("Error inserting session: {}", e);
-                        panic!();
-                    }
+            Some(v) => match session.insert("id", v.id) {
+                Ok(_) => Some(Ok(LoginResult {
+                    email: v.email,
+                    id: v.id,
+                })),
+                Err(e) => {
+                    println!("{}{:?}", LOG_KEY, e);
+                    None
                 }
-            }
-            None => {
-                println!("Incorrect email or password");
-                Err("Incorrect email or password".to_string())
-            }
+            },
+            None => None,
         },
         Err(e) => {
-            println!("[Error]: {:?}", e);
-            return Err("Incorrect email or password".to_string());
+            println!("{}{:?}", LOG_KEY, e);
+            Some(Err(e))
         }
     }
 }

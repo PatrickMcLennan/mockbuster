@@ -116,12 +116,9 @@ async fn get(
 
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(
-            Document::new(DocumentProps {
-                wasm_assets: "searchView.js".to_string(),
-                title: "Search".to_string(),
-                content,
-            })
-        )
-    )
+        .body(Document::new(DocumentProps {
+            wasm_assets: "searchView.js".to_string(),
+            title: "Search".to_string(),
+            content,
+        })))
 }
