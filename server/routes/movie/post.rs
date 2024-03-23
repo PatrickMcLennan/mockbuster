@@ -7,7 +7,7 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use movie_view::movie_view::{Movie, Props};
-use sea_orm::DatabaseConnection;
+use sea_orm::{DatabaseConnection, DbErr};
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
@@ -63,21 +63,31 @@ async fn post(
 
     match ratings::create::execute(form.score.clone(), user_id, tmdb_id, db.get_ref().clone()).await
     {
-        Some(_) => {
+        Ok(_) => {
             alert_styles = "success".to_string();
             alert_copy = format!(
                 "Success!  You've rated {} {} / 10",
                 tmdb_movie_result.title, form.score
             );
         }
-        None => {
+        Err(_) => {
             alert_styles = "danger".to_string();
             alert_copy = "You have already rated this movie -- you cannot rate a movie twice, and you cannot change your score.".to_string()
         }
     };
 
-    let ratings = ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await;
-    let aggregate_rating = aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await;
+    let ratings = match ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await {
+        Ok(v) => v,
+        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+    };
+    let aggregate_rating =
+        match aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await {
+            Ok(v) => Some(v),
+            Err(e) => match e {
+                DbErr::RecordNotFound(id) if id == tmdb_id.to_string() => None,
+                _ => return Ok(HttpResponse::InternalServerError().finish()),
+            },
+        };
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();

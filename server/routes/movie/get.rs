@@ -7,7 +7,7 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use movie_view::movie_view::{Movie, Props};
-use sea_orm::DatabaseConnection;
+use sea_orm::{DatabaseConnection, DbErr};
 use serde_json::json;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
@@ -56,8 +56,19 @@ async fn get(
 
     let movie_clone = tmdb_movie_result.clone();
 
-    let ratings = ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await;
-    let aggregate_rating = aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await;
+    let ratings = match ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await {
+        Ok(v) => v,
+        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+    };
+
+    let aggregate_rating =
+        match aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await {
+            Ok(v) => Some(v),
+            Err(e) => match e {
+                DbErr::RecordNotFound(id) if id == tmdb_id.to_string() => None,
+                _ => return Ok(HttpResponse::InternalServerError().finish()),
+            },
+        };
     let user_rating = ratings
         .clone()
         .into_iter()

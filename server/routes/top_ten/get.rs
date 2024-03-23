@@ -17,7 +17,10 @@ async fn get(
     db: Data<DatabaseConnection>,
     http_client: Data<reqwest_middleware::ClientWithMiddleware>,
 ) -> Result<HttpResponse, ActixError> {
-    let top_movies = aggregate_ratings_operations::list::execute(db.get_ref().clone()).await;
+    let top_movies = match aggregate_ratings_operations::list::execute(db.get_ref().clone()).await {
+        Ok(v) => v,
+        Err(e) => return Ok(HttpResponse::InternalServerError().finish()),
+    };
 
     let mut unique_movies = HashMap::new();
     let movie_ids = top_movies
