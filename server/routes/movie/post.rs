@@ -1,15 +1,14 @@
-use crate::operations::{aggregate_ratings, comments, ratings, tmdb_movies};
-use crate::utils::document::{Document, DocumentProps};
+use crate::operations::{comments, ratings, tmdb_movies};
 use actix_session::Session;
+use actix_web::web::Redirect;
 use actix_web::{
     post,
     web::{Data, Form, Path},
-    Error as ActixError, HttpResponse,
+    Error as ActixError,
 };
-use movie_view::movie_view::{Movie, Props};
+use actix_web_flash_messages::FlashMessage;
+use models::tmdb_movies::movie_id_result::MovieIdResult;
 use sea_orm::{DatabaseConnection, DbErr};
-use tokio::task::spawn_blocking;
-use tokio::task::LocalSet;
 
 #[derive(serde::Deserialize)]
 struct RatingForm {
@@ -24,150 +23,82 @@ async fn post(
     Form(form): Form<RatingForm>,
     session: Session,
     db: Data<DatabaseConnection>,
-) -> Result<HttpResponse, ActixError> {
-    let tmdb_id = path.into_inner();
-    let mut alert_styles = String::new();
-    let mut alert_copy = String::new();
-
-    let tmdb_movie_result = match tmdb_movies::fetch::execute(
-        tmdb_id.clone(),
-        Some(http_client.as_ref().clone()),
-    )
-    .await
-    {
-        Ok(res) => res,
-        Err(e) => {
-            println!("[ERROR -- /movie/{} POST]: {}", tmdb_id, e);
-            return Ok(HttpResponse::Found()
-                .append_header(("Location", "/"))
-                .finish());
-        }
-    };
-
-    let movie_clone = tmdb_movie_result.clone();
+) -> Result<Redirect, ActixError> {
+    let mut redirect_url = None;
 
     let user_id = match session.get("id") {
-        Ok(v) => match v {
-            Some(id) => id,
-            None => {
-                return Ok(HttpResponse::Found()
-                    .append_header(("Location", "/login"))
-                    .finish())
+        Ok(Some(id)) => id,
+        _ => {
+            redirect_url = Some("/login".to_string());
+            None
+        }
+    };
+
+    let tmdb_id = path.into_inner();
+
+    if redirect_url.is_none() {
+        let mut tmdb_movie_result: Option<MovieIdResult> = None;
+        match tmdb_movies::fetch::execute(tmdb_id.clone(), Some(http_client.as_ref().clone())).await
+        {
+            Ok(res) => {
+                tmdb_movie_result = Some(res);
+                ()
             }
-        },
-        Err(_) => {
-            return Ok(HttpResponse::Found()
-                .append_header(("Location", "/login"))
-                .finish())
-        }
-    };
-
-    match form.comment {
-        Some(comment) => {
-            if comment.len() >= 1 {
-                match comments::create::execute(comment, user_id, tmdb_id, db.get_ref().clone()).await {
-                    Ok(_) => (),
-                    Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-                }
-            } else { () }
-        }
-        None => (),
-    }
-
-    match form.score {
-        Some(score) => {
-            match ratings::create::execute(score.clone(), user_id, tmdb_id, db.get_ref().clone())
-                .await
-            {
-                Ok(_) => {
-                    alert_styles = "success".to_string();
-                    alert_copy = format!(
-                        "Success!  You've rated {} {} / 10",
-                        tmdb_movie_result.title, score
-                    );
-                }
-                Err(_) => {
-                    alert_styles = "danger".to_string();
-                    alert_copy = "You have already rated this movie -- you cannot rate a movie twice, and you cannot change your score.".to_string()
-                }
-            };
-        }
-        None => (),
-    }
-
-    let score = match form.score {
-        Some(v) => Some(v),
-        None => {
-            match ratings::fetch::by_user_and_movie::execute(tmdb_id, user_id, db.get_ref().clone())
-                .await
-            {
-                Ok(v) => Some(v.score),
-                Err(e) => match e {
-                    DbErr::RecordNotFound(id) if id == tmdb_id.to_string() => None,
-                    _ => return Ok(HttpResponse::InternalServerError().finish()),
-                },
+            _ => {
+                redirect_url = Some("/500".to_string());
+                ()
             }
-        }
-    };
-
-    let ratings = match ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await {
-        Ok(v) => v,
-        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-    };
-    let aggregate_rating =
-        match aggregate_ratings::fetch::execute(tmdb_id, db.get_ref().clone()).await {
-            Ok(v) => Some(v),
-            Err(e) => match e {
-                DbErr::RecordNotFound(id) if id == tmdb_id.to_string() => None,
-                _ => return Ok(HttpResponse::InternalServerError().finish()),
-            },
         };
 
-    let comments = match comments::fetch::by_tmdb_id::execute(tmdb_id, db.get_ref().clone()).await {
-        Ok(v) => v,
-        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-    };
-    let content = spawn_blocking(move || {
-        use tokio::runtime::Builder;
-        let set = LocalSet::new();
-        let rt = Builder::new_current_thread().enable_all().build().unwrap();
+        if redirect_url.is_none() {
+            if let Some(comment) = form.comment {
+                if comment.len() >= 1 {
+                    match comments::create::execute(
+                        comment,
+                        user_id.unwrap(),
+                        tmdb_id,
+                        db.get_ref().clone(),
+                    )
+                    .await
+                    {
+                        Err(_) => redirect_url = Some("/500".to_string()),
+                        _ => (),
+                    }
+                }
+            }
 
-        set.block_on(&rt, async {
-            yew::ServerRenderer::<Movie>::with_props(move || Props {
-                aggregate_rating: aggregate_rating,
-                comments: Some(comments),
-                movie: Some(movie_clone),
-                alert_copy: if alert_copy.len() >= 1 {
-                    Some(alert_copy)
-                } else {
-                    None
-                },
-                alert_styles: if alert_styles.len() >= 1 {
-                    Some(alert_styles.clone())
-                } else {
-                    None
-                },
-                user_score: score,
-                user_rated_date: if alert_styles == "success" {
-                    Some(chrono::Utc::now().format("%d-%m-%Y").to_string())
-                } else {
-                    None
-                },
-                ratings: Some(ratings),
-            })
-            .render()
-            .await
-        })
-    })
-    .await
-    .expect("the thread has failed.");
+            if let Some(score) = form.score {
+                match ratings::create::execute(
+                    score.clone(),
+                    user_id.unwrap(),
+                    tmdb_id,
+                    db.get_ref().clone(),
+                )
+                .await
+                {
+                    Ok(_) => {
+                        FlashMessage::success(format!(
+                            "Success! You've rated {} {} / 10",
+                            tmdb_movie_result.unwrap().title,
+                            score
+                        ))
+                        .send();
+                    }
+                    Err(error) => {
+                        let message = match error {
+                            DbErr::RecordNotFound(_score) if _score == score.to_string() => "You've already rated this movie. You cannot rate a movie twice and you cannot change your score.".to_string(),
+                            _ => "Rating movies is not allowed at this time, please try again alter".to_string(),
+                        };
+                        FlashMessage::error(message).send();
+                    }
+                };
+            }
 
-    Ok(HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(Document::new(DocumentProps {
-            description: "Rate a movie".to_string(),
-            wasm_assets: "movieView.js".to_string(),
-            title: tmdb_movie_result.title,
-            content,
-        })))
+            if redirect_url.is_none() {
+                redirect_url = Some(format!("/movie/{}", tmdb_id));
+            }
+        }
+    }
+
+    Ok(Redirect::to(redirect_url.unwrap_or("/".to_string())).see_other())
 }

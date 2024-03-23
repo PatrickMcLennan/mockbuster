@@ -6,6 +6,7 @@ use actix_web::{
     web::{Data, Path},
     Error as ActixError, HttpResponse,
 };
+use actix_web_flash_messages::{IncomingFlashMessages, Level};
 use movie_view::movie_view::{Movie, Props};
 use sea_orm::{DatabaseConnection, DbErr};
 use serde_json::json;
@@ -18,6 +19,7 @@ async fn get(
     http_client: Data<reqwest_middleware::ClientWithMiddleware>,
     db: Data<DatabaseConnection>,
     session: Session,
+    messages: IncomingFlashMessages,
 ) -> Result<HttpResponse, ActixError> {
     let user_id = match session.get::<i32>("id") {
         Ok(v) => match v {
@@ -46,8 +48,7 @@ async fn get(
     .await
     {
         Ok(v) => v,
-        Err(e) => {
-            println!("[ERROR -- /movie/{} GET]: {}", tmdb_id, e);
+        Err(_) => {
             return Ok(HttpResponse::InternalServerError().json(
                 &json!({"message": "This movie is unavailable at the moment; please try again later"}),
             ));
@@ -79,6 +80,19 @@ async fn get(
         .into_iter()
         .find(|rating| rating.1.as_ref().unwrap().id == user_id);
 
+    let mut iterated_messages = messages.iter();
+    let mut alert_copy: Option<String> = None;
+    let mut alert_styles: Option<String> = None;
+    match iterated_messages.len() {
+        1 => {
+            let first = iterated_messages.nth(0).unwrap();
+            alert_copy = Some(first.content().to_string());
+            alert_styles = Some(first.level().to_string());
+            ()
+        }
+        _ => (),
+    };
+
     let content = spawn_blocking(|| {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
@@ -88,8 +102,8 @@ async fn get(
             yew::ServerRenderer::<Movie>::with_props(|| Props {
                 movie: Some(movie_clone),
                 aggregate_rating: aggregate_rating,
-                alert_copy: None,
-                alert_styles: None,
+                alert_copy: alert_copy,
+                alert_styles: alert_styles,
                 comments: Some(comments),
                 user_score: match &user_rating {
                     Some(v) => Some(v.0.score.clone()),

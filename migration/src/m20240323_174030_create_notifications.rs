@@ -89,19 +89,6 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name("ratings-user_id-tmdb_id-index")
-                    .table(Notifications::Table)
-                    .col(Notifications::UserId)
-                    .col(Notifications::RelatedId)
-                    .unique()
-                    .to_owned(),
-            )
-            .await?;
-
         let conn = manager.get_connection();
 
         if cfg!(any(debug_assertions, test)) {

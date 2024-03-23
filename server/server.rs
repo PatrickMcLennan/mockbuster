@@ -1,6 +1,7 @@
 use actix_files::Files;
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App as ActixApp, HttpServer};
+use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use env_logger::Env;
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
@@ -24,6 +25,11 @@ async fn main() -> std::io::Result<()> {
     let secret_key = Key::generate();
     let redis_url = env::var("REDIS_URL").expect("NO_REDIS_URL_IN_ENV");
 
+    // Middleware for Flash messages
+    let flash_message_store = CookieMessageStore::builder(secret_key.clone()).build();
+    let flash_message_framework = FlashMessagesFramework::builder(flash_message_store).build();
+
+    // Http Client with caching middleware -- cache calls to TMDB API
     let http_client = ClientBuilder::new(Client::new())
         .with(Cache(HttpCache {
             mode: CacheMode::Default,
@@ -46,7 +52,6 @@ async fn main() -> std::io::Result<()> {
     };
 
     let redis_connection = redis::Client::open(redis_url).unwrap();
-
     let redis_connection_pool = r2d2::Pool::builder().build(redis_connection).unwrap();
 
     HttpServer::new(move || {
@@ -60,6 +65,7 @@ async fn main() -> std::io::Result<()> {
                     secret_key.clone(),
 				)
 			)
+            .wrap(flash_message_framework.clone())
 			// Postgres connection pool
 			.app_data(web::Data::new(pool.clone()))
 			// HTTP Client connection pool

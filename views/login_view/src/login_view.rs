@@ -1,4 +1,5 @@
 use reqwasm::http::{Headers, Request};
+use serde::{Deserialize, Serialize};
 use validators::users::login_form::LoginFormSchema;
 use wasm_bindgen::prelude::*;
 use web_sys::{console, window, HtmlInputElement};
@@ -7,8 +8,28 @@ use yew::prelude::*;
 static EMAIL_ERROR_ID: &str = "email-error-message";
 static PASSWORD_ERROR_ID: &str = "password-error-message";
 
-#[function_component(Login)]
-pub fn login_view() -> Html {
+#[derive(Properties, PartialEq, Clone)]
+pub struct Props {
+    pub alert_message: Option<String>,
+    pub alert_styles: Option<String>,
+}
+
+#[derive(Properties, PartialEq, Clone, Deserialize, Serialize)]
+pub struct State {
+    pub alert_message: Option<String>,
+    pub alert_styles: Option<String>,
+}
+
+#[function_component]
+pub fn Content(props: &Props) -> HtmlResult {
+    let state = use_prepared_state!((), |_| -> State {
+        let props_clone = props.clone();
+        State {
+            alert_message: props_clone.alert_message,
+            alert_styles: props_clone.alert_styles,
+        }
+    })?
+    .unwrap();
     let loading = use_state(|| false);
     let email_error = use_state(|| String::new());
     let password_error = use_state(|| String::new());
@@ -85,7 +106,7 @@ pub fn login_view() -> Html {
         ()
     });
 
-    html! {
+    Ok(html! {
         <div class="container row">
             <div class="col-6 offset-3">
                 <form novalidate={true} onsubmit={onsubmit}>
@@ -151,11 +172,25 @@ pub fn login_view() -> Html {
                 </form>
             </div>
         </div>
+    })
+}
+
+#[function_component(Login)]
+pub fn login(props: &Props) -> Html {
+    let props_clone = props.clone();
+    html! {
+        <Suspense fallback={ html! { <div>{"Loading..."}</div> }}>
+            <Content alert_styles={props_clone.alert_styles} alert_message={props_clone.alert_message} />
+        </Suspense>
     }
 }
 
 #[wasm_bindgen]
 pub fn hydrate_login_view() -> Result<(), JsValue> {
-    yew::Renderer::<Login>::new().hydrate();
+    yew::Renderer::<Login>::with_props(Props {
+        alert_message: None,
+        alert_styles: None,
+    })
+    .hydrate();
     Ok(())
 }
