@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlInputElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
+use crate::comment_entry::CommentEntry;
+
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct VoteModalProps {
     pub title: String,
@@ -97,20 +99,7 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
                                 <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", *score * 10.0)}></div>
                             </div>
                         </fieldset>
-                        <fieldset class="mt-3">
-                            <textarea
-                                id="comment"
-                                class="form-control"
-                                name="comment"
-                                rows="4"
-                                cols="50"
-                                placeholder="Leave an optional comment.  You can comment on a movie at any time."
-                                oninput={on_comment_input}
-                                value={comment.to_string()}
-                            >
-                            </textarea>
-                            <small class="d-block mt-3 text-right">{format!("{}/250", comment.to_string().len())}</small>
-                        </fieldset>
+                        <CommentEntry comment={comment.to_string()} oninput={on_comment_input} />
                     </div>
                     <fieldset class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{"Cancel"}</button>

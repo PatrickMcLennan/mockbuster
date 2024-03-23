@@ -1,4 +1,5 @@
-pub mod comment_card;
+pub mod comment;
+pub mod comment_entry;
 pub mod frame;
 pub mod header;
 pub mod logo;

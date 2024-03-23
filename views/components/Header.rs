@@ -90,15 +90,13 @@ pub fn header(props: &Props) -> Html {
 
     html! {
         <header class="sticky-top bg-white border border-top-none border-left-none border-right-none">
-            <nav class="px-4 container">
-                <div class="row gx-2">
-                    <div class="col-4" style="max-height: 80px;">
-                        <a href="/" aria-label="Home">
-                            <Logo />
-                        </a>
-                    </div>
-                    <div class="col-8 d-flex align-items-center">
-                        <form class="input-group mb-0" novalidate={true} onsubmit={submit_stub} role="search">
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/" aria-label="Home">
+                        <Logo />
+                    </a>
+                    <form class="d-flex mb-0" novalidate={true} onsubmit={submit_stub} role="search">
+                        <div class="input-group">
                             <input
                                 aria-label="Search"
                                 autofocus={ if props.search.to_string().len() >= 1 { true }  else { false } }
@@ -107,11 +105,11 @@ pub fn header(props: &Props) -> Html {
                                 placeholder="Search..."
                                 value={props.search.to_string()}
                                 oninput={oninput}
-                                style="max-width: 300px;"
+                                style="width: 275px;"
                             />
-                            <button class="btn btn-outline-primary mr-auto" type="submit">{"🔎"}</button>
-                        </form>
-                    </div>
+                            <button class="btn btn-outline-primary" type="submit">{"🔎"}</button>
+                        </div>
+                    </form>
                 </div>
             </nav>
         </header>

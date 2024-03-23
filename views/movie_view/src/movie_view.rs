@@ -1,8 +1,9 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, comments, ratings, users};
 
-use crate::components::scores_card::ScoresCard;
+use crate::components::{scores_card::ScoresCard, stats_card::StatsCard};
 use components::{
+    comment::Comment,
     frame::Frame,
     header::Header,
     page_title::PageTitle,
@@ -170,45 +171,19 @@ fn Content(props: &Props) -> HtmlResult {
                         <div class="row g-3 mt-4">
                             <article class={classes!(if has_user_ratings { "col-sm-12 col-lg-8" } else { "col-12" } )}>
                                 <div class="row g-2 mb-2">
-                                    <div class="col-sm-6 col-md-4">
-                                        <section class="card">
-                                            <header class="card-header">
-                                                <strong>{"Released"}</strong>
-                                            </header>
-                                            <div class="card-body">
-                                                <p class="card-text">{&state.movie.release_date}</p>
-                                            </div>
-                                        </section>
-                                    </div>
-                                    <div class="col-sm-6 col-md-4">
-                                        <section class="card">
-                                            <header class="card-header">
-                                                <strong>{"Budget"}</strong>
-                                            </header>
-                                            <div class="card-body">
-                                                <p class="card-text">
-                                                    {
-                                                        match &state.movie.budget {
-                                                            0 => "/".to_string(),
-                                                            _ => format!("${}", state.movie.budget.to_formatted_string(&Locale::en).to_string())
-                                                        }
-                                                    }
-                                                </p>
-                                            </div>
-                                        </section>
-                                    </div>
-                                    <div class="col-sm-6 col-md-4">
-                                        <section class="card">
-                                            <header class="card-header">
-                                                <strong>{"Runtime"}</strong>
-                                            </header>
-                                            <div class="card-body">
-                                                <p class="card-text">{format!("{} mins", &state.movie.runtime)}</p>
-                                            </div>
-                                        </section>
-                                    </div>
+                                    <StatsCard header={"Released".to_string()} copy={state.movie.release_date.to_string()} />
+                                    <StatsCard
+                                        header={"Budget".to_string()}
+                                        copy={
+                                            match &state.movie.budget {
+                                                0 => "/".to_string(),
+                                                _ => format!("${}", state.movie.budget.to_formatted_string(&Locale::en).to_string())
+                                            }
+                                        }
+                                    />
+                                    <StatsCard header={"Runtime".to_string()} copy={format!("{} mins", &state.movie.runtime)} />
                                 </div>
-                                <div class="row g-2">
+                                <div class="row g-2 mb-2">
                                     <div class="col-12">
                                         <section class="card">
                                             <header class="card-header">
@@ -220,7 +195,7 @@ fn Content(props: &Props) -> HtmlResult {
                                         </section>
                                     </div>
                                 </div>
-                                <div class="row g-2">
+                                <div class="row g-2 mb-2">
                                     <div class="col-10 mx-auto">
                                         <ol class="list-group list-group-flush">
                                             {
@@ -231,25 +206,15 @@ fn Content(props: &Props) -> HtmlResult {
                                                     .map(|comment| {
                                                         let user = comment.1.unwrap();
                                                         let user_name = format!("{} {}", user.first_name, user.last_name);
-                                                        let created_at = comment.0.created_at.format("%d-%m-%Y");
+                                                        let created_at = comment.0.created_at.format("%d-%m-%Y").to_string();
                                                         html! {
                                                             <li class="list-group-item">
-                                                                <blockquote class="blockquote">
-                                                                    <p>{comment.0.content}</p>
-                                                                    <footer class="blockquote-footer">
-                                                                        <a class="link-primary" href={format!("/profile/{}", user.id)}>
-                                                                            <cite title={user_name.to_string()}>
-                                                                                {user_name}
-                                                                            </cite>
-                                                                        </a>
-                                                                        <small>
-                                                                            {" on "}
-                                                                            <date time={created_at.to_string()}>
-                                                                                {created_at.to_string()}
-                                                                            </date>
-                                                                        </small>
-                                                                    </footer>
-                                                                </blockquote>
+                                                                <Comment
+                                                                    comment={comment.0.content.to_string()}
+                                                                    user_id={user.id}
+                                                                    user_name={user_name}
+                                                                    created_at={created_at}
+                                                                />
                                                             </li>
                                                         }
                                                     })

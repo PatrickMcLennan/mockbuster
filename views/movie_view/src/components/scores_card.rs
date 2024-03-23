@@ -1,9 +1,8 @@
-use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 
 use components::rating_bar::{Props as RatingBarProps, RatingBar};
 
-#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
+#[derive(Properties, PartialEq)]
 pub struct Props {
     pub scores: Vec<RatingBarProps>,
 }
