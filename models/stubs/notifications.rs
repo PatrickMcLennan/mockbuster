@@ -8,7 +8,7 @@ pub struct Notification {
     pub notification_type: i32,
     pub seen: bool,
     pub related_id: i32,
-    pub created_at: chrono::DateTime::<chrono::Utc>,
-    pub updated_at: chrono::DateTime::<chrono::Utc>,
-    pub seen_at: Option<chrono::DateTime::<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub seen_at: Option<chrono::DateTime<chrono::Utc>>,
 }
