@@ -37,6 +37,9 @@ pub async fn execute(
         .await
     {
         Ok(_) => Ok(rating),
-        Err(e) => Ok(rating.clone()),
+        Err(e) => {
+            println!("{}{:?}", LOG_KEY, e);
+            Ok(rating.clone())
+        }
     }
 }

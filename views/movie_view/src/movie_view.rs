@@ -4,6 +4,7 @@ use models::generated::{aggregate_ratings, comments, ratings, users};
 use crate::components::{scores_card::ScoresCard, stats_card::StatsCard};
 use components::{
     comment::Comment,
+    comment_entry::CommentEntry,
     frame::Frame,
     header::Header,
     page_title::PageTitle,
@@ -76,6 +77,7 @@ pub struct State {
 
 #[function_component]
 fn Content(props: &Props) -> HtmlResult {
+    let comment = use_state(|| String::new());
     let state = use_prepared_state!((), move |_| -> State {
         let props_clone = props.clone();
         State {
@@ -221,6 +223,21 @@ fn Content(props: &Props) -> HtmlResult {
                                                     .collect::<Html>()
                                             }
                                         </ol>
+                                    </div>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-10 mx-auto">
+                                        <form method="POST" class="card">
+                                            <legend class="card-header" style="font-size: 1rem;">
+                                                <strong>{"Leave a comment"}</strong>
+                                            </legend>
+                                            <div class="card-body">
+                                                <CommentEntry comment={comment} />
+                                            </div>
+                                            <fieldset class="card-footer">
+                                                <button type="submit" class="btn btn-primary">{"Submit Comment"}</button>
+                                            </fieldset>
+                                        </form>
                                     </div>
                                 </div>
                             </article>

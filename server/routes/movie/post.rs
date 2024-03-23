@@ -13,7 +13,7 @@ use tokio::task::LocalSet;
 
 #[derive(serde::Deserialize)]
 struct RatingForm {
-    pub score: f32,
+    pub score: Option<f32>,
     pub comment: Option<String>,
 }
 
@@ -66,24 +66,45 @@ async fn post(
         Some(comment) => {
             match comments::create::execute(comment, user_id, tmdb_id, db.get_ref().clone()).await {
                 Ok(_) => (),
-                Err(_) => panic!(),
+                Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
             }
         }
         None => (),
     }
 
-    match ratings::create::execute(form.score.clone(), user_id, tmdb_id, db.get_ref().clone()).await
-    {
-        Ok(_) => {
-            alert_styles = "success".to_string();
-            alert_copy = format!(
-                "Success!  You've rated {} {} / 10",
-                tmdb_movie_result.title, form.score
-            );
+    match form.score {
+        Some(score) => {
+            match ratings::create::execute(score.clone(), user_id, tmdb_id, db.get_ref().clone())
+                .await
+            {
+                Ok(_) => {
+                    alert_styles = "success".to_string();
+                    alert_copy = format!(
+                        "Success!  You've rated {} {} / 10",
+                        tmdb_movie_result.title, score
+                    );
+                }
+                Err(_) => {
+                    alert_styles = "danger".to_string();
+                    alert_copy = "You have already rated this movie -- you cannot rate a movie twice, and you cannot change your score.".to_string()
+                }
+            };
         }
-        Err(_) => {
-            alert_styles = "danger".to_string();
-            alert_copy = "You have already rated this movie -- you cannot rate a movie twice, and you cannot change your score.".to_string()
+        None => (),
+    }
+
+    let score = match form.score {
+        Some(v) => Some(v),
+        None => {
+            match ratings::fetch::by_user_and_movie::execute(tmdb_id, user_id, db.get_ref().clone())
+                .await
+            {
+                Ok(v) => Some(v.score),
+                Err(e) => match e {
+                    DbErr::RecordNotFound(id) if id == tmdb_id.to_string() => None,
+                    _ => return Ok(HttpResponse::InternalServerError().finish()),
+                },
+            }
         }
     };
 
@@ -108,7 +129,6 @@ async fn post(
         use tokio::runtime::Builder;
         let set = LocalSet::new();
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
-        let form_score_clone = form.score.clone();
 
         set.block_on(&rt, async {
             yew::ServerRenderer::<Movie>::with_props(move || Props {
@@ -125,11 +145,7 @@ async fn post(
                 } else {
                     None
                 },
-                user_score: if alert_styles == "success" {
-                    Some(form_score_clone)
-                } else {
-                    None
-                },
+                user_score: score,
                 user_rated_date: if alert_styles == "success" {
                     Some(chrono::Utc::now().format("%d-%m-%Y").to_string())
                 } else {

@@ -1,11 +1,10 @@
-use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
-use web_sys::{EventTarget, HtmlInputElement, HtmlTextAreaElement};
+use web_sys::{EventTarget, HtmlInputElement};
 use yew::prelude::*;
 
 use crate::comment_entry::CommentEntry;
 
-#[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
+#[derive(Properties, PartialEq)]
 pub struct VoteModalProps {
     pub title: String,
     pub id: i32,
@@ -22,21 +21,6 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
         2.6..=5.0 => Some("bg-info"),
         5.1..=7.5 => Some("bg-success"),
         _ => None,
-    };
-
-    let on_comment_input = {
-        let comment_clone = comment.clone();
-        Callback::from(move |e: InputEvent| {
-            let target: Option<EventTarget> = e.target();
-            let input = target.and_then(|t| t.dyn_into::<HtmlTextAreaElement>().ok());
-
-            if let Some(input) = input {
-                let mut new_comment = input.value();
-                new_comment.truncate(250);
-
-                comment_clone.set(new_comment);
-            }
-        })
     };
 
     let on_score_input = {
@@ -75,7 +59,7 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </header>
                     <div class="modal-body">
-                        <fieldset>
+                        <fieldset class="mb-3">
                             <legend style="font-size: 1rem;">
                                 {"Select a score from 0 - 10 in 0.5 increments.  "}<strong>{"This cannot be undone, and you cannot change your vote later."}</strong>
                             </legend>
@@ -99,7 +83,7 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
                                 <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", *score * 10.0)}></div>
                             </div>
                         </fieldset>
-                        <CommentEntry comment={comment.to_string()} oninput={on_comment_input} />
+                        <CommentEntry comment={comment} />
                     </div>
                     <fieldset class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{"Cancel"}</button>

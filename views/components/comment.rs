@@ -11,7 +11,7 @@ pub struct Props {
 #[function_component(Comment)]
 pub fn comment(props: &Props) -> Html {
     html! {
-        <blockquote class="blockquote">
+        <blockquote class="blockquote mb-0">
             <p>{&props.comment}</p>
             <footer class="blockquote-footer">
                 <a class="link-primary" href={format!("/profile/{}", props.user_id)}>
