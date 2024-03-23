@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use models::generated::{aggregate_ratings, ratings, users};
+use models::generated::aggregate_ratings;
 
 use components::{
     frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar,

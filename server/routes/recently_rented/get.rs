@@ -7,7 +7,7 @@ use models::{
     generated::{ratings as ratings_model, users as users_model},
     tmdb_movies::movie_id_result::MovieIdResult,
 };
-use sea_orm::{DatabaseConnection, EntityTrait, PaginatorTrait};
+use sea_orm::DatabaseConnection;
 use std::collections::HashMap;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;

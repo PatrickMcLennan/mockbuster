@@ -41,7 +41,7 @@ pub fn sidebar(props: &Props) -> Html {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="top-10" class={classes!("nav-link", if current_route == CurrentRoute::TopRated { "active" } else { "" })} style="border-radius: 0;">
+                    <a href="/top-10" class={classes!("nav-link", if current_route == CurrentRoute::TopRated { "active" } else { "" })} style="border-radius: 0;">
                         <span class="nav-name" style="word-wrap: normal;">{"Top Rated"}</span>
                     </a>
                 </li>

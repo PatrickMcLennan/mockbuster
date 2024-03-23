@@ -1,4 +1,4 @@
-use crate::operations::users;
+use crate::operations::{ratings, users};
 use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
@@ -6,8 +6,8 @@ use actix_web::{
     web::{Data, Query},
     Error as ActixError, HttpResponse,
 };
-use profile_view::profile_view::Profile;
-use sea_orm::DatabaseConnection;
+use profile_view::profile_view::{Profile, Props};
+use sea_orm::{DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
@@ -38,9 +38,19 @@ async fn get(
 
     let profile = match users::fetch::execute(id, db.get_ref().clone()).await {
         Ok(s) => s,
-        Err(e) => return Ok(HttpResponse::NotFound().finish()),
+        Err(_) => return Ok(HttpResponse::NotFound().finish()),
     };
 
+    let recent_ratings =
+        match ratings::fetch::by_user::execute(id as u32, db.get_ref().clone()).await {
+            Ok(v) => Some(v),
+            Err(e) => match e {
+                DbErr::RecordNotFound(id) if id == id.to_string() => None,
+                _ => return Ok(HttpResponse::InternalServerError().finish()),
+            },
+        };
+
+    let profile_clone = profile.clone();
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
@@ -48,7 +58,12 @@ async fn get(
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
 
         set.block_on(&rt, async {
-            yew::ServerRenderer::<Profile>::new().render().await
+            yew::ServerRenderer::<Profile>::with_props(|| Props {
+                recent_ratings,
+                profile: Some(profile_clone),
+            })
+            .render()
+            .await
         })
     })
     .await
@@ -59,7 +74,8 @@ async fn get(
         .body(Document::new(DocumentProps {
             description: format!(
                 "Profile for {} {}",
-                profile.0.first_name, profile.0.last_name
+                profile.clone().first_name,
+                profile.clone().last_name
             ),
             wasm_assets: "profiveView.js".to_string(),
             title: "Profile".to_string(),
