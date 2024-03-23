@@ -72,6 +72,14 @@ module.exports = {
           from: 'node_modules/bootstrap/dist/css/bootstrap.css',
           to: path.resolve(__dirname, './server/assets/bootstrap.css'),
         },
+        {
+          from: `./manifest.json`,
+          to: path.resolve(__dirname, `./server/assets/manifest.json`)
+        },
+        {
+          from: `./assets/logo.svg`,
+          to: path.resolve(__dirname, `./server/assets/logo.svg`)
+        },
         !IS_PROD && {
           from: 'node_modules/bootstrap/dist/css/bootstrap.css.map',
           to: path.resolve(__dirname, './server/assets/bootstrap.css.map'),
