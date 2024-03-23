@@ -23,7 +23,7 @@ pub fn rating_bar(props: &Props) -> Html {
 
     html! {
         <div>
-            <div class="d-flex justify-content-between align-items-end">
+            <div class="d-flex flex-md-row flex-sm-column justify-content-between align-items-end">
                 <span class="display-6" style={TEXT_BACKGROUND}>
                     {props.score}
                     <small class="h5" style={TEXT_BACKGROUND}>{" / 10"}</small>
