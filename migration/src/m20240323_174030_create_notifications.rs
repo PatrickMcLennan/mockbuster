@@ -89,19 +89,45 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name("ratings-user_id-tmdb_id-index")
+                    .table(Notifications::Table)
+                    .col(Notifications::UserId)
+                    .col(Notifications::RelatedId)
+                    .unique()
+                    .to_owned(),
+            )
+            .await?;
+
         let conn = manager.get_connection();
 
-        // if cfg!(any(debug_assertions, test)) {
-        //     conn.execute_unprepared(
-        //             "
-        //                 INSERT INTO notifications (first_name, last_name, email, password_hash, permission) VALUES
-        //                 ('Elvis', 'Presley', 'king@theking.com', crypt('!Testing2', gen_salt('bf')), 2),
-        //                 ('Kurt', 'Cobain', 'whatever@whatever.com', crypt('!Testing0', gen_salt('bf')), 0),
-        //                 ('Jimi', 'Hendrix', 'jimi@hendrix.com', crypt('!Testing0', gen_salt('bf')), 0);
-        //             ",
-        //         )
-        //         .await?;
-        // }
+        if cfg!(any(debug_assertions, test)) {
+            conn.execute_unprepared(
+                "
+                        INSERT INTO notifications (user_id, related_id, notification_type) VALUES
+                        (1, 2, 0),
+                        (1, 3, 0),
+                        (1, 4, 0),
+                        (1, 5, 0),
+                        (1, 6, 0),
+                        (1, 7, 0),
+                        (1, 8, 0),
+                        (1, 9, 0),
+                        (1, 5, 1),
+                        (1, 6, 1),
+                        (1, 7, 1),
+                        (1, 8, 1),
+                        (1, 9, 1),
+                        (1, 10, 1),
+                        (1, 11, 1),
+                        (1, 12, 1);
+                    ",
+            )
+            .await?;
+        }
 
         conn.execute_unprepared(
             "

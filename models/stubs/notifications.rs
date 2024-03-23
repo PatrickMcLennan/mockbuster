@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Properties, Serialize, Deserialize)]
-pub struct Notification {
+pub struct Notifications {
     pub id: i32,
     pub user_id: i32,
     pub notification_type: i32,

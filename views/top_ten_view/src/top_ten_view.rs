@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use models::generated::aggregate_ratings;
+use models::generated::{aggregate_ratings, notifications};
 
 use components::{
     frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar,
@@ -7,7 +7,8 @@ use components::{
 };
 use models::{
     stubs::{
-        aggregate_ratings::AggregateRating as AggregateRatingsStub, rating::Rating as RatingStub,
+        aggregate_ratings::AggregateRating as AggregateRatingsStub,
+        notifications::Notifications as NotificationsStub, rating::Rating as RatingStub,
     },
     tmdb_movies::movie_id_result::MovieIdResult,
 };
