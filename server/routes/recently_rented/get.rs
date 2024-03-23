@@ -41,7 +41,7 @@ async fn get(
 
     let mut recently_rented_hashmap: HashMap<i32, Option<MovieIdResult>> = HashMap::new();
     for rating in &recently_rented_op {
-        let id = rating.0.tmdb_id;
+        let id = rating[0].0.tmdb_id;
         recently_rented_hashmap.insert(id, None);
     }
 
@@ -76,10 +76,10 @@ async fn get(
     let recently_rented = recently_rented_op
         .into_iter()
         .map(|recently_rented| {
-            let id = recently_rented.0.tmdb_id.clone();
+            let id = recently_rented[0].0.tmdb_id.clone();
             (
-                recently_rented.0,
-                recently_rented.1,
+                recently_rented[0].0.clone(),
+                recently_rented[0].1.clone(),
                 recently_rented_hashmap.get(&id).unwrap().clone(),
             )
         })

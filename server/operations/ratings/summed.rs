@@ -1,11 +1,13 @@
-use sea_orm::{DatabaseConnection, DbBackend, FromQueryResult, JsonValue, Statement};
+use sea_orm::{DatabaseConnection, DbBackend, DbErr, FromQueryResult, JsonValue, Statement};
 
 pub struct SummaryResult {
     pub sum_score: f64,
     pub weighted_average: f64,
 }
 
-pub async fn execute(tmdb_id: i32, db: DatabaseConnection) -> Option<SummaryResult> {
+const LOG_KEY: &str = "[Operations::Ratings::Summed]: ";
+
+pub async fn execute(tmdb_id: i32, db: DatabaseConnection) -> Result<SummaryResult, DbErr> {
     match JsonValue::find_by_statement(Statement::from_sql_and_values(
         DbBackend::Postgres,
         r#"
@@ -26,15 +28,18 @@ pub async fn execute(tmdb_id: i32, db: DatabaseConnection) -> Option<SummaryResu
     .await
     {
         Ok(v) => match v {
-            Some(v) => Some(SummaryResult {
+            Some(v) => Ok(SummaryResult {
                 sum_score: v.get("sum_score").unwrap().as_f64().unwrap(),
                 weighted_average: v.get("weighted_average").unwrap().as_f64().unwrap(),
             }),
-            None => None,
+            None => {
+                println!("{}: Cannot sum ratings for {}", LOG_KEY, tmdb_id);
+                Err(DbErr::RecordNotFound(tmdb_id.to_string()))
+            }
         },
         Err(e) => {
-            print!("Error: {:?}", e);
-            None
+            print!("{}{:?}", LOG_KEY, e);
+            Err(e)
         }
     }
 }

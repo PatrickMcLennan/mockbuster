@@ -1,15 +1,16 @@
 use models::generated::comments;
 use sea_orm::{prelude::*, ActiveValue::Set, DatabaseConnection};
 
+const LOG_KEY: &str = "[Operations::Comments::Create]: ";
+
 pub async fn execute(
     content: String,
     user_id: i32,
     tmdb_id: u32,
     db: DatabaseConnection,
-) -> Option<()> {
+) -> Result<comments::ActiveModel, DbErr> {
     if content.len() > 250 {
-        // TODO: Handle this better
-        return None;
+        return Err(DbErr::RecordNotInserted);
     }
 
     let comment = comments::ActiveModel {
@@ -19,12 +20,12 @@ pub async fn execute(
         ..Default::default()
     };
 
-    match comments::Entity::insert(comment).exec(&db).await {
-        Ok(_) => Some(()),
+    match comments::Entity::insert(comment.clone()).exec(&db).await {
+        Ok(_) => Ok(comment),
         Err(e) => {
             return {
-                println!("Error: {:?}", e);
-                None
+                println!("{}{:?}", LOG_KEY, e);
+                Err(e)
             }
         }
     }

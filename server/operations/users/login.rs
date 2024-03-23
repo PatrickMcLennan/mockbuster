@@ -1,4 +1,4 @@
-use actix_session::{Session, SessionInsertError};
+use actix_session::Session;
 use models::generated::users;
 use sea_orm::{prelude::*, DatabaseBackend, DatabaseConnection, Statement};
 use validators::users::login_form::LoginFormSchema;
