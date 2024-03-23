@@ -64,10 +64,12 @@ async fn post(
 
     match form.comment {
         Some(comment) => {
-            match comments::create::execute(comment, user_id, tmdb_id, db.get_ref().clone()).await {
-                Ok(_) => (),
-                Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-            }
+            if comment.len() >= 1 {
+                match comments::create::execute(comment, user_id, tmdb_id, db.get_ref().clone()).await {
+                    Ok(_) => (),
+                    Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+                }
+            } else { () }
         }
         None => (),
     }

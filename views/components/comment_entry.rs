@@ -29,10 +29,13 @@ pub fn comment_entry(props: &Props) -> Html {
             <textarea
                 aria-describedby="comment-limit"
                 class="form-control"
+                maxlength="250"
+                minlength="0"
                 name="comment"
                 rows="4"
                 cols="50"
-                placeholder="Leave an optional comment.  You can comment on a movie at any time."
+                placeholder="Optional"
+                required=true
                 oninput={oninput}
                 value={props.comment.to_string()}
             >

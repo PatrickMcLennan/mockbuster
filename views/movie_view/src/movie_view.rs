@@ -226,7 +226,7 @@ fn Content(props: &Props) -> HtmlResult {
                                     </div>
                                 </div>
                                 <div class="row g-2 mb-2">
-                                    <div class="col-10 mx-auto">
+                                    <div class="col-12">
                                         <form method="POST" class="card">
                                             <legend class="card-header" style="font-size: 1rem;">
                                                 <strong>{"Leave a comment"}</strong>
