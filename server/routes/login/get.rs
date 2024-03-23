@@ -23,6 +23,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
         .body(Document::new(DocumentProps {
             wasm_assets: "loginView.js".to_string(),
             title: "Log in".to_string(),
+            description: "Log in to mockbuster".to_string(),
             content,
         })))
 }

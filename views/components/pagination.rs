@@ -6,7 +6,7 @@ pub struct Props {
     pub total_pages: i64,
     pub previous_url: String,
     pub next_url: String,
-    pub numbered_url: String,
+    pub base_url: String,
 }
 
 #[function_component(Pagination)]
@@ -70,7 +70,7 @@ pub fn pagination(props: &Props) -> Html {
                                    >
                                        <a
                                            class="page-link"
-                                           href={if is_current_page { "#".to_string() } else { format!("{}&page={}", props.numbered_url, &page) }}
+                                           href={if is_current_page { "#".to_string() } else { format!("{}page={}", props.base_url, &page) }}
                                            tabindex={if is_current_page { Some("-1") } else { None }}
                                            aria-current={if is_first_page { Some("true") } else { None }}
                                            aria-disabled={if is_current_page { Some("true") } else { None }}

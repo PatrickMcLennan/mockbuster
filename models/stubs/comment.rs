@@ -3,7 +3,7 @@ use yew::prelude::*;
 
 #[cfg(not(feature = "ssr"))]
 #[derive(Clone, Debug, Deserialize, PartialEq, Properties, Serialize)]
-pub struct CommentStub {
+pub struct Comment {
     pub id: i32,
     pub user_id: i32,
     pub content: String,

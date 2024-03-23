@@ -1,10 +1,9 @@
 #[cfg(feature = "ssr")]
 use models::generated::{ratings, users};
 
-use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
 use components::{
-    frame::Frame, header::Header, page_title::PageTitle, rating_bar::RatingBar,
-    sidebar::CurrentRoute,
+    frame::Frame, header::Header, page_title::PageTitle, pagination::Pagination,
+    rating_bar::RatingBar, sidebar::CurrentRoute,
 };
 use models::{
     stubs::{rating::Rating as RatingStub, user::User as UserStub},
@@ -12,7 +11,6 @@ use models::{
 };
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::*, JsValue};
-use web_sys::console;
 
 // use crono
 use yew::prelude::*;
@@ -21,24 +19,32 @@ use yew::prelude::*;
 #[derive(Debug, Deserialize, PartialEq, Properties, Serialize)]
 pub struct Props {
     pub results: Option<Vec<(RatingStub, Option<UserStub>, Option<MovieIdResult>)>>,
+    pub total_pages: Option<u64>,
+    pub current_page: Option<u64>,
 }
 
 #[cfg(feature = "ssr")]
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
     pub results: Option<Vec<(ratings::Model, Option<users::Model>, Option<MovieIdResult>)>>,
+    pub total_pages: Option<u64>,
+    pub current_page: Option<u64>,
 }
 
 #[cfg(feature = "ssr")]
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct State {
     pub results: Vec<(ratings::Model, Option<users::Model>, Option<MovieIdResult>)>,
+    pub total_pages: u64,
+    pub current_page: u64,
 }
 
 #[cfg(not(feature = "ssr"))]
 #[derive(Clone, Debug, Deserialize, PartialEq, Properties, Serialize)]
 pub struct State {
     results: Vec<(RatingStub, Option<UserStub>, Option<MovieIdResult>)>,
+    pub total_pages: u64,
+    pub current_page: u64,
 }
 
 #[function_component]
@@ -46,9 +52,24 @@ fn Content(props: &Props) -> HtmlResult {
     let state = use_prepared_state!((), move |_| -> State {
         State {
             results: props.results.as_ref().unwrap().clone(),
+            total_pages: match props.total_pages {
+                Some(v) => match v {
+                    1..=10 => v,
+                    _ => 1,
+                },
+                None => 1,
+            },
+            current_page: match props.current_page {
+                Some(v) => v,
+                None => 1,
+            },
         }
     })?
     .unwrap();
+
+    let show_pagination = &state.total_pages > &1;
+    let current_page = state.current_page;
+    let total_pages = state.total_pages;
 
     Ok(html! {
         <>
@@ -111,6 +132,17 @@ fn Content(props: &Props) -> HtmlResult {
                             .collect::<Html>()
                     }
                 </section>
+                {if show_pagination {
+                    html! {
+                        <Pagination
+                            current_page={current_page as i64}
+                            previous_url={format!("/recently-rented?page={}", current_page - 1)}
+                            next_url={format!("/recently-rented?page={}", current_page + 1)}
+                            base_url={format!("/recently-rented?")}
+                            total_pages={total_pages as i64}
+                        />
+                    }
+                } else { html! { <></> } }}
             </Frame>
         </>
     })
@@ -118,15 +150,21 @@ fn Content(props: &Props) -> HtmlResult {
 
 #[function_component(RecentlyRented)]
 pub fn recently_rented_view(props: &Props) -> Html {
+    let props_clone = props.clone();
     html! {
         <Suspense fallback={ html! { <div>{"Loading..."}</div> } }>
-            <Content results={props.results.clone()} />
+            <Content current_page={props_clone.current_page} results={props_clone.results.clone()} total_pages={props_clone.total_pages} />
         </Suspense>
     }
 }
 
 #[wasm_bindgen]
 pub fn hydrate_recently_rented_view() -> Result<(), JsValue> {
-    yew::Renderer::<RecentlyRented>::with_props(Props { results: None }).hydrate();
+    yew::Renderer::<RecentlyRented>::with_props(Props {
+        current_page: None,
+        results: None,
+        total_pages: None,
+    })
+    .hydrate();
     Ok(())
 }

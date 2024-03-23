@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
-use web_sys::{EventTarget, HtmlInputElement};
+use web_sys::{EventTarget, HtmlInputElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
@@ -13,6 +13,7 @@ pub struct VoteModalProps {
 #[function_component(VoteModal)]
 pub fn vote_modal(props: &VoteModalProps) -> Html {
     let score = use_state(|| 5.0);
+    let comment = use_state(|| String::new());
 
     let score_color = match *score as f32 {
         0.0..=2.5 => Some("bg-danger"),
@@ -21,7 +22,22 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
         _ => None,
     };
 
-    let oninput = {
+    let on_comment_input = {
+        let comment_clone = comment.clone();
+        Callback::from(move |e: InputEvent| {
+            let target: Option<EventTarget> = e.target();
+            let input = target.and_then(|t| t.dyn_into::<HtmlTextAreaElement>().ok());
+
+            if let Some(input) = input {
+                let mut new_comment = input.value();
+                new_comment.truncate(250);
+
+                comment_clone.set(new_comment);
+            }
+        })
+    };
+
+    let on_score_input = {
         let score_clone = score.clone();
         Callback::from(move |e: InputEvent| {
             let target: Option<EventTarget> = e.target();
@@ -56,30 +72,46 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
                         <h5 class="modal-title">{format!("Rate {}", props.title)}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </header>
-                    <fieldset class="modal-body">
-                        <legend style="font-size: 1rem;">
-                            {"Select a score from 0 - 10 in 0.5 increments.  "}<strong>{"This cannot be undone, and you cannot change your vote later."}</strong>
-                        </legend>
-                        <div class="input-group mb-3">
-                            <input
-                                type="number"
-                                name="score"
-                                class="form-control"
-                                aria-label="Score"
-                                min="0"
-                                max="10"
-                                step="0.5"
-                                oninput={oninput}
-                                value={format!("{}", *score)}
-                            />
-                            <div class="input-group-append">
-                                <span class="input-group-text">{" / 10"}</span>
+                    <div class="modal-body">
+                        <fieldset>
+                            <legend style="font-size: 1rem;">
+                                {"Select a score from 0 - 10 in 0.5 increments.  "}<strong>{"This cannot be undone, and you cannot change your vote later."}</strong>
+                            </legend>
+                            <div class="input-group mb-3">
+                                <input
+                                    type="number"
+                                    name="score"
+                                    class="form-control"
+                                    aria-label="Score"
+                                    min="0"
+                                    max="10"
+                                    step="0.5"
+                                    oninput={on_score_input}
+                                    value={format!("{}", *score)}
+                                />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">{" / 10"}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="progress-stacked mt-1" role="progressbar" aria-label={format!("{} / 10", *score)} aria-valuenow={format!("{}", *score)} aria-valuemin="0" aria-valuemax="10">
-                            <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", *score * 10.0)}></div>
-                        </div>
-                    </fieldset>
+                            <div class="progress-stacked mt-1" role="progressbar" aria-label={format!("{} / 10", *score)} aria-valuenow={format!("{}", *score)} aria-valuemin="0" aria-valuemax="10">
+                                <div class={classes!("progress-bar", if score_color.is_some() { score_color } else { None })} style={format!("width: {}%", *score * 10.0)}></div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="mt-3">
+                            <textarea
+                                id="comment"
+                                class="form-control"
+                                name="comment"
+                                rows="4"
+                                cols="50"
+                                placeholder="Leave an optional comment.  You can comment on a movie at any time."
+                                oninput={on_comment_input}
+                                value={comment.to_string()}
+                            >
+                            </textarea>
+                            <small class="d-block mt-3 text-right">{format!("{}/250", comment.to_string().len())}</small>
+                        </fieldset>
+                    </div>
                     <fieldset class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{"Cancel"}</button>
                         <button type="submit" class="btn btn-primary">{"Submit Rating"}</button>

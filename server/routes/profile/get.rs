@@ -41,12 +41,6 @@ async fn get(
         Err(e) => return Ok(HttpResponse::NotFound().finish()),
     };
 
-    match profile.len() {
-        1 => (),
-        0 => return Ok(HttpResponse::NotFound().finish()),
-        _ => return Ok(HttpResponse::InternalServerError().finish()),
-    };
-
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
@@ -63,6 +57,10 @@ async fn get(
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(Document::new(DocumentProps {
+            description: format!(
+                "Profile for {} {}",
+                profile.0.first_name, profile.0.last_name
+            ),
             wasm_assets: "profiveView.js".to_string(),
             title: "Profile".to_string(),
             content,

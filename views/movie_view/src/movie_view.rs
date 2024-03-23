@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use models::generated::{aggregate_ratings, ratings, users};
+use models::generated::{aggregate_ratings, comments, ratings, users};
 
 use crate::components::scores_card::ScoresCard;
 use components::{
@@ -11,8 +11,8 @@ use components::{
 };
 use models::{
     stubs::{
-        aggregate_ratings::AggregateRating as AggregateRatingsStub, rating::Rating as RatingStub,
-        user::User as UserStub,
+        aggregate_ratings::AggregateRating as AggregateRatingsStub,
+        comment::Comment as CommentStub, rating::Rating as RatingStub, user::User as UserStub,
     },
     tmdb_movies::movie_id_result::MovieIdResult,
 };
@@ -25,6 +25,7 @@ use yew::prelude::*;
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
     pub aggregate_rating: Option<AggregateRatingsStub>,
+    pub comments: Option<Vec<(CommentStub, Option<UserStub>)>>,
     pub movie: Option<MovieIdResult>,
     pub alert_styles: Option<String>,
     pub alert_copy: Option<String>,
@@ -37,6 +38,7 @@ pub struct Props {
 #[derive(Debug, Properties, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Props {
     pub aggregate_rating: Option<aggregate_ratings::Model>,
+    pub comments: Option<Vec<(comments::Model, Option<users::Model>)>>,
     pub movie: Option<MovieIdResult>,
     pub alert_styles: Option<String>,
     pub alert_copy: Option<String>,
@@ -49,6 +51,7 @@ pub struct Props {
 #[derive(Properties, PartialEq, Deserialize, Serialize)]
 pub struct State {
     pub aggregate_rating: Option<AggregateRatingsStub>,
+    pub comments: Vec<(CommentStub, Option<UserStub>)>,
     pub movie: MovieIdResult,
     pub alert_styles: Option<String>,
     pub alert_copy: Option<String>,
@@ -61,6 +64,7 @@ pub struct State {
 #[derive(Properties, PartialEq, Deserialize, Serialize)]
 pub struct State {
     pub aggregate_rating: Option<aggregate_ratings::Model>,
+    pub comments: Vec<(comments::Model, Option<users::Model>)>,
     pub movie: MovieIdResult,
     pub alert_styles: Option<String>,
     pub alert_copy: Option<String>,
@@ -75,6 +79,10 @@ fn Content(props: &Props) -> HtmlResult {
         let props_clone = props.clone();
         State {
             aggregate_rating: props_clone.aggregate_rating,
+            comments: match props_clone.comments {
+                Some(v) => v,
+                None => vec![],
+            },
             movie: props_clone.movie.as_ref().unwrap().clone(),
             alert_styles: props_clone.alert_styles,
             alert_copy: props_clone.alert_copy,
@@ -212,6 +220,44 @@ fn Content(props: &Props) -> HtmlResult {
                                         </section>
                                     </div>
                                 </div>
+                                <div class="row g-2">
+                                    <div class="col-10 mx-auto">
+                                        <ol class="list-group list-group-flush">
+                                            {
+                                                state
+                                                    .comments
+                                                    .clone()
+                                                    .into_iter()
+                                                    .map(|comment| {
+                                                        let user = comment.1.unwrap();
+                                                        let user_name = format!("{} {}", user.first_name, user.last_name);
+                                                        let created_at = comment.0.created_at.format("%d-%m-%Y");
+                                                        html! {
+                                                            <li class="list-group-item">
+                                                                <blockquote class="blockquote">
+                                                                    <p>{comment.0.content}</p>
+                                                                    <footer class="blockquote-footer">
+                                                                        <a class="link-primary" href={format!("/profile/{}", user.id)}>
+                                                                            <cite title={user_name.to_string()}>
+                                                                                {user_name}
+                                                                            </cite>
+                                                                        </a>
+                                                                        <small>
+                                                                            {" on "}
+                                                                            <date time={created_at.to_string()}>
+                                                                                {created_at.to_string()}
+                                                                            </date>
+                                                                        </small>
+                                                                    </footer>
+                                                                </blockquote>
+                                                            </li>
+                                                        }
+                                                    })
+                                                    .collect::<Html>()
+                                            }
+                                        </ol>
+                                    </div>
+                                </div>
                             </article>
                             {if has_user_ratings {
                                 html! {
@@ -241,6 +287,7 @@ pub fn movie_view(props: &Props) -> Html {
         <Suspense fallback={ html! { <div>{"Loading..."}</div> } }>
             <Content
                 aggregate_rating={props_clone.aggregate_rating}
+                comments={props_clone.comments}
                 movie={props_clone.movie}
                 alert_copy={props_clone.alert_copy}
                 alert_styles={props_clone.alert_styles}
@@ -257,6 +304,7 @@ pub fn movie_view(props: &Props) -> Html {
 pub fn hydrate_movie_view() -> Result<(), JsValue> {
     yew::Renderer::<Movie>::with_props(Props {
         aggregate_rating: None,
+        comments: None,
         movie: None,
         alert_styles: None,
         alert_copy: None,

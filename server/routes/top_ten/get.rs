@@ -97,6 +97,7 @@ async fn get(
         .content_type("text/html; charset=utf-8")
         .body(Document::new(DocumentProps {
             wasm_assets: "topTenView.js".to_string(),
+            description: "Top rated movies on mockbuster".to_string(),
             title: "Top rated".to_string(),
             content,
         })))

@@ -24,6 +24,7 @@ async fn get() -> Result<HttpResponse, ActixError> {
         .body(Document::new(DocumentProps {
             wasm_assets: "homeView.js".to_string(),
             title: "Home".to_string(),
+            description: "Share movies with your friends on mockbuster".to_string(),
             content,
         })))
 }

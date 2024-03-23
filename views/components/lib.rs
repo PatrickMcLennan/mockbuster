@@ -1,3 +1,4 @@
+pub mod comment_card;
 pub mod frame;
 pub mod header;
 pub mod logo;

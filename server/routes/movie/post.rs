@@ -1,4 +1,4 @@
-use crate::operations::{aggregate_ratings, ratings, tmdb_movies};
+use crate::operations::{aggregate_ratings, comments, ratings, tmdb_movies};
 use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
@@ -14,6 +14,7 @@ use tokio::task::LocalSet;
 #[derive(serde::Deserialize)]
 struct RatingForm {
     pub score: f32,
+    pub comment: Option<String>,
 }
 
 #[post("/movie/{tmdb_id}")]
@@ -61,6 +62,16 @@ async fn post(
         }
     };
 
+    match form.comment {
+        Some(comment) => {
+            match comments::create::execute(comment, user_id, tmdb_id, db.get_ref().clone()).await {
+                Ok(_) => (),
+                Err(_) => panic!(),
+            }
+        }
+        None => (),
+    }
+
     match ratings::create::execute(form.score.clone(), user_id, tmdb_id, db.get_ref().clone()).await
     {
         Ok(_) => {
@@ -88,6 +99,11 @@ async fn post(
                 _ => return Ok(HttpResponse::InternalServerError().finish()),
             },
         };
+
+    let comments = match comments::fetch::by_tmdb_id::execute(tmdb_id, db.get_ref().clone()).await {
+        Ok(v) => v,
+        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+    };
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
@@ -97,6 +113,7 @@ async fn post(
         set.block_on(&rt, async {
             yew::ServerRenderer::<Movie>::with_props(move || Props {
                 aggregate_rating: aggregate_rating,
+                comments: Some(comments),
                 movie: Some(movie_clone),
                 alert_copy: if alert_copy.len() >= 1 {
                     Some(alert_copy)
@@ -130,6 +147,7 @@ async fn post(
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(Document::new(DocumentProps {
+            description: "Rate a movie".to_string(),
             wasm_assets: "movieView.js".to_string(),
             title: tmdb_movie_result.title,
             content,

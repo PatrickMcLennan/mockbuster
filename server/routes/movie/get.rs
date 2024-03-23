@@ -1,4 +1,4 @@
-use crate::operations::{aggregate_ratings, ratings, tmdb_movies};
+use crate::operations::{aggregate_ratings, comments, ratings, tmdb_movies};
 use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
@@ -56,6 +56,11 @@ async fn get(
 
     let movie_clone = tmdb_movie_result.clone();
 
+    let comments = match comments::fetch::by_tmdb_id::execute(tmdb_id, db.get_ref().clone()).await {
+        Ok(v) => v,
+        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+    };
+
     let ratings = match ratings::fetch::by_movie::execute(tmdb_id, db.get_ref().clone()).await {
         Ok(v) => v,
         Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
@@ -85,6 +90,7 @@ async fn get(
                 aggregate_rating: aggregate_rating,
                 alert_copy: None,
                 alert_styles: None,
+                comments: Some(comments),
                 user_score: match &user_rating {
                     Some(v) => Some(v.0.score.clone()),
                     None => None,
@@ -106,6 +112,7 @@ async fn get(
         .content_type("text/html; charset=utf-8")
         .body(Document::new(DocumentProps {
             wasm_assets: "movieView.js".to_string(),
+            description: tmdb_movie_result.overview,
             title: tmdb_movie_result.title,
             content,
         })))

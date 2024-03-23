@@ -32,7 +32,6 @@ async fn get(
     {
         Ok(v) => v,
         Err(e) => {
-            println!("[ERROR -- /search GET]: {}", e);
             return Ok(HttpResponse::InternalServerError().json(
                 &json!({"message": "Search is down at the moment; please try again later"}),
             ));
@@ -68,7 +67,6 @@ async fn get(
             hash_map
         }
         Err(e) => {
-            println!("[ERROR -- /search GET]: {}", e);
             return Ok(HttpResponse::InternalServerError().json(
                 &json!({"message": "Search is down at the moment; please try again later"}),
             ));
@@ -91,6 +89,8 @@ async fn get(
         .collect::<Vec<Movie>>()
         .to_vec();
 
+    let params_clone = params.clone().into_inner();
+
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;
         let set = LocalSet::new();
@@ -99,7 +99,7 @@ async fn get(
         set.block_on(&rt, async {
             let clone = tmdb_search_results.clone();
             yew::ServerRenderer::<Search>::with_props(move || Props {
-                dto: Some(params.into_inner()),
+                dto: Some(params_clone.clone()),
                 movie_search_results: Some(MovieSearchResults {
                     page: clone.page.clone(),
                     results: movie_search_results,
@@ -117,6 +117,7 @@ async fn get(
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(Document::new(DocumentProps {
+            description: format!("Search results for {}", params.clone().query),
             wasm_assets: "searchView.js".to_string(),
             title: "Search".to_string(),
             content,

@@ -3,7 +3,6 @@ use actix_web::{
     http::StatusCode, post, web::Data, web::Json, Error as ActixError, HttpResponse, Responder,
 };
 use sea_orm::DatabaseConnection;
-use serde_json::json;
 use validators::users::login_form::LoginFormSchema;
 
 use crate::operations::users;

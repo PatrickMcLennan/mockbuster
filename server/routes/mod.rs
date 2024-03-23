@@ -1,4 +1,3 @@
-pub mod comment;
 pub mod home;
 pub mod login;
 pub mod logout;
