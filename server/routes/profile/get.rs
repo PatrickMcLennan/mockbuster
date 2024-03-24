@@ -77,7 +77,7 @@ async fn get(
                 profile.clone().first_name,
                 profile.clone().last_name
             ),
-            wasm_assets: "profiveView.js".to_string(),
+            wasm_assets: "profileView.js".to_string(),
             title: "Profile".to_string(),
             content,
         })))

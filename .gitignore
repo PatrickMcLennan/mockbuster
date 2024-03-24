@@ -14,8 +14,10 @@ __pycache__
 node_modules
 dist/
 pkg/
-assets/
+server/assets/
 dump.rdb
 models/generated/
 http-cacache
 mongo/data
+
+todo.md

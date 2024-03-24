@@ -19,9 +19,11 @@ impl Document {
 					<meta name="theme-color" content='#0d6efd' />
 					<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 					<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+					<link rel="icon" type="image/x-icon" href="/assets/logo.svg">
 					<link rel="manifest" href="/assets/manifest.json">
 					<link rel="stylesheet" href="/assets/bootstrap.css" />
 					<script defer src="/assets/bootstrap.js" type="text/javascript"></script>
+					<script defer src="/assets/index.js" type="text/javascript"></script>
 					<script defer src="/assets/{}"></script>
 					<title>{} | mockbuster</title>
 				</head>

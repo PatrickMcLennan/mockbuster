@@ -24,15 +24,21 @@ Example / explanation using the [LoginView](https://github.com/PatrickMcLennan/m
 ### What's the full stack?
 #### Front End
 - [bootstrap](https://getbootstrap.com/) for all styles + UI logic (dropdowns, modals, etc)
-- [wasm-bindgen](https://rustwasm.github.io/docs/wasm-bindgen/) for generating WASM code invokable from client side JS
+- [wasm-bindgen](https://rustwasm.github.io/docs/wasm-bindgen/) for generating WASM code from [yew](https://yew.rs/)
 - [web-sys](https://crates.io/crates/web-sys) for binding the Browser API to WASM
 - [reqwasm](https://crates.io/crates/reqwasm) as an HTTP client
 - [webpack](https://webpack.js.org/) for bundling FE dependencies (bootstrap, etc)
   - [wasm-pack](https://rustwasm.github.io/docs/wasm-pack/) for bundling WASM components via webpack
+- [yew](https://yew.rs/) Client side templating
 
 #### Back End
 - [Actix Web](https://actix.rs/) for document, asset + REST requests
 - [SeaORM](https://github.com/SeaQL/sea-orm) ORM & all interfacing with postgres
+- [yew](https://yew.rs/) Server side templating
+
+#### Storage
+- [postgres](https://www.postgresql.org/) for the main + relational data store.
+- [redis](https://redis.io/) for expensive ephemeral data such as sessions
 
 #### Networking
 - [Docker](https://docs.docker.com/) for Postgres + Redis containers

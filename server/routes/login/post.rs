@@ -17,7 +17,7 @@ async fn post(
     session: Session,
 ) -> Result<Redirect, ActixError> {
     match form.get_errors() {
-        Some(e) => {
+        Some(_) => {
             FlashMessage::error("An email and a password are required.").send();
             return Ok(Redirect::to("/login").see_other());
         }

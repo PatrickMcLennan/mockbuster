@@ -6,7 +6,7 @@ use actix_web::{
     web::{Data, Path},
     Error as ActixError, HttpResponse,
 };
-use actix_web_flash_messages::{IncomingFlashMessages, Level};
+use actix_web_flash_messages::IncomingFlashMessages;
 use movie_view::movie_view::{Movie, Props};
 use sea_orm::{DatabaseConnection, DbErr};
 use serde_json::json;
@@ -25,7 +25,6 @@ async fn get(
         Ok(v) => match v {
             Some(id) => id as i32,
             None => {
-                println!("None block kicking in");
                 return Ok(HttpResponse::Found()
                     .append_header(("Location", "/login"))
                     .finish());

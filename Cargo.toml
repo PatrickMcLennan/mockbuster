@@ -34,7 +34,7 @@ validator = { version = "0.16.1", features = ["derive"] }
 yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4.37"
-web-sys = { version = "0.3.64", features = ["Event", "EventTarget", "Window"] }
+web-sys = { version = "0.3.69", features = ["Event", "EventTarget", "Window", "RegistrationOptions", "ServiceWorkerContainer", "ServiceWorker"] }
 
 [profile.release]
 lto = true
