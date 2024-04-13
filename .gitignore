@@ -21,3 +21,6 @@ http-cacache
 mongo/data
 
 todo.md
+
+certificate.crt
+private.key
