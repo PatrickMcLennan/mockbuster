@@ -6,6 +6,7 @@ mod m20240317_172504_aggregate_ratings;
 mod m20240321_234206_create_comments;
 mod m20240323_174030_create_notifications;
 mod m20240323_181246_create_user_preferences;
+mod m20240414_142416_subscriptions;
 
 pub struct Migrator;
 
@@ -19,6 +20,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240321_234206_create_comments::Migration),
             Box::new(m20240323_174030_create_notifications::Migration),
             Box::new(m20240323_181246_create_user_preferences::Migration),
+            Box::new(m20240414_142416_subscriptions::Migration),
         ]
     }
 }

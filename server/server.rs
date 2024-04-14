@@ -14,7 +14,7 @@ mod operations;
 mod routes;
 mod utils;
 
-use routes::{home, login, logout, movie, profile, recently_rented, search, top_ten};
+use routes::{home, login, logout, movie, profile, recently_rented, search, subscribe, top_ten};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -22,7 +22,6 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
     dotenv::from_path("./../.env").ok();
 
-    // let secret_key = Key::generate();
     let secret_key = Key::from(
         env::var("COOKIE_KEY")
             .expect("NO_COOKIE_KEY_IN_ENV")
@@ -34,7 +33,10 @@ async fn main() -> std::io::Result<()> {
     let flash_message_store = CookieMessageStore::builder(secret_key.clone()).build();
     let flash_message_framework = FlashMessagesFramework::builder(flash_message_store).build();
 
-    // Http Client with caching middleware -- cache calls to TMDB API
+    // Http Client with caching middleware -- cache calls to TMDB API.
+    // This is a poor mans DB in order to not have to reconcile the
+    // TMDBs massive dataset internally or make a million calls to
+    // their service.
     let http_client = ClientBuilder::new(Client::new())
         .with(Cache(HttpCache {
             mode: CacheMode::Default,
@@ -90,6 +92,7 @@ async fn main() -> std::io::Result<()> {
 			.service(recently_rented::get::get)
 			.service(search::get::get)
 			.service(search::post::post)
+			.service(subscribe::post::post)
 			.service(top_ten::get::get)
     })
     .bind(("127.0.0.1", 8080))?

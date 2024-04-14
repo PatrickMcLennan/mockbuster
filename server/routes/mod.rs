@@ -5,4 +5,5 @@ pub mod movie;
 pub mod profile;
 pub mod recently_rented;
 pub mod search;
+pub mod subscribe;
 pub mod top_ten;

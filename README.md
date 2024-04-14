@@ -72,7 +72,9 @@ Rename `localhost.pem` to `certificate.crt` and `localhost-key.pem` to `private.
 
 > After this step, macOs + linux users may need to restart their machine for Chromium browsers to trust this cert.
 
-Then
+Then generate the keys needed for [VAPID](https://datatracker.ietf.org/doc/html/draft-thomson-webpush-vapid) and insert them in the `.env` file. You can visit a site such as [this](https://www.attheminute.com/ca/vapid-key-generator) to have keys generated for you.
+
+Then,
 
 ```bash
 ## Install Rust deps

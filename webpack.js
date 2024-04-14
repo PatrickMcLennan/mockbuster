@@ -3,14 +3,16 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
+const dotenv = require("dotenv");
 
 /**
  * TODO:
- *
- * - Better optimize prod WASM builds (WASM code splitting? IDK)
- * - Watching the /components dir on each package is really innefficient (see: watchDirectories on every WasmPackPlugin).
- *   Find a more efficient way to recompile only what's necessary when /components changes
+ * - Builds are not cached, one change triggers a full rebuild
  */
+
+dotenv.config({ path: path.resolve(__dirname, `.env`) });
+const SUBSCRIPTION_PUBLIC_KEY = JSON.stringify(process.env.SUBSCRIPTION_PUBLIC_KEY);
 
 const VIEWS = [
   { js: `homeView`, rust: `home_view` },
@@ -95,6 +97,9 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
+    }),
+    new webpack.DefinePlugin({
+      SUBSCRIPTION_PUBLIC_KEY,
     }),
     ...VIEWS.map(
       ({ rust }) =>

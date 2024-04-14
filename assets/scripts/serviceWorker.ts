@@ -47,7 +47,7 @@ async function cacheFirst({ request, preloadResponsePromise, fallbackUrl }) {
     // when even the fallback response is not available,
     // there is nothing we can do, but we must always
     // return a Response object
-    return new Response("Network error happened", {
+    return new Response("Network error", {
       status: 408,
       headers: { "Content-Type": "text/plain" },
     });
@@ -89,7 +89,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  console.log(`fetch event: ${event}`);
+  dev_logger(`fetch event: \n${event}\n`);
   event.respondWith(
     cacheFirst({
       request: event.request,
