@@ -1,28 +1,31 @@
 use crate::operations::subscriptions;
 use actix_session::Session;
-use actix_web::{get, web, web::Data, Error as ActixError, HttpResponse};
+use actix_web::{post, web, web::Data, Error as ActixError, HttpResponse};
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct SubscribeRequest {
     endpoint: String,
     p256: String,
     auth: String,
 }
 
-#[get("/subscribe")]
+#[post("/subscribe")]
 async fn post(
     req: web::Json<SubscribeRequest>,
     db: Data<DatabaseConnection>,
     session: Session,
 ) -> Result<HttpResponse, ActixError> {
+    println!("{:?}", req);
     let user_id = match session.get::<i32>("id") {
         Ok(Some(id)) => id,
         _ => return Ok(HttpResponse::Unauthorized().finish()),
     };
 
-    match subscriptions::create::execute(
+    println!("{:?}", user_id);
+
+    match subscriptions::upsert::execute(
         req.endpoint.to_string(),
         req.p256.to_string(),
         req.auth.to_string(),
