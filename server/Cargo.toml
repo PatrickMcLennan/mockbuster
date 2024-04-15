@@ -17,8 +17,10 @@ chrono = { workspace = true }
 models = { path = "./../models", features = ["db_models"] }
 dotenv = "0.15.0"
 env_logger = "0.10.0"
+futures = "0.3"
 http-cache-reqwest = { workspace = true }
 num-format = { workspace = true }
+rdkafka = { version = "0.25", features = ["cmake-build"] }
 regex = "1.9.6"
 reqwest = { version = "0.11.9", features = ["json"] }
 reqwest-middleware = { workspace = true }
@@ -32,10 +34,13 @@ home_view = { path = "./../views/home_view" }
 login_view = { path = "./../views/login_view" }
 movie_view = { path = "./../views/movie_view", features = ["ssr"] }
 profile_view = { path = "./../views/profile_view", features = ["ssr"] }
-recently_rented_view = { path = "./../views/recently_rented_view", features = ["ssr"] }
+recently_rented_view = { path = "./../views/recently_rented_view", features = [
+    "ssr",
+] }
 search_view = { path = "./../views/search_view" }
 top_ten_view = { path = "./../views/top_ten_view", features = ["ssr"] }
 r2d2 = { workspace = true }
 redis = { workspace = true, features = ["r2d2"] }
+web-push = "0.10.1"
 web-sys = { workspace = true }
 yew = { workspace = true }

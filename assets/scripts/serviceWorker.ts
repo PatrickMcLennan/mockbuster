@@ -98,3 +98,9 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+// https://javascript.plainenglish.io/push-notifications-using-a-service-worker-5f2e371774e
+// self.addEventListener("push", (e) => {
+//   console.log({ e });
+//   self.registration.showNotification("Wohoo!!", { body: e.data.text() });
+// });

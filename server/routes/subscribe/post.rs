@@ -17,13 +17,10 @@ async fn post(
     db: Data<DatabaseConnection>,
     session: Session,
 ) -> Result<HttpResponse, ActixError> {
-    println!("{:?}", req);
     let user_id = match session.get::<i32>("id") {
         Ok(Some(id)) => id,
         _ => return Ok(HttpResponse::Unauthorized().finish()),
     };
-
-    println!("{:?}", user_id);
 
     match subscriptions::upsert::execute(
         req.endpoint.to_string(),

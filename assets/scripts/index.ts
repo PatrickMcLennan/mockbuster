@@ -3,7 +3,7 @@
 
 const registerServiceWorker = async () => {
   const applicationServerKey = SUBSCRIPTION_PUBLIC_KEY;
-  if ("serviceWorker" in navigator && "Notification" in window) {
+  if ("serviceWorker" in navigator && "Notification" in window && "PushManager" in window) {
     try {
       Notification.requestPermission();
       const registration = await navigator.serviceWorker.register("/assets/serviceWorker.js");

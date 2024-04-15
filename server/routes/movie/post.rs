@@ -1,4 +1,5 @@
 use crate::operations::{comments, ratings, tmdb_movies};
+use crate::utils::producer;
 use actix_session::Session;
 use actix_web::web::Redirect;
 use actix_web::{
@@ -23,6 +24,7 @@ async fn post(
     Form(form): Form<RatingForm>,
     session: Session,
     db: Data<DatabaseConnection>,
+    kafka_producer: Data<producer::KafkaProducer>,
 ) -> Result<Redirect, ActixError> {
     let mut redirect_url = None;
 
@@ -58,6 +60,7 @@ async fn post(
                         user_id.unwrap(),
                         tmdb_id,
                         db.get_ref().clone(),
+                        kafka_producer,
                     )
                     .await
                     {
