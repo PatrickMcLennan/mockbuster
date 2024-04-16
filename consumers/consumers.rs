@@ -1,5 +1,6 @@
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
+use sea_orm::{Database, DatabaseConnection};
 
 pub struct KafkaConsumer {
     consumer: StreamConsumer,
@@ -32,4 +33,17 @@ impl KafkaConsumer {
             // }
         }
     }
+}
+
+#[tokio::main]
+async fn main() {
+    let pool: DatabaseConnection =
+        Database::connect(std::env::var("DATABASE_URL").expect("NO_POSTGRES_URL_IN_ENV"))
+            .await
+            .unwrap();
+
+    let consumer = KafkaConsumer::new("kafka:9092", "mockbuster-1");
+
+    consumer.start(&["comments"]).await;
+    ()
 }

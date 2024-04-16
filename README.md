@@ -100,4 +100,8 @@ cargo watch -x run; ## from within /server
 yarn compile:dev:watch; ## from root
 ```
 
-All Rust & TS code across FE & BE will recompile on save, and the server will restart.
+All Rust & TS code across FE & BE will recompile on save, and the server will restart. It's also helpful to monitor the kafka consumer output in a terminal:
+
+```bash
+docker attach kafka-consumer;
+```

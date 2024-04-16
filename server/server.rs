@@ -3,7 +3,6 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App as ActixApp, HttpServer};
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use env_logger::Env;
-use futures::executor::block_on;
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
 
@@ -16,9 +15,9 @@ mod routes;
 mod utils;
 
 use routes::{home, login, logout, movie, profile, recently_rented, search, subscribe, top_ten};
-use utils::{consumer, producer};
+use utils::producer;
 
-const KAFKA_BROKERS: &str = "localhost:9092";
+const KAFKA_BROKERS: &str = "kafka:9092";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -66,11 +65,6 @@ async fn main() -> std::io::Result<()> {
     let redis_connection_pool = r2d2::Pool::builder().build(redis_connection).unwrap();
 
     let kafka_producer = producer::KafkaProducer::new(KAFKA_BROKERS);
-    let kafka_consumer = consumer::KafkaConsumer::new("localhost:9092", "mockbuster-1");
-
-    std::thread::spawn(move || {
-        block_on(kafka_consumer.start(&["comments"]));
-    });
 
     HttpServer::new(move || {
         ActixApp::new()
@@ -107,7 +101,7 @@ async fn main() -> std::io::Result<()> {
 			.service(subscribe::post::post)
 			.service(top_ten::get::get)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }

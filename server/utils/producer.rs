@@ -21,11 +21,19 @@ impl KafkaProducer {
     pub async fn send_message(&self, topic: &str, key: String, value: Value) {
         let value_bytes = serde_json::to_vec(&value).expect("Error serializing JSON value");
 
+        println!("{:?}", value_bytes);
         let record = FutureRecord::to(topic).key(&key).payload(&value_bytes);
+        println!("{:?}", record);
 
-        let _delivery_status = self
-            .producer
-            .send(record, Duration::from_millis(5000))
-            .await;
+        match self.producer.send(record, Duration::from_millis(0)).await {
+            Ok(v) => {
+                println!("Success!: {:?}", v);
+                ()
+            }
+            Err(e) => {
+                println!("Error!: {:?}", e);
+                ()
+            }
+        }
     }
 }

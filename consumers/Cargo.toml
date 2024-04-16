@@ -1,0 +1,13 @@
+[package]
+name = "kafka_consumers"
+version = "0.0.1"
+edition = "2021"
+
+[[bin]]
+name = "consumers"
+path = "./consumers.rs"
+
+[dependencies]
+sea-orm = { workspace = true }
+rdkafka = { workspace = true }
+tokio = { workspace = true }

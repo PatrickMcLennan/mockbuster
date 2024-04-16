@@ -34,6 +34,8 @@ services:
     image: nginx:stable-alpine3.17-slim
     container_name: nginx
     restart: unless-stopped
+    depends_on:
+      - server
     env_file: 
       - .env
     volumes:
@@ -49,11 +51,13 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181" 
-    volumes:
-      - ./zookeeper/jaas.conf:/opt/bitnami/zookeeper/conf/jaas.conf
+    # volumes:
+    #   - ./zookeeper/jaas.conf:/opt/bitnami/zookeeper/conf/jaas.conf
     environment:
-      ZOO_ENABLE_AUTH: "true"  
-      ALLOW_ANONYMOUS_LOGIN: "no"  
+      # ZOO_ENABLE_AUTH: true
+      # ALLOW_ANONYMOUS_LOGIN: no
+      ALLOW_PLAINTEXT_LISTENER: yes
+      ALLOW_ANONYMOUS_LOGIN: yes
       # ZOO_SERVER_USERS: ${ZOOKEEPER_USER}
       # ZOO_SERVER_PASSWORDS: ${ZOOKEEPER_PASSWORD}
       ZOO_LOG_LEVEL: TRACE
@@ -73,3 +77,49 @@ services:
       # KAFKA_ZOOKEEPER_PASSWORD: ${ZOOKEEPER_PASSWORD}
     depends_on:
       - zookeeper  
+
+  kafka-consumer:
+    image: rust:1.77.2
+    container_name: kafka-consumer
+    # ports:
+    #   - "9092:9092"
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - zookeeper  
+      - kafka  
+    command: >
+      sh -c "apt-get update && apt-get install -y cmake && cargo install cargo-watch && cd /app/consumers && cargo watch -x run"
+
+  server:
+    image: rust:1.77.2
+    container_name: server
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - zookeeper  
+      - kafka  
+      - postgres
+      - redis
+    command: >
+      sh -c "\
+        apt-get update && \
+        apt-get install -y cmake && \
+        cargo install cargo-watch && \
+        curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
+        rustup component add rustfmt && \
+        cargo install sea-orm-cli && \
+        sea-orm-cli migrate up && \
+        sea-orm-cli generate entity -o ./models/generated --with-serde both && \
+        cd /app/server && \
+        cargo watch -x run \
+      "
+

@@ -20,7 +20,7 @@ env_logger = "0.10.0"
 futures = "0.3"
 http-cache-reqwest = { workspace = true }
 num-format = { workspace = true }
-rdkafka = { version = "0.25", features = ["cmake-build"] }
+rdkafka = { workspace = true }
 regex = "1.9.6"
 reqwest = { version = "0.11.9", features = ["json"] }
 reqwest-middleware = { workspace = true }
