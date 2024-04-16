@@ -81,8 +81,6 @@ services:
   kafka-consumer:
     image: rust:1.77.2
     container_name: kafka-consumer
-    # ports:
-    #   - "9092:9092"
     env_file:
       - .env
     working_dir: /app

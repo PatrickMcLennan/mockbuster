@@ -1,6 +1,9 @@
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
+use rdkafka::Message;
 use sea_orm::{Database, DatabaseConnection};
+
+const KAFKA_BROKERS: &str = "kafka:9092";
 
 pub struct KafkaConsumer {
     consumer: StreamConsumer,
@@ -22,6 +25,25 @@ impl KafkaConsumer {
 
         loop {
             let message = self.consumer.recv().await.expect("Error receiving message");
+            println!("Topic: {}", message.topic());
+            println!("Partition: {}", message.partition());
+            println!("Offset: {}", message.offset());
+            println!("Key: {:?}", message.key());
+
+            let key_str = match message.key() {
+                Some(key_bytes) => String::from_utf8_lossy(key_bytes).to_string(),
+                None => "No Key".to_string(), // Provide a default value for when key is missing
+            };
+            println!("Key: {}", key_str);
+
+            match message.payload_view::<str>() {
+                Some(Ok(payload)) => {
+                    println!("Received message:");
+                    println!("Payload: {}", payload);
+                }
+                Some(Err(e)) => println!("Error decoding message payload: {}", e),
+                None => println!("Received empty message"),
+            }
 
             println!("{:?}", message);
             // match message {
@@ -42,7 +64,7 @@ async fn main() {
             .await
             .unwrap();
 
-    let consumer = KafkaConsumer::new("kafka:9092", "mockbuster-1");
+    let consumer = KafkaConsumer::new(KAFKA_BROKERS, "mockbuster-1");
 
     consumer.start(&["comments"]).await;
     ()
