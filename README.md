@@ -59,7 +59,7 @@ No (good) reason in particular - as a Rust fan this stack is a POC to check out 
 
 ## Developing
 
-Development uses https [as it's needed for ServiceWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API#:~:text=Service%20workers%20only%20run%20over%20HTTPS%2C%20for%20security%20reasons.%20Most%20significantly%2C%20HTTP%20connections%20are%20susceptible%20to%20malicious%20code%20injection%20by%20man%20in%20the%20middle%20attacks%2C%20and%20such%20attacks%20could%20be%20worse%20if%20allowed%20access%20to%20these%20powerful%20APIs). You'll need to generate an SSL certificate + private key within the `nginx` dir:
+You must use https [as it's needed for ServiceWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API#:~:text=Service%20workers%20only%20run%20over%20HTTPS%2C%20for%20security%20reasons.%20Most%20significantly%2C%20HTTP%20connections%20are%20susceptible%20to%20malicious%20code%20injection%20by%20man%20in%20the%20middle%20attacks%2C%20and%20such%20attacks%20could%20be%20worse%20if%20allowed%20access%20to%20these%20powerful%20APIs), which powers the Progressive Web App. You'll need to generate an SSL certificate + private key within the `nginx` dir:
 
 ```bash
 ## Install mkcert && generate trusted self-signed certs
@@ -74,34 +74,20 @@ Rename `localhost.pem` to `certificate.crt` and `localhost-key.pem` to `private.
 
 Then generate the keys needed for [VAPID](https://datatracker.ietf.org/doc/html/draft-thomson-webpush-vapid) and insert them in the `.env` file. You can visit a site such as [this](https://www.attheminute.com/ca/vapid-key-generator) to have keys generated for you.
 
-Then,
+Finally, mockbuster uses Docker & docker-compose. To run all the services, you can simply run
 
 ```bash
-## Install Rust deps
-cargo install cargo-watch;
-## Install ORM
-cargo install sea-orm-cli;
-## Install wasm-pack
-curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh; // https://rustwasm.github.io/wasm-pack/installer/;
-## Start containers
 docker-compose up -d;
-## Run migrations
-sea-orm-cli migrate up;
-## Generate models
-sea-orm-cli generate entity -o ./models/generated --with-serde both;
-## Install FE toolchain
-yarn;
 ```
 
-Once installed, run these 2 build processes in parallel.
+in the root to spin up all services needed. You can use Docker Desktop to monitor the logs of the resulting containers, or you can attach to their logs in a terminal. I recommend viewing these outputs at least:
 
 ```bash
-cargo watch -x run; ## from within /server
-yarn compile:dev:watch; ## from root
+  docker attach kafka-consumer;
+  docker attach nginx;
+  docker attach postgres;
+  docker attach server;
+  docker attach wasm-builder;
 ```
 
-All Rust & TS code across FE & BE will recompile on save, and the server will restart. It's also helpful to monitor the kafka consumer output in a terminal:
-
-```bash
-docker attach kafka-consumer;
-```
+All Rust & TS code across FE & BE will recompile on save, and the services will restart.

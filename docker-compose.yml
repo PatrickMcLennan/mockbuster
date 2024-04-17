@@ -121,3 +121,24 @@ services:
         cargo watch -x run \
       "
 
+  wasm-builder:
+    image: rust:1.77.2
+    container_name: wasm-builder
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "\
+        apt update && \
+        apt remove cmdtest && \
+        apt install -y nodejs npm && \
+        npm install -g yarn && \
+        curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
+        cd /app && \
+        yarn && \
+        yarn compile::dev::watch;
+      "
+
+
