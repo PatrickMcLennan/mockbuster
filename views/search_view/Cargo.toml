@@ -9,10 +9,8 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
-getrandom = { workspace = true }
 models = { path = "./../../models" }
 serde = { workspace = true }
-validator = { workspace = true }
 validators = { path = "./../../validators" }
 wasm-bindgen = { workspace = true }
 yew = { workspace = true }
