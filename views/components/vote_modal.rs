@@ -16,12 +16,21 @@ pub fn vote_modal(props: &VoteModalProps) -> Html {
     let score = use_state(|| 5.0);
     let comment = use_state(|| String::new());
 
-    let score_color = match *score as f32 {
-        0.0..=2.5 => Some("bg-danger"),
-        2.6..=5.0 => Some("bg-info"),
-        5.1..=7.5 => Some("bg-success"),
-        _ => None,
+    let score_f32 = *score as f32;
+    let score_color = if score_f32 >= 0.0 && score_f32 <= 2.5 {
+        Some("bg-danger")
+    } else if score_f32 >= 2.6 && score_f32 <= 5.0 {
+        Some("bg-info")
+    } else {
+        Some("bg-success")
     };
+
+    // let score_color = match *score as f32 {
+    //     0.0..=2.5 => Some("bg-danger"),
+    //     2.6..=5.0 => Some("bg-info"),
+    //     5.1..=7.5 => Some("bg-success"),
+    //     _ => None,
+    // };
 
     let on_score_input = {
         let score_clone = score.clone();

@@ -1,6 +1,6 @@
-use crate::operations::users;
 use actix_session::Session;
 use actix_web::{http::StatusCode, post, Error as ActixError, HttpResponse};
+use operations::users;
 
 #[post("/logout")]
 async fn post(session: Session) -> Result<HttpResponse, ActixError> {

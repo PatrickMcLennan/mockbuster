@@ -150,10 +150,9 @@ fn Content(props: &Props) -> HtmlResult {
 
 #[function_component(RecentlyRented)]
 pub fn recently_rented_view(props: &Props) -> Html {
-    let props_clone = props.clone();
     html! {
         <Suspense fallback={ html! { <div>{"Loading..."}</div> } }>
-            <Content current_page={props_clone.current_page} results={props_clone.results.clone()} total_pages={props_clone.total_pages} />
+            <Content current_page={props.current_page} results={props.results.clone()} total_pages={props.total_pages} />
         </Suspense>
     }
 }

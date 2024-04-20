@@ -1,10 +1,10 @@
-use crate::operations::{aggregate_ratings as aggregate_ratings_operations, tmdb_movies};
 use crate::utils::document::{Document, DocumentProps};
 use actix_web::{get, web::Data, Error as ActixError, HttpResponse};
 use models::{
     generated::aggregate_ratings as aggregate_ratings_model,
     tmdb_movies::movie_id_result::MovieIdResult,
 };
+use operations::{aggregate_ratings as aggregate_ratings_operations, tmdb_movies};
 use sea_orm::DatabaseConnection;
 use std::collections::HashMap;
 use tokio::task::spawn_blocking;
@@ -19,7 +19,7 @@ async fn get(
 ) -> Result<HttpResponse, ActixError> {
     let top_movies = match aggregate_ratings_operations::list::execute(db.get_ref().clone()).await {
         Ok(v) => v,
-        Err(e) => return Ok(HttpResponse::InternalServerError().finish()),
+        Err(_e) => return Ok(HttpResponse::InternalServerError().finish()),
     };
 
     let mut unique_movies = HashMap::new();

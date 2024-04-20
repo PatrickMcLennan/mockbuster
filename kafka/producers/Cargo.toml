@@ -1,0 +1,12 @@
+[package]
+name = "kafka-producer"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+path = "./kafka-producer.rs"
+
+[dependencies]
+rdkafka = { workspace = true }
+serde_json = { workspace = true }
+serde = { workspace = true }

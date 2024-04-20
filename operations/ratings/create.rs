@@ -1,7 +1,7 @@
 use models::generated::ratings as ratings_model;
 use sea_orm::{prelude::*, ActiveValue::Set, DatabaseConnection};
 
-use crate::operations::{aggregate_ratings, ratings as ratings_operations};
+use crate::{aggregate_ratings, ratings as ratings_operations};
 
 const LOG_KEY: &str = "[Operations::Ratings::Create]: ";
 
@@ -29,6 +29,11 @@ pub async fn execute(
         }
     };
 
+    // Calculating + writing the new aggregate_score should happen in a downstream consumer.  However
+    // considering this will probably have so few users (lol) that might make for a strange UX:
+    // you'll submit your rating as one of < ~8 users, and then get redirected back to the movie page,
+    // where the aggregate_score displayed might not have been updated yet.  Doing this work async here
+    // for now.
     let new_summed_score = ratings_operations::summed::execute(tmdb_id as i32, db.clone())
         .await
         .unwrap();

@@ -13,8 +13,8 @@ use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 use validators::tmdb_movies::search_dto::SearchDTO;
 
-use crate::operations::tmdb_movies;
 use crate::utils::document::{Document, DocumentProps};
+use operations::tmdb_movies;
 
 #[get("/search")]
 async fn get(
@@ -31,7 +31,7 @@ async fn get(
     .await
     {
         Ok(v) => v,
-        Err(e) => {
+        Err(_e) => {
             return Ok(HttpResponse::InternalServerError().json(
                 &json!({"message": "Search is down at the moment; please try again later"}),
             ));
@@ -66,7 +66,7 @@ async fn get(
             }
             hash_map
         }
-        Err(e) => {
+        Err(_e) => {
             return Ok(HttpResponse::InternalServerError().json(
                 &json!({"message": "Search is down at the moment; please try again later"}),
             ));

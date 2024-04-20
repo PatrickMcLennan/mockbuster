@@ -22,7 +22,7 @@ pub struct State {
 
 #[function_component]
 pub fn Content(props: &Props) -> HtmlResult {
-    let state = use_prepared_state!((), |_| -> State {
+    let _state = use_prepared_state!((), |_| -> State {
         let props_clone = props.clone();
         State {
             alert_message: props_clone.alert_message,

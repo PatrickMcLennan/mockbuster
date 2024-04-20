@@ -1,8 +1,6 @@
-use crate::utils::producer;
-use actix_web::web::Data;
+use kafka_producer::{schemas, topics::Topic, KafkaProducer};
 use models::generated::comments;
 use sea_orm::{prelude::*, ActiveValue::Set, DatabaseConnection};
-use serde_json::json;
 
 const LOG_KEY: &str = "[Operations::Comments::Create]: ";
 
@@ -11,7 +9,7 @@ pub async fn execute(
     user_id: i32,
     tmdb_id: u32,
     db: DatabaseConnection,
-    kafka_producer: Data<producer::KafkaProducer>,
+    kafka_producer: KafkaProducer,
 ) -> Result<comments::ActiveModel, DbErr> {
     if content.len() > 250 {
         return Err(DbErr::RecordNotInserted);
@@ -26,13 +24,19 @@ pub async fn execute(
 
     match comments::Entity::insert(comment.clone()).exec(&db).await {
         Ok(last_inserted) => {
+            let last_inserted_id = last_inserted.last_insert_id;
+
+            let message = schemas::create_comment::CreateCommentSchema {
+                id: last_inserted_id,
+                tmdb_id: tmdb_id as i32,
+                user_id: user_id as i32,
+            };
+
             kafka_producer
                 .send_message(
-                    "comments",
-                    "COMMENT_CREATE".to_string(),
-                    json!({
-                        "id": last_inserted.last_insert_id
-                    }),
+                    &Topic::COMMENT_CREATE,
+                    last_inserted.last_insert_id,
+                    message.to_json(),
                 )
                 .await;
             Ok(comment)

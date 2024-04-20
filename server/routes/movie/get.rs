@@ -1,4 +1,3 @@
-use crate::operations::{aggregate_ratings, comments, ratings, tmdb_movies};
 use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
@@ -8,6 +7,7 @@ use actix_web::{
 };
 use actix_web_flash_messages::IncomingFlashMessages;
 use movie_view::movie_view::{Movie, Props};
+use operations::{aggregate_ratings, comments, ratings, tmdb_movies};
 use sea_orm::{DatabaseConnection, DbErr};
 use serde_json::json;
 use tokio::task::spawn_blocking;

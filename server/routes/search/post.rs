@@ -1,7 +1,7 @@
 use actix_web::{post, web::Data, web::Json, Error as ActixError, HttpResponse, Responder};
 use validators::tmdb_movies::search_dto::SearchDTO;
 
-use crate::operations::tmdb_movies;
+use operations::tmdb_movies;
 
 #[post("/search")]
 async fn post(

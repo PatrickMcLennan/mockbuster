@@ -1,7 +1,7 @@
 #[cfg(feature = "ssr")]
 use models::generated::{aggregate_ratings, comments, ratings, users};
 
-use crate::components::{scores_card::ScoresCard, stats_card::StatsCard};
+use crate::_components::{scores_card::ScoresCard, stats_card::StatsCard};
 use components::{
     comment::Comment,
     comment_entry::CommentEntry,
@@ -264,18 +264,17 @@ fn Content(props: &Props) -> HtmlResult {
 
 #[function_component(Movie)]
 pub fn movie_view(props: &Props) -> Html {
-    let props_clone = props.clone();
     html! {
         <Suspense fallback={ html! { <div>{"Loading..."}</div> } }>
             <Content
-                aggregate_rating={props_clone.aggregate_rating}
-                comments={props_clone.comments}
-                movie={props_clone.movie}
-                alert_copy={props_clone.alert_copy}
-                alert_styles={props_clone.alert_styles}
-                user_score={props_clone.user_score}
-                user_rated_date={props_clone.user_rated_date}
-                ratings={props_clone.ratings}
+                aggregate_rating={props.aggregate_rating.clone()}
+                comments={props.comments.clone()}
+                movie={props.movie.clone()}
+                alert_copy={props.alert_copy.clone()}
+                alert_styles={props.alert_styles.clone()}
+                user_score={props.user_score.clone()}
+                user_rated_date={props.user_rated_date.clone()}
+                ratings={props.ratings.clone()}
 
             />
         </Suspense>

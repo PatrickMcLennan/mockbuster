@@ -3,6 +3,7 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App as ActixApp, HttpServer};
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use env_logger::Env;
+use kafka_producer::KafkaProducer;
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
 
@@ -10,12 +11,10 @@ use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheO
 use reqwest::Client;
 use reqwest_middleware::ClientBuilder;
 
-mod operations;
 mod routes;
 mod utils;
 
 use routes::{home, login, logout, movie, profile, recently_rented, search, subscribe, top_ten};
-use utils::producer;
 
 const KAFKA_BROKERS: &str = "kafka:9092";
 
@@ -36,10 +35,11 @@ async fn main() -> std::io::Result<()> {
     let flash_message_store = CookieMessageStore::builder(secret_key.clone()).build();
     let flash_message_framework = FlashMessagesFramework::builder(flash_message_store).build();
 
+    let isahc_client = web_push::IsahcWebPushClient::new().expect("No IsahcWebPushClient");
+
     // Http Client with caching middleware -- cache calls to TMDB API.
-    // This is a poor mans DB in order to not have to reconcile the
-    // TMDBs massive dataset internally or make a million calls to
-    // their service.
+    // This is a poor mans DB in order to not have to reconcile TMDBs
+    // massive dataset internally or make a million calls to their service.
     let http_client = ClientBuilder::new(Client::new())
         .with(Cache(HttpCache {
             mode: CacheMode::Default,
@@ -64,7 +64,7 @@ async fn main() -> std::io::Result<()> {
     let redis_connection = redis::Client::open(redis_url).unwrap();
     let redis_connection_pool = r2d2::Pool::builder().build(redis_connection).unwrap();
 
-    let kafka_producer = producer::KafkaProducer::new(KAFKA_BROKERS);
+    let kafka_producer = KafkaProducer::new(KAFKA_BROKERS);
 
     HttpServer::new(move || {
         ActixApp::new()
@@ -85,6 +85,7 @@ async fn main() -> std::io::Result<()> {
 			// Redis connection pool
 			.app_data(web::Data::new(redis_connection_pool.clone()))
 			.app_data(web::Data::new(kafka_producer.clone()))
+			.app_data(web::Data::new(isahc_client.clone()))
 			// Static Files
 			.service(Files::new("/assets", "./assets/").show_files_listing())
 			// Routes

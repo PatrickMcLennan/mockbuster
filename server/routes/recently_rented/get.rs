@@ -12,8 +12,8 @@ use std::collections::HashMap;
 use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
-use crate::operations::{ratings, tmdb_movies};
 use crate::utils::document::{Document, DocumentProps};
+use operations::{ratings, tmdb_movies};
 use recently_rented_view::recently_rented_view::{Props, RecentlyRented};
 use validators::ratings::recently_rented_dto::RecentlyRentedDTO;
 

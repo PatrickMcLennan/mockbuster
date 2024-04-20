@@ -8,7 +8,6 @@ crate-type = ["cdylib", "rlib"]
 path = "./src/lib.rs"
 
 [dependencies]
-chrono = { workspace = true }
 components = { path = "./../components" }
 models = { path = "./../../models", optional = true }
 num-format = { workspace = true }

@@ -1,4 +1,3 @@
-use crate::operations::{ratings, users};
 use crate::utils::document::{Document, DocumentProps};
 use actix_session::Session;
 use actix_web::{
@@ -6,6 +5,7 @@ use actix_web::{
     web::{Data, Query},
     Error as ActixError, HttpResponse,
 };
+use operations::{ratings, users};
 use profile_view::profile_view::{Profile, Props};
 use sea_orm::{DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};

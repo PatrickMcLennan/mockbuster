@@ -89,8 +89,10 @@ services:
     depends_on:
       - zookeeper  
       - kafka  
+      - server  
+      - postgres  
     command: >
-      sh -c "apt-get update && apt-get install -y cmake && cargo install cargo-watch && cd /app/consumers && cargo watch -x run"
+      sh -c "apt-get update && apt-get install -y cmake && cargo install cargo-watch && cd /app/kafka/consumers && cargo watch -x run"
 
   server:
     image: rust:1.77.2

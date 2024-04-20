@@ -12,11 +12,13 @@ const TEXT_BACKGROUND: &str = "background-color: white; max-width: max-content; 
 
 #[function_component(RatingBar)]
 pub fn rating_bar(props: &Props) -> Html {
-    let score_color = match props.score as f32 {
-        0.0..=2.5 => Some("bg-danger"),
-        2.6..=5.0 => Some("bg-info"),
-        5.1..=7.5 => Some("bg-success"),
-        _ => None,
+    let score_f32 = props.score as f32;
+    let score_color = if score_f32 >= 0.0 && score_f32 <= 2.5 {
+        Some("bg-danger")
+    } else if score_f32 >= 2.6 && score_f32 <= 5.0 {
+        Some("bg-info")
+    } else {
+        Some("bg-success")
     };
 
     let score_100 = props.score as i32 * 10;

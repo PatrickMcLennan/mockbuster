@@ -9,13 +9,10 @@ path = "./src/lib.rs"
 
 [dependencies]
 components = { path = "./../components" }
-chrono = { workspace = true }
 models = { path = "./../../models", optional = true }
 wasm-bindgen = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
-yew = { workspace = true, features = ["csr", "ssr"]}
-web-sys = { workspace = true }
+yew = { workspace = true, features = ["csr", "ssr"] }
 
 [features]
 ssr = ["yew/ssr", "dep:models", "models?/db_models"]

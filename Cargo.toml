@@ -12,12 +12,16 @@ members = [
   "./migration",
   "./models",
   "./server",
-  "./consumers",
+  "./kafka/consumers",
+  "./kafka/producers",
+  "./operations",
 ]
 default-members = ["./server"]
 resolver = "2"
 
 [workspace.dependencies]
+actix-session = { version = "0.8.0", features = ["redis-rs-session"] }
+actix-web = "4.0.0-rc.1"
 chrono = { version = "0.4.35", features = ["serde"] }
 getrandom = { version = "0.2", features = ["js"] }
 http-cache-reqwest = "0.13.0"
@@ -26,6 +30,7 @@ r2d2 = { version = "0.8.4" }
 rdkafka = { version = "0.36.2", features = ["cmake-build"] }
 redis = { version = "0.25.2", features = ["r2d2"] }
 reqwasm = { version = "0.5.0" }
+reqwest = { version = "0.11.9", features = ["json"] }
 reqwest-middleware = "0.2.4"
 sea-orm = { version = "0.12.3", features = [
   "sqlx-postgres",
@@ -39,6 +44,7 @@ validator = { version = "0.16.1", features = ["derive"] }
 yew = { version = "0.21.0", features = ["hydration", "csr", "ssr"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4.37"
+web-push = "0.10.1"
 web-sys = { version = "0.3.69", features = [
   "Event",
   "EventTarget",
