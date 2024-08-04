@@ -46,54 +46,6 @@ services:
       - "80:80"
       - "443:443"
 
-  zookeeper:
-    image: bitnami/zookeeper:3.9.2
-    container_name: zookeeper
-    ports:
-      - "2181:2181" 
-    # volumes:
-    #   - ./zookeeper/jaas.conf:/opt/bitnami/zookeeper/conf/jaas.conf
-    environment:
-      # ZOO_ENABLE_AUTH: true
-      # ALLOW_ANONYMOUS_LOGIN: no
-      ALLOW_PLAINTEXT_LISTENER: yes
-      ALLOW_ANONYMOUS_LOGIN: yes
-      # ZOO_SERVER_USERS: ${ZOOKEEPER_USER}
-      # ZOO_SERVER_PASSWORDS: ${ZOOKEEPER_PASSWORD}
-      ZOO_LOG_LEVEL: TRACE
-
-  kafka:
-    image: bitnami/kafka:3.6.2
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-      # KAFKA_ZOOKEEPER_USER: ${ZOOKEEPER_USER}
-      # KAFKA_ZOOKEEPER_PASSWORD: ${ZOOKEEPER_PASSWORD}
-    depends_on:
-      - zookeeper  
-
-  kafka-consumer:
-    image: rust:1.77.2
-    container_name: kafka-consumer
-    env_file:
-      - .env
-    working_dir: /app
-    volumes:
-      - .:/app
-    depends_on:
-      - zookeeper  
-      - kafka  
-      - server  
-      - postgres  
-    command: >
-      sh -c "apt-get update && apt-get install -y cmake && cargo install cargo-watch && cd /app/kafka/consumers && cargo watch -x run"
-
   server:
     image: rust:1.77.2
     container_name: server
@@ -105,8 +57,6 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - zookeeper  
-      - kafka  
       - postgres
       - redis
     command: >

@@ -12,8 +12,6 @@ members = [
   "./migration",
   "./models",
   "./server",
-  "./kafka/consumers",
-  "./kafka/producers",
   "./operations",
 ]
 default-members = ["./server"]
@@ -23,11 +21,11 @@ resolver = "2"
 actix-session = { version = "0.8.0", features = ["redis-rs-session"] }
 actix-web = "4.0.0-rc.1"
 chrono = { version = "0.4.35", features = ["serde"] }
+dotenv = "0.15.0"
 getrandom = { version = "0.2", features = ["js"] }
 http-cache-reqwest = "0.13.0"
 num-format = "0.4.4"
 r2d2 = { version = "0.8.4" }
-rdkafka = { version = "0.36.2", features = ["cmake-build"] }
 redis = { version = "0.25.2", features = ["r2d2"] }
 reqwasm = { version = "0.5.0" }
 reqwest = { version = "0.11.9", features = ["json"] }

@@ -6,7 +6,7 @@ const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator && "Notification" in window && "PushManager" in window) {
     try {
       Notification.requestPermission();
-      const registration = await navigator.serviceWorker.register("/assets/serviceWorker.js");
+      const registration = await navigator.serviceWorker.register("/assets/serviceWorker.js", { scope: "/" });
       const existingSubscription = await registration.pushManager.getSubscription();
 
       if (!existingSubscription) {

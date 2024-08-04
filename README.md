@@ -6,7 +6,7 @@ A WIP application for friends to rate, share and discuss movies.
 
 ### Tech TL;DR?
 
-mockbuster is primarily an [Actix Web](https://actix.rs/) application glueing databases to a UI for users to rate, share and discuss movies.
+mockbuster is an [Actix Web](https://actix.rs/) application for users to rate, share and discuss movies. It follows an SSR + Client Side Hydration approach for a UI that allows users to rate, discuss and share movies with their friends.
 
 #### FE TL;DR
 
@@ -83,7 +83,6 @@ docker-compose up -d;
 in the root to spin up all services needed. You can use Docker Desktop to monitor the logs of the resulting containers, or you can attach to their logs in a terminal. I recommend viewing these outputs at least:
 
 ```bash
-  docker attach kafka-consumer;
   docker attach nginx;
   docker attach postgres;
   docker attach server;

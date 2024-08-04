@@ -8,11 +8,11 @@ path = "./operations.rs"
 
 [dependencies]
 actix-session = { workspace = true }
-kafka-producer = { path = "./../kafka/producers" }
 models = { path = "./../models", features = ["db_models"] }
-rdkafka = { workspace = true }
 reqwest = { workspace = true }
 reqwest-middleware = { workspace = true }
 sea-orm = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
+web-push = { workspace = true }
 validators = { path = "./../validators" }
