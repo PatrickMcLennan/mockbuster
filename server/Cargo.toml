@@ -14,10 +14,9 @@ actix-session = { workspace = true }
 actix-web-flash-messages = { version = "0.4.2", features = ["cookies"] }
 actix-web = { workspace = true }
 models = { path = "./../models", features = ["db_models"] }
-dotenv = "0.15.0"
+dotenv = { workspace = true }
 env_logger = "0.10.0"
 http-cache-reqwest = { workspace = true }
-kafka-producer = { path = "./../kafka/producers" }
 operations = { path = "./../operations" }
 reqwest = { workspace = true }
 reqwest-middleware = { workspace = true }
@@ -26,7 +25,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
 validators = { path = "./../validators" }
-home_view = { path = "./../views/home_view" }
+home_view = { path = "./../views/home_view", features = ["ssr"] }
 login_view = { path = "./../views/login_view" }
 movie_view = { path = "./../views/movie_view", features = ["ssr"] }
 profile_view = { path = "./../views/profile_view", features = ["ssr"] }

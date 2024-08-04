@@ -3,7 +3,6 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App as ActixApp, HttpServer};
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use env_logger::Env;
-use kafka_producer::KafkaProducer;
 use sea_orm::{Database, DatabaseConnection};
 use std::env;
 
@@ -15,8 +14,6 @@ mod routes;
 mod utils;
 
 use routes::{home, login, logout, movie, profile, recently_rented, search, subscribe, top_ten};
-
-const KAFKA_BROKERS: &str = "kafka:9092";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
@@ -64,8 +61,6 @@ async fn main() -> std::io::Result<()> {
     let redis_connection = redis::Client::open(redis_url).unwrap();
     let redis_connection_pool = r2d2::Pool::builder().build(redis_connection).unwrap();
 
-    let kafka_producer = KafkaProducer::new(KAFKA_BROKERS);
-
     HttpServer::new(move || {
         ActixApp::new()
 			// Logger
@@ -84,7 +79,6 @@ async fn main() -> std::io::Result<()> {
 			.app_data(web::Data::new(http_client.clone()))
 			// Redis connection pool
 			.app_data(web::Data::new(redis_connection_pool.clone()))
-			.app_data(web::Data::new(kafka_producer.clone()))
 			.app_data(web::Data::new(isahc_client.clone()))
 			// Static Files
 			.service(Files::new("/assets", "./assets/").show_files_listing())

@@ -6,7 +6,6 @@ use actix_web::{
     Error as ActixError,
 };
 use actix_web_flash_messages::FlashMessage;
-use kafka_producer::KafkaProducer;
 use models::tmdb_movies::movie_id_result::MovieIdResult;
 use operations::{comments, ratings, tmdb_movies};
 use sea_orm::{DatabaseConnection, DbErr};
@@ -24,7 +23,6 @@ async fn post(
     Form(form): Form<RatingForm>,
     session: Session,
     db: Data<DatabaseConnection>,
-    kafka_producer: Data<KafkaProducer>,
 ) -> Result<Redirect, ActixError> {
     let mut redirect_url = None;
 
@@ -60,7 +58,6 @@ async fn post(
                         user_id.unwrap(),
                         tmdb_id,
                         db.get_ref().clone(),
-                        kafka_producer.get_ref().clone(),
                     )
                     .await
                     {
