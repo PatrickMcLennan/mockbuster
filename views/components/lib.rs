@@ -8,4 +8,5 @@ pub mod page_title;
 pub mod pagination;
 pub mod rating_bar;
 pub mod sidebar;
+pub mod user_badge;
 pub mod vote_modal;

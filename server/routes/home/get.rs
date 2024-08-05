@@ -7,11 +7,15 @@ use tokio::task::spawn_blocking;
 use tokio::task::LocalSet;
 
 #[get("/")]
-async fn get(db: Data<DatabaseConnection>) -> Result<HttpResponse, ActixError> {
-    let events = match events::list::execute(db.get_ref().clone()).await {
-        Ok(v) => v,
-        Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
-    };
+async fn get(
+    db: Data<DatabaseConnection>,
+    http_client: Data<reqwest_middleware::ClientWithMiddleware>,
+) -> Result<HttpResponse, ActixError> {
+    let events =
+        match events::list::execute(db.get_ref().clone(), http_client.get_ref().clone()).await {
+            Ok(v) => v,
+            Err(_) => return Ok(HttpResponse::InternalServerError().finish()),
+        };
 
     let content = spawn_blocking(move || {
         use tokio::runtime::Builder;

@@ -1,7 +1,9 @@
-use models::events_list_result::EventsListResult;
+use crate::tmdb_movies;
+use models::{events_list_result::EventsListResult, tmdb_movies::movie_id_result::MovieIdResult};
 use sea_orm::{
     prelude::*, DatabaseBackend, DatabaseConnection, FromQueryResult, JsonValue, Statement,
 };
+use std::collections::HashMap;
 
 const LOG_KEY: &str = "[Operations::Events::List]: ";
 
@@ -11,7 +13,10 @@ const LOG_KEY: &str = "[Operations::Events::List]: ";
 // For good UX, if a user leaves a rating and comment on the same movie within 24hrs,
 // aggregate them into 1 event.
 
-pub async fn execute(db: DatabaseConnection) -> Result<Vec<EventsListResult>, DbErr> {
+pub async fn execute(
+    db: DatabaseConnection,
+    http_client: reqwest_middleware::ClientWithMiddleware,
+) -> Result<Vec<EventsListResult>, DbErr> {
     match JsonValue::find_by_statement(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
             "
@@ -110,7 +115,7 @@ pub async fn execute(db: DatabaseConnection) -> Result<Vec<EventsListResult>, Db
         .await
     {
         Ok(records) => {
-            Ok(records.into_iter().filter_map(|value| {
+            let events = records.into_iter().filter_map(|value| {
                 let json = &value["event_json"];
                 match serde_json::from_value::<EventsListResult>(json.clone()) {
                     Ok(v) => Some(v),
@@ -119,7 +124,79 @@ pub async fn execute(db: DatabaseConnection) -> Result<Vec<EventsListResult>, Db
                         None
                     }
                 }
-            }).collect::<Vec<EventsListResult>>())
+            }).collect::<Vec<EventsListResult>>();
+
+            let mut tmdb_futures = vec![];
+            let mut tmdb_movies: HashMap<i32, Option<MovieIdResult>> = HashMap::new();
+
+            for event in events.clone() {
+                let clone = http_client.clone();
+                let tmdb_id = if event.comment.is_some() {
+                    event.comment.unwrap().tmdb_id
+                } else {
+                    event.rating.unwrap().tmdb_id
+                };
+
+                let has_movie = tmdb_movies.contains_key(&tmdb_id);
+
+                if !has_movie {
+                    tmdb_movies.insert(tmdb_id, None);
+    
+                    let future = async move {
+                        tmdb_movies::fetch::execute(tmdb_id as u32, Some(clone.clone())).await
+                    };
+                    tmdb_futures.push(future)
+                } else {
+                    ()
+                }
+            }
+
+            tokio::join!(async {
+                let mut result_vec = Vec::new();
+                for future in tmdb_futures {
+                    result_vec.push(future.await);
+                }
+
+                for result in result_vec {
+                    match result {
+                        Ok(v) => {
+                            tmdb_movies.insert(v.id, Some(v));
+                            ()
+                        },
+                        Err(e) => {
+                            println!("{}{:?}", LOG_KEY, e);
+                            ()
+                        }
+                    }
+                }
+            });
+
+
+            Ok(
+                events
+                    .into_iter()
+                    .map(|event| {
+                        let event_clone = event.clone();
+
+                        let tmdb_id = if event.comment.is_some() {
+                            event_clone.comment.unwrap().tmdb_id
+                        } else {
+                            event_clone.rating.unwrap().tmdb_id
+                        };
+
+                        let movie_clone = tmdb_movies.get(&tmdb_id);
+
+                        EventsListResult {
+                            user: event.user,
+                            comment: event.comment.clone(),
+                            rating: event.rating.clone(),
+                            tmdb_movie: if movie_clone.is_some() {
+                                movie_clone.unwrap().clone()
+                            } else { None }
+                        }
+                    })
+                    .collect::<Vec<EventsListResult>>()
+            )
         },
         Err(e) => {
             println!("{}{:?}", LOG_KEY, e);
