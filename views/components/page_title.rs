@@ -46,9 +46,6 @@ pub fn page_title(props: &Props) -> Html {
                 }}
                 <div class="row g-0">
                     <div class={format!("d-flex flex-column {}", copy_column_styles)}>
-                        // <h1 class="p-1" style="mix-blend-mode: difference; color: white; text-shadow: 1px 1px 2px white;">{&props.h1}</h1>
-                        // <h1 style="-webkit-text-stroke: 1px white;">{&props.h1}</h1>
-                        // <h2 class="mb-0" style="-webkit-text-stroke: 1px white;">{&props.h2}</h2>
                         <h1 style={HEADING_STYLES}>{&props.h1}</h1>
                         {
                             match &props.h2.len() {

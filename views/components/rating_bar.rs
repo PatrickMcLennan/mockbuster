@@ -8,7 +8,7 @@ pub struct Props {
     pub date: Option<String>,
 }
 
-const TEXT_BACKGROUND: &str = "background-color: white; max-width: max-content; padding: 0.5rem;";
+const TEXT_BACKGROUND: &str = "background-color: white; max-width: max-content; padding: 0.25rem;";
 
 #[function_component(RatingBar)]
 pub fn rating_bar(props: &Props) -> Html {
@@ -26,10 +26,10 @@ pub fn rating_bar(props: &Props) -> Html {
     html! {
         <div>
             <div class="d-flex flex-md-row flex-sm-column justify-content-between align-items-end">
-                <span class="display-6" style={TEXT_BACKGROUND}>
+                <h6 class="h5 mb-0" style={TEXT_BACKGROUND}>
                     {props.score}
-                    <small class="h5" style={TEXT_BACKGROUND}>{" / 10"}</small>
-                </span>
+                    <small class="h6" style={TEXT_BACKGROUND}>{" / 10"}</small>
+                </h6>
                 {
                     match &props.date {
                         Some(v) => html! {

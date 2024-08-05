@@ -81,7 +81,7 @@ fn Content(props: &Props) -> HtmlResult {
                                                             alt={format!("{} poster", tmdb_result.title)}
                                                             class="img-fluid rounded-start"
                                                             src={image}
-                                                            style="aspect-ratio: 2/3; width: 100%; height: auto; max-height: 168px;"
+                                                            style="aspect-ratio: 2/3; width: 100%; height: 100%;"
                                                         />
                                                     </a>
                                                 </div>

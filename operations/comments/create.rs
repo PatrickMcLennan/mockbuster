@@ -17,6 +17,8 @@ pub async fn execute(
         content: Set(content.to_owned()),
         user_id: Set(user_id.to_owned()),
         tmdb_id: Set((tmdb_id as i32).to_owned()),
+        created_at: Set(chrono::Utc::now().fixed_offset()),
+        updated_at: Set(chrono::Utc::now().fixed_offset()),
         ..Default::default()
     };
 

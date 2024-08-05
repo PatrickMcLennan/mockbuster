@@ -15,6 +15,8 @@ pub async fn execute(
         score: Set(score.to_owned()),
         user_id: Set(user_id.to_owned()),
         tmdb_id: Set((tmdb_id as i32).to_owned()),
+        created_at: Set(chrono::Utc::now().fixed_offset()),
+        updated_at: Set(chrono::Utc::now().fixed_offset()),
         ..Default::default()
     };
 
@@ -30,10 +32,14 @@ pub async fn execute(
     };
 
     // Calculating + writing the new aggregate_score should happen in a downstream consumer.  However
-    // considering this will probably have so few users (lol) that might make for a strange UX:
-    // you'll submit your rating as one of < ~8 users, and then get redirected back to the movie page,
-    // where the aggregate_score displayed might not have been updated yet.  Doing this work async here
-    // for now.
+    // with so few users the UX will seem delayed when the aggregate score doesn't happen syncronously
+    // with your rating.  With thousands of users, an aggregate score not updating immediately makes sense.
+    // With < 20, it will seem like a bug.
+
+    // Having this side effect in here is less than ideal, this would be a bottleneck in a larger app.
+    // But it's not a large app, and updating the aggregate here makes more sense than standing up a downstream
+    // consumer that acts on this async, and trying to monkey-patch that UX for a small handful of users.
+
     let new_summed_score = ratings_operations::summed::execute(tmdb_id as i32, db.clone())
         .await
         .unwrap();

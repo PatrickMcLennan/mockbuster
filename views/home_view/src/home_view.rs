@@ -91,7 +91,7 @@ fn Content(props: &Props) -> HtmlResult {
                                         let user_id = event.user.id;
 
                                         let image = match event.tmdb_movie.clone() {
-                                            Some(movie) => format!("https://image.tmdb.org/t/p/w300{}", movie.poster_path),
+                                            Some(movie) => format!("https://image.tmdb.org/t/p/w500{}", movie.poster_path),
                                             None => "https://www.google.com".to_string(),
                                         };
 
@@ -131,12 +131,12 @@ fn Content(props: &Props) -> HtmlResult {
                                                                         alt={format!("{} poster", image)}
                                                                         class="img-fluid rounded-start"
                                                                         src={image}
-                                                                        style="aspect-ratio: 2/3; width: 100%; height: auto;"
+                                                                        style="aspect-ratio: 2/3; width: 100%; height: 100%;"
                                                                     />
                                                                 </a>
                                                             </div>
-                                                            <figcaption class="col-9">
-                                                                <div class="card-body d-flex flex-column justify-content-stretch align-items-start h-100">
+                                                            <figcaption class="col-10">
+                                                                <div class="card-body d-flex flex-column justify-content-stretch align-items-start h-100 w-100">
 
                                                                     <h4 class="card-title h6 mb-0" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
                                                                         <UserBadge user_name={first_name.to_string()} user_id={user_id} image_url={String::new()} />

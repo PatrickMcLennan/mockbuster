@@ -3,7 +3,7 @@ use models::generated::{ratings, users};
 
 use components::{
     frame::Frame, header::Header, page_title::PageTitle, pagination::Pagination,
-    rating_bar::RatingBar, sidebar::CurrentRoute,
+    rating_bar::RatingBar, sidebar::CurrentRoute, user_badge::UserBadge,
 };
 use models::{
     stubs::{rating::Rating as RatingStub, user::User as UserStub},
@@ -103,23 +103,21 @@ fn Content(props: &Props) -> HtmlResult {
                                                             alt={format!("{} poster", tmdb.title)}
                                                             class="img-fluid rounded-start"
                                                             src={image}
-                                                            style="aspect-ratio: 2/3; width: 100%; height: auto; max-height: 168px;"
+                                                            style="aspect-ratio: 2/3; width: 100%; height: 100%;"
                                                         />
                                                     </a>
                                                 </div>
                                                 <figcaption class="col-8">
-                                                    <div class="card-body">
+                                                    <div class="card-body h-100 d-flex flex-column justify-content-between align-items-start">
                                                         <a href={format!("/movie/{}", tmdb.id)} style="-webkit-line-clamp: 3;">
                                                             <h5 class="card-title h6 mb-0" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{tmdb.title.to_string()}</h5>
                                                         </a>
-                                                        <div class="mb-0">
+                                                        <div class="mb-0 mt-2 w-100">
                                                             <div>
                                                                 <RatingBar score={model.score} date={watched_at.to_string()} />
                                                             </div>
-                                                            <div class="mt-2 d-flex justify-content-between">
-                                                                <span class="badge rounded-pill text-bg-secondary">
-                                                                    {user.first_name.chars().nth(0).unwrap()}{user.last_name.chars().nth(0).unwrap()}
-                                                                </span>
+                                                            <div class="mt-2">
+                                                                <UserBadge user_name={user.first_name} user_id={user.id} image_url={String::new()}  />
                                                             </div>
                                                         </div>
                                                     </div>
